@@ -1,5 +1,5 @@
 (()=>{const D=WSET_DATA,T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},G=window.WSET_V107||{regions:[],profiles:[],children:[]},G8=window.WSET_V108||{units:[],profiles:[],children:[],specificity:{},rankWeights:[1,.75,.55,.35,.2,.12,.08,.05,.03,.02]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",intensity:"",fruit:"",signature:"",texture:""},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{cur:"1",stack:[]},compare:new Set(),refFilter:"all",refMode:"grapes",refCountry:"all"};
+const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",intensity:"",fruit:"",signature:"",texture:""},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{answers:[],current:null,done:false,extended:false},compare:new Set(),refFilter:"all",refMode:"grapes",refCountry:"all"};
 const L={acid:"Acidité",tannin:"Tanins",alcohol:"Alcool",body:"Corps",color:"Couleur",intensity:"Intensité",fruit:"Fruit",signature:"Signature",texture:"Texture"},sat=["F","M-","M","M+","E"],lev=v=>({"F":1,"M-":2,"M":3,"M+":4,"E":5}[v]||0),cmp=d=>d<=.01?1:d<=.5?.92:d<=1?.82:d<=1.5?.65:d<=2?.42:d<=2.5?.2:.05,has=(a,b)=>(a||"").toLowerCase().includes((b||"").toLowerCase());
 function wineTheme(){document.body.classList.toggle("wine-white",S.type==="Blanc");document.body.classList.toggle("wine-red",S.type==="Rouge");let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=S.type==="Blanc"?"#9a6b16":"#7c2d3f"}
 function satField(k,l){
@@ -336,9 +336,128 @@ function quizNew(){
  $("#quizChoices").innerHTML="";$("#quizFeedback").classList.add("hidden");$("#quizFeedback").innerHTML="";
  choices.forEach(g=>{let b=document.createElement("button");b.className="quiz-choice";b.textContent=g.name;b.onclick=()=>{let ok=g.name===answer.name;$("#quizFeedback").classList.remove("hidden");$("#quizFeedback").innerHTML=`<b>${ok?"✓ Bonne réponse":"✗ "+answer.name}</b><p>${answer.keyMarker||answer.differentiation||""}</p>`;$$(".quiz-choice").forEach(x=>x.disabled=true)};$("#quizChoices").append(b)})
 }
-function treeRender(){let n=T[S.tree.cur];$("#treeStep").textContent="Étape "+n.id;$("#treeQuestion").textContent=n.q;$("#treeTip").textContent=n.tip;$("#treeOrientation").classList.add("hidden");$("#treeBack").style.visibility=S.tree.stack.length?"visible":"hidden"}
-function treeAns(y){let n=T[S.tree.cur],txt=y?n.yesText:n.noText,nx=y?n.yesNext:n.noNext;S.tree.stack.push({id:n.id,a:y?"Oui":"Non",text:txt});$("#treeOrientation").textContent=txt;$("#treeOrientation").classList.remove("hidden");trail();setTimeout(()=>{if(nx==="BACK")back();else if(nx==="ORIGIN")tab("origin");else if(nx==="GRAPE")tab("grape");else if(T[nx]){S.tree.cur=nx;treeRender();trail()}},650)}
-function back(){let x=S.tree.stack.pop();if(x)S.tree.cur=x.id;treeRender();trail()}function trail(){let e=$("#treeTrail");e.innerHTML="";S.tree.stack.slice(-6).forEach(x=>{let d=document.createElement("div");d.className="trail-item";d.innerHTML=`<b>${x.id} · ${x.a}</b> — ${x.text}`;e.append(d)})}
+
+const AQ=[
+ {id:"colorPale",q:"La couleur est-elle plutôt pâle ?",why:"La profondeur de couleur sépare rapidement les cépages naturellement peu pigmentés des profils plus extraits.",test:g=>g.color<=2.7,yes:{color:"M-"},no:null},
+ {id:"colorDeep",q:"La couleur est-elle franchement profonde ?",why:"Une couleur profonde favorise les cépages fortement pigmentés et écarte plusieurs cépages à peau fine.",test:g=>g.color>=4.1,yes:{color:"M+"}},
+ {id:"acidHigh",q:"L’acidité est-elle élevée ou très élevée ?",why:"L’acidité est l’un des marqueurs structurels les plus fiables pour séparer les familles de cépages.",test:g=>g.acid>=4,yes:{acid:"M+"},no:{acid:"M"}},
+ {id:"acidLow",q:"L’acidité paraît-elle plutôt faible à moyenne ?",why:"Une acidité modérée écarte les cépages naturellement très acides.",test:g=>g.acid<=3,yes:{acid:"M-"}},
+ {id:"tanninHigh",q:"Les tanins sont-ils élevés, fermes ou très structurants ?",why:"Pour les rouges, le niveau de tanins est souvent l’un des critères les plus discriminants.",types:["Rouge"],test:g=>g.tannin>=4.2,yes:{tannin:"M+"},no:{tannin:"M"}},
+ {id:"tanninLow",q:"Les tanins sont-ils plutôt faibles ou très souples ?",why:"Des tanins faibles orientent vers un groupe beaucoup plus restreint de cépages rouges.",types:["Rouge"],test:g=>g.tannin<=2.7,yes:{tannin:"M-"}},
+ {id:"bodyLight",q:"Le corps est-il plutôt léger ?",why:"Le poids en bouche permet de distinguer les cépages fins des profils naturellement plus charnus.",test:g=>g.body<=2.7,yes:{body:"M-"}},
+ {id:"bodyFull",q:"Le vin est-il ample ou corsé ?",why:"Un corps élevé rapproche les cépages à forte concentration ou issus de climats plus chauds.",test:g=>g.body>=4.1,yes:{body:"M+"}},
+ {id:"alcoholHigh",q:"L’alcool paraît-il élevé ?",why:"L’alcool renseigne à la fois sur le cépage, la maturité et le contexte climatique.",test:g=>g.alcohol>=4.1,yes:{alcohol:"M+"}},
+ {id:"alcoholLow",q:"L’alcool paraît-il faible à modéré ?",why:"Un alcool contenu est particulièrement utile pour identifier certains cépages ou styles de climat frais.",test:g=>g.alcohol<=2.8,yes:{alcohol:"M-"}},
+ {id:"aromaIntense",q:"L’intensité aromatique est-elle nettement marquée ?",why:"Certains cépages sont naturellement beaucoup plus expressifs que d’autres.",test:g=>g.intensity>=4.2,yes:{intensity:"M+"}},
+ {id:"redFruit",q:"Le fruit évoque-t-il surtout les fruits rouges (cerise, fraise, framboise) ?",why:"La couleur du fruit est très utile pour départager les rouges de structure comparable.",types:["Rouge"],test:g=>has(g.fruitCompatible,"Fruits rouges")||has(g.keyMarker,"cerise")||has(g.keyMarker,"fraise")||has(g.keyMarker,"frambo")},
+ {id:"blackFruit",q:"Le fruit est-il dominé par des fruits noirs (cassis, mûre, prune noire) ?",why:"Les fruits noirs orientent vers des cépages plus pigmentés ou des maturités plus poussées.",types:["Rouge"],test:g=>has(g.fruitCompatible,"Fruits noirs")||has(g.keyMarker,"cassis")||has(g.keyMarker,"mûre")||has(g.keyMarker,"prune")},
+ {id:"citrus",q:"Les agrumes dominent-ils le profil aromatique ?",why:"Chez les blancs, la dominance agrumes/citron permet de séparer plusieurs familles aromatiques.",types:["Blanc"],test:g=>has(g.fruitCompatible,"Agrumes")||has(g.keyMarker,"citron")||has(g.blindMarker,"citron")||has(g.differentiation,"agrum")},
+ {id:"stoneFruit",q:"Les fruits à noyau (pêche, abricot) sont-ils marqués ?",why:"Ce marqueur est particulièrement utile parmi les blancs aromatiques et certains blancs méridionaux.",types:["Blanc"],test:g=>has(g.fruitCompatible,"Fruits à noyau")||has(g.keyMarker,"pêche")||has(g.keyMarker,"abricot")||has(g.blindMarker,"abricot")},
+ {id:"tropical",q:"Perçoit-on nettement des fruits tropicaux ou exotiques ?",why:"Un caractère tropical peut signaler certains cépages ou un niveau de maturité spécifique.",types:["Blanc"],test:g=>has(g.fruitCompatible,"Tropic")||has(g.keyMarker,"tropical")||has(g.keyMarker,"ananas")||has(g.keyMarker,"mangue")},
+ {id:"floral",q:"Le caractère floral est-il net (violette, rose, fleurs blanches) ?",why:"Le floral est un excellent marqueur secondaire lorsque plusieurs candidats structurels restent proches.",test:g=>has(g.signaturesCompatible,"floral")||has(g.keyMarker,"violette")||has(g.keyMarker,"rose")||has(g.keyMarker,"floral")||has(g.blindMarker,"floral")},
+ {id:"pyrazine",q:"Perçoit-on un caractère végétal de type poivron, feuille ou pyrazine ?",why:"Les pyrazines sont très discriminantes pour certaines familles bordelaises et quelques cépages apparentés.",test:g=>has(g.signaturesCompatible,"Pyrazine")||has(g.keyMarker,"poivron")||has(g.keyMarker,"végétal")||has(g.blindMarker,"poivron")},
+ {id:"pepper",q:"Le poivre noir ou blanc est-il un marqueur évident ?",why:"Le poivre est un marqueur très puissant pour départager plusieurs rouges de structure comparable.",types:["Rouge"],test:g=>has(g.keyMarker,"poivre")||has(g.blindMarker,"poivre")||has(g.signaturesCompatible,"poivre")},
+ {id:"licorice",q:"Réglisse, anis ou épices sombres sont-ils marqués ?",why:"Ces notes peuvent aider à départager certains rouges méditerranéens et cépages à forte maturité.",types:["Rouge"],test:g=>has(g.keyMarker,"réglisse")||has(g.blindMarker,"réglisse")||has(g.keyMarker,"anis")},
+ {id:"earth",q:"Un caractère terreux, sous-bois ou champignon est-il net ?",why:"Ces marqueurs peuvent aider à distinguer les cépages fins évolutifs des profils dominés par le fruit primaire.",types:["Rouge"],test:g=>has(g.keyMarker,"terre")||has(g.blindMarker,"sous-bois")||has(g.differentiation,"terre")||has(g.keyMarker,"champignon")},
+ {id:"tarRose",q:"Rose séchée, goudron ou notes balsamiques sont-ils présents ?",why:"Cette association est particulièrement discriminante parmi les rouges pâles, acides et tanniques.",types:["Rouge"],test:g=>has(g.keyMarker,"goudron")||has(g.blindMarker,"goudron")||has(g.keyMarker,"rose")||has(g.differentiation,"goudron")},
+ {id:"petrol",q:"Une note pétrolée / hydrocarbure est-elle perceptible ?",why:"Le caractère TDN/pétrole est très discriminant dans un groupe restreint de cépages blancs.",types:["Blanc"],test:g=>has(g.keyMarker,"pétrol")||has(g.blindMarker,"pétrol")||has(g.differentiation,"pétrol")},
+ {id:"greenHerbal",q:"Le profil est-il franchement herbacé ou végétal frais ?",why:"Un caractère herbacé net sépare plusieurs blancs aromatiques de profils plus fruités ou floraux.",types:["Blanc"],test:g=>has(g.keyMarker,"herbac")||has(g.blindMarker,"herbac")||has(g.keyMarker,"herbe")||has(g.signaturesCompatible,"végétal")},
+ {id:"thiol",q:"Perçoit-on buis, fruit de la passion ou agrumes très expressifs ?",why:"Les marqueurs thiolés constituent une signature très discriminante de certains blancs.",types:["Blanc"],test:g=>has(g.keyMarker,"buis")||has(g.keyMarker,"passion")||has(g.blindMarker,"passion")||has(g.differentiation,"thiol")},
+ {id:"waxHoney",q:"Cire, miel ou lanoline font-ils partie du profil ?",why:"Ces caractères permettent notamment de départager certains blancs à forte acidité et bonne capacité de garde.",types:["Blanc"],test:g=>has(g.keyMarker,"cire")||has(g.keyMarker,"miel")||has(g.blindMarker,"cire")||has(g.differentiation,"lanoline")},
+ {id:"almond",q:"Amande, noisette ou légère amertume de finale sont-elles présentes ?",why:"Les notes d’amande et l’amertume finale sont utiles dans plusieurs familles de blancs italiens et méditerranéens.",types:["Blanc"],test:g=>has(g.keyMarker,"amande")||has(g.blindMarker,"amande")||has(g.keyMarker,"noisette")||has(g.differentiation,"amert")},
+ {id:"saline",q:"La finale paraît-elle saline, crayeuse ou très minérale ?",why:"La salinité/minéralité peut devenir très discriminante lorsque l’espace des candidats est déjà resserré.",types:["Blanc"],test:g=>has(g.keyMarker,"salin")||has(g.blindMarker,"salin")||has(g.differentiation,"salin")||has(g.keyMarker,"minéral")},
+ {id:"aromaticGrape",q:"Le vin est-il très aromatique, floral et épicé plutôt que neutre ?",why:"Cette question sépare les cépages aromatiques de ceux dont le profil repose surtout sur la structure ou la vinification.",types:["Blanc"],test:g=>g.intensity>=4.2&&(has(g.keyMarker,"floral")||has(g.keyMarker,"épice")||has(g.keyMarker,"litchi")||has(g.blindMarker,"floral"))},
+ {id:"muscat",q:"Le raisin frais, la fleur d’oranger ou le muscat sont-ils évidents ?",why:"Le caractère muscaté est une signature variétale très spécifique.",types:["Blanc"],test:g=>has(g.name,"Muscat")||has(g.keyMarker,"raisin")||has(g.keyMarker,"fleur d’oranger")||has(g.blindMarker,"muscat")},
+ {id:"viognier",q:"Abricot mûr, pêche et floral avec acidité plutôt modérée : est-ce proche du vin ?",why:"Cette combinaison aide à isoler les blancs aromatiques amples mais peu acides.",types:["Blanc"],test:g=>has(g.name,"Viognier")||((g.acid<=3)&&has(g.keyMarker,"abricot"))},
+ {id:"oak",q:"Le bois ou les marqueurs d’élevage sont-ils nettement perceptibles ?",why:"L’élevage n’identifie pas seul un cépage mais départage efficacement des styles proches.",test:g=>has(g.textureCompatible,"Boisé")||has(g.secondaryTertiary,"bois")||has(g.differentiation,"bois")},
+ {id:"silky",q:"La texture est-elle particulièrement fine ou soyeuse ?",why:"La finesse tannique/texturale aide à séparer les cépages à peau fine des profils plus rustiques.",test:g=>has(g.textureCompatible,"Fin / soyeux")},
+ {id:"firm",q:"La texture est-elle ferme, anguleuse ou austère ?",why:"La qualité des tanins est souvent aussi utile que leur quantité.",types:["Rouge"],test:g=>has(g.textureCompatible,"Ferme / structuré")||g.tannin>=4.3},
+ {id:"driedFruit",q:"Le fruit évoque-t-il la prune séchée, le raisin sec ou une forte surmaturité ?",why:"Les fruits séchés orientent vers certains styles de passerillage ou des maturités très poussées.",test:g=>has(g.keyMarker,"séché")||has(g.blindMarker,"raisin sec")||has(g.differentiation,"appassimento")},
+ {id:"cherryHerb",q:"Cerise acidulée, herbes sèches et acidité élevée dominent-elles ?",why:"Cette combinaison est particulièrement utile pour départager plusieurs rouges italiens.",types:["Rouge"],test:g=>has(g.keyMarker,"cerise")&&(g.acid>=4)&& (has(g.keyMarker,"herb")||has(g.differentiation,"Sangiovese")||has(g.name,"Sangiovese"))},
+ {id:"bananaCarbonic",q:"Banane, bonbon ou caractère très fruité de macération carbonique sont-ils perceptibles ?",why:"Ce profil de vinification est très utile dans un petit nombre de familles de rouges légers.",types:["Rouge"],test:g=>has(g.keyMarker,"banane")||has(g.blindMarker,"bonbon")||has(g.differentiation,"carbonique")||has(g.name,"Gamay")},
+ {id:"oliveMeat",q:"Olive noire, viande fumée ou caractère savoureux sont-ils présents ?",why:"Ces marqueurs sont très utiles pour distinguer certains profils de Syrah et cépages méditerranéens.",types:["Rouge"],test:g=>has(g.keyMarker,"olive")||has(g.keyMarker,"viande")||has(g.blindMarker,"olive")},
+ {id:"plumSoft",q:"Prune mûre et texture ronde/souple dominent-elles ?",why:"Cette combinaison aide à séparer les rouges charnus et souples des profils plus fermes ou acides.",types:["Rouge"],test:g=>has(g.keyMarker,"prune")&&(g.tannin<=3.7||has(g.keyMarker,"souple"))},
+ {id:"highAcidHighTanninPale",q:"Le vin combine-t-il couleur relativement pâle, acidité élevée et tanins élevés ?",why:"Cette combinaison structurelle rare concentre fortement le diagnostic.",types:["Rouge"],test:g=>g.color<=3.2&&g.acid>=4&&g.tannin>=4.2},
+ {id:"lowTanninHighAcid",q:"Le vin combine-t-il acidité élevée et tanins faibles à modérés ?",why:"Cette structure est très discriminante parmi les rouges légers.",types:["Rouge"],test:g=>g.acid>=4&&g.tannin<=3.1}
+];
+function treeCandidates(){
+ let pool=D.grapes.filter(g=>g.type===S.type),answers=S.tree.answers||[];
+ return pool.map(g=>{let score=0,used=0;answers.forEach(a=>{if(a.a==="Incertain")return;let q=AQ.find(x=>x.id===a.qid);if(!q)return;let match=!!q.test(g),yes=a.a==="Oui";score+=(match===yes?2:-1.5);used++});return{...g,treeScore:score,used}}).sort((a,b)=>b.treeScore-a.treeScore)
+}
+function treeProbabilities(){
+ let arr=treeCandidates(),max=arr[0]?.treeScore||0,exp=arr.map(g=>Math.exp((g.treeScore-max)/2.2)),sum=exp.reduce((a,b)=>a+b,0)||1;
+ return arr.map((g,i)=>({...g,p:exp[i]/sum}))
+}
+function questionUtility(q,cands){
+ if(q.types&&!q.types.includes(S.type))return-1;
+ let top=cands.slice(0,18),yes=0,total=0;
+ top.forEach(g=>{let w=Math.max(.01,g.p);total+=w;if(q.test(g))yes+=w});
+ if(!total)return-1;let p=yes/total;
+ return 4*p*(1-p)
+}
+function nextAdaptiveQuestion(){
+ let asked=new Set(S.tree.answers.map(a=>a.qid)),c=treeProbabilities();
+ return AQ.filter(q=>!asked.has(q.id)&&(!q.types||q.types.includes(S.type))).map(q=>[q,questionUtility(q,c)]).sort((a,b)=>b[1]-a[1])[0]?.[0]||null
+}
+function convergenceData(){
+ let c=treeProbabilities(),top=c[0]?.p||0,gap=(c[0]?.p||0)-(c[1]?.p||0),n=S.tree.answers.filter(a=>a.a!=="Incertain").length;
+ let level=Math.min(1,.15+n*.045+top*.48+gap*.65);
+ return{c,top,gap,n,level}
+}
+function shouldTreeStop(){
+ let x=convergenceData(),total=S.tree.answers.length;
+ if(total>=18)return true;
+ if(total<6)return false;
+ if(x.top>.52&&x.gap>.18)return true;
+ if(total>=9&&x.top>.38&&x.gap>.10)return true;
+ return false
+}
+function treeRender(){
+ let x=convergenceData(),q=S.tree.current||nextAdaptiveQuestion();S.tree.current=q;
+ $("#treeStep").textContent=`${S.tree.answers.length?S.tree.answers.length+" réponses":"Diagnostic guidé"}`;
+ $("#treeQuestion").textContent=q?q.q:"";
+ $("#treeBack").style.visibility=S.tree.answers.length?"visible":"hidden";
+ $("#treeWhy").classList.toggle("hidden",!q);$("#treeWhyText").classList.add("hidden");
+ $("#adaptiveCard").classList.toggle("hidden",S.tree.done);
+ let bar=$("#treeConvergence");bar.querySelector("i").style.width=Math.round(x.level*100)+"%";
+ bar.querySelector("small").textContent=x.level>.72?"Ciblé":x.level>.45?"En convergence":"Large";
+ bar.querySelector("span").textContent="Convergence";
+ trail()
+}
+function treeApplyObservation(q,answer){
+ let patch=answer==="Oui"?q.yes:answer==="Non"?q.no:null;if(!patch)return;
+ Object.entries(patch).forEach(([k,v])=>{if(v&&!S.g[k])S.g[k]=v})
+}
+function treeAns(answer){
+ if(S.tree.done||!S.tree.current)return;
+ let q=S.tree.current;S.tree.answers.push({qid:q.id,q:q.q,a:answer});treeApplyObservation(q,answer);S.tree.current=null;
+ if(shouldTreeStop())treeFinish();else treeRender()
+}
+function back(){
+ if(!S.tree.answers.length)return;S.tree.answers.pop();S.tree.done=false;S.tree.current=null;$("#adaptiveResult").classList.add("hidden");treeRender()
+}
+function trail(){
+ let e=$("#adaptiveHistory");e.innerHTML="";
+ S.tree.answers.forEach((x,i)=>{let d=document.createElement("button");d.type="button";d.className="adaptive-history-item";d.innerHTML=`<span>${i+1}</span><div><b>${esc(x.q)}</b><small>${esc(x.a)}</small></div>`;d.onclick=()=>{S.tree.answers=S.tree.answers.slice(0,i);S.tree.done=false;S.tree.current=null;$("#adaptiveResult").classList.add("hidden");treeRender()};e.append(d)})
+}
+function treeDiscriminants(cands){
+ let top=cands.slice(0,4),fields=[["acid","Acidité"],["tannin","Tanins"],["alcohol","Alcool"],["body","Corps"],["color","Couleur"],["intensity","Intensité"]];
+ let out=[];
+ fields.forEach(([k,l])=>{if(k==="tannin"&&S.type==="Blanc")return;let vals=top.map(g=>Number(g[k])).filter(Number.isFinite);if(vals.length<2)return;let spread=Math.max(...vals)-Math.min(...vals);if(spread>=.8)out.push({score:spread,text:`${l} : ${top.map(g=>`${g.name} ${Number(g[k]).toFixed(1)}`).join(" · ")}`})});
+ top.forEach(g=>{let t=g.differentiation||g.discrimination;if(t)out.push({score:.7,text:`${g.name} : ${t}`})});
+ return out.sort((a,b)=>b.score-a.score).slice(0,6)
+}
+function treeFinish(){
+ S.tree.done=true;S.tree.current=null;let c=treeProbabilities(),top=c.slice(0,5),disc=treeDiscriminants(top);
+ $("#adaptiveCard").classList.add("hidden");let r=$("#adaptiveResult");r.classList.remove("hidden");
+ r.innerHTML=`<div class="training-card adaptive-final"><div class="training-progress"><span>HYPOTHÈSES RESTANTES</span><button id="treeRestartFinal" class="ghost-btn small">Recommencer</button></div><div class="adaptive-candidates">${top.map((g,i)=>`<button class="adaptive-candidate" data-grape="${esc(g.name)}"><span>${i+1}</span><div><b>${esc(g.name)}</b><small>${esc(g.keyMarker||g.blindMarker||"")}</small></div><strong>${Math.round(g.p*100)}%</strong></button>`).join("")}</div>${disc.length?`<div class="adaptive-discriminants"><b>Pour les départager</b>${disc.map(d=>`<p>${esc(d.text)}</p>`).join("")}</div>`:""}<div class="adaptive-final-actions"><button id="treeContinue" class="secondary-btn">Continuer à départager</button><button id="treeToDiagnostic" class="primary-btn">Voir le diagnostic complet</button></div></div>`;
+ r.querySelectorAll(".adaptive-candidate").forEach(b=>b.onclick=()=>{let g=D.grapes.find(x=>x.name===b.dataset.grape);if(g)showG(g)});
+ $("#treeRestartFinal").onclick=treeRestart;
+ $("#treeContinue").onclick=()=>{S.tree.done=false;S.tree.extended=true;S.tree.current=nextAdaptiveQuestion();r.classList.add("hidden");treeRender()};
+ $("#treeToDiagnostic").onclick=()=>{forms();calc();tab("grape")}
+ trail()
+}
+function treeRestart(){S.tree={answers:[],current:null,done:false,extended:false};$("#adaptiveResult").classList.add("hidden");treeRender()}
 const HK="wineBlindHistoryV2",hist=()=>{try{return JSON.parse(localStorage.getItem(HK)||"[]")}catch{return[]}};
 function openSave(){let d=new Date();$("#wineDate").value=d.toISOString().slice(0,10);$("#saveDialog").showModal()}
 function save(ev){ev.preventDefault();let g=S.gr[0],o=S.or[0],r={id:Date.now(),date:$("#wineDate").value,name:$("#wineName").value.trim(),vintage:$("#wineVintage").value.trim(),actualGrape:$("#actualGrape").value.trim(),actualOrigin:$("#actualOrigin").value.trim(),notes:$("#wineNotes").value.trim(),type:S.type,observations:{...S.g},originObservations:{...S.o},topGrape:g?g.name:"",topGrapeScore:g?Math.round(g.score):null,top3:S.gr.slice(0,3).map(x=>x.name),topOrigin:o?o.style:""};let h=hist();h.unshift(r);localStorage.setItem(HK,JSON.stringify(h));$("#saveDialog").close();$("#saveForm").reset();tab("history")}
@@ -366,4 +485,4 @@ function histRender(){
  h.forEach(r=>{let d=document.createElement("div");d.className="history-card";let hit=r.actualGrape&&r.topGrape?r.actualGrape.toLowerCase()===r.topGrape.toLowerCase():null;d.innerHTML=`<div class="history-head"><div><h3>${r.name||"Dégustation sans nom"}${r.vintage?" · "+r.vintage:""}</h3><div class="history-meta">${r.date||""} · ${r.type}${hit===true?" · ✓ Top 1":hit===false?" · à revoir":""}</div></div><button class="delete-btn" data-id="${r.id}">Supprimer</button></div><div class="history-result"><b>Diagnostic :</b> ${r.topGrape||"—"}${r.topGrapeScore?` (${r.topGrapeScore})`:""}${r.topOrigin?" · "+r.topOrigin:""}<br><b>Révélation :</b> ${r.actualGrape||"non renseignée"}${r.actualOrigin?" · "+r.actualOrigin:""}${r.notes?`<br><span class="muted">${r.notes}</span>`:""}</div>`;l.append(d)});
  $$(".delete-btn").forEach(b=>b.onclick=()=>{localStorage.setItem(HK,JSON.stringify(hist().filter(x=>String(x.id)!==b.dataset.id)));histRender()})
 }
-$("#typeRed").onclick=()=>{S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc()};$("#typeWhite").onclick=()=>{S.type="Blanc";S.g.tannin="";$("#typeWhite").classList.add("active");$("#typeRed").classList.remove("active");wineTheme();forms();calc()};$$(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));$("#goOrigin").onclick=()=>tab("origin");$("#closeDialog").onclick=()=>$("#detailDialog").close();$("#searchGrape").oninput=e=>ref(e.target.value);$$(".ref-mode-btn").forEach(b=>b.onclick=()=>{S.refMode=b.dataset.refmode;S.refCountry="all";$$(".ref-mode-btn").forEach(x=>x.classList.toggle("active",x===b));ref($("#searchGrape").value)});$$(".filter-chip").forEach(b=>b.onclick=()=>{$$(".filter-chip").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.refFilter=b.dataset.ref;ref($("#searchGrape").value)});$("#modeTree").onclick=()=>{$("#modeTree").classList.add("active");$("#modeQuiz").classList.remove("active");$("#treeMode").classList.remove("hidden");$("#quizMode").classList.add("hidden")};$("#modeQuiz").onclick=()=>{$("#modeQuiz").classList.add("active");$("#modeTree").classList.remove("active");$("#quizMode").classList.remove("hidden");$("#treeMode").classList.add("hidden");quizNew()};$("#newQuiz").onclick=quizNew;$("#treeYes").onclick=()=>treeAns(1);$("#treeNo").onclick=()=>treeAns(0);$("#treeBack").onclick=back;$("#treeRestart").onclick=()=>{S.tree={cur:"1",stack:[]};treeRender();trail()};$("#saveTasting").onclick=openSave;$("#saveTastingOrigin").onclick=openSave;$("#closeSave").onclick=()=>$("#saveDialog").close();$("#saveForm").onsubmit=save;$("#resetAll").onclick=()=>{Object.keys(S.g).forEach(k=>S.g[k]="");Object.keys(S.o).forEach(k=>S.o[k]="");S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc();tab("grape")};D.grapes.forEach(g=>{let o=document.createElement("option");o.value=g.name;$("#grapeNames").append(o)});wineTheme();forms();ref();treeRender();histRender();calc();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{})})();
+$("#typeRed").onclick=()=>{S.type="Rouge";S.tree={answers:[],current:null,done:false,extended:false};$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc()};$("#typeWhite").onclick=()=>{S.type="Blanc";S.g.tannin="";$("#typeWhite").classList.add("active");$("#typeRed").classList.remove("active");wineTheme();forms();calc()};$$(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));$("#goOrigin").onclick=()=>tab("origin");$("#closeDialog").onclick=()=>$("#detailDialog").close();$("#searchGrape").oninput=e=>ref(e.target.value);$$(".ref-mode-btn").forEach(b=>b.onclick=()=>{S.refMode=b.dataset.refmode;S.refCountry="all";$$(".ref-mode-btn").forEach(x=>x.classList.toggle("active",x===b));ref($("#searchGrape").value)});$$(".filter-chip").forEach(b=>b.onclick=()=>{$$(".filter-chip").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.refFilter=b.dataset.ref;ref($("#searchGrape").value)});$("#modeTree").onclick=()=>{$("#modeTree").classList.add("active");$("#modeQuiz").classList.remove("active");$("#treeMode").classList.remove("hidden");$("#quizMode").classList.add("hidden")};$("#modeQuiz").onclick=()=>{$("#modeQuiz").classList.add("active");$("#modeTree").classList.remove("active");$("#quizMode").classList.remove("hidden");$("#treeMode").classList.add("hidden");quizNew()};$("#newQuiz").onclick=quizNew;$("#treeYes").onclick=()=>treeAns("Oui");$("#treeNo").onclick=()=>treeAns("Non");$("#treeUnsure").onclick=()=>treeAns("Incertain");$("#treeBack").onclick=back;$("#treeRestart").onclick=treeRestart;$("#treeWhy").onclick=()=>{let q=S.tree.current,e=$("#treeWhyText");if(!q)return;e.textContent=q.why||"";e.classList.toggle("hidden")};$("#saveTasting").onclick=openSave;$("#saveTastingOrigin").onclick=openSave;$("#closeSave").onclick=()=>$("#saveDialog").close();$("#saveForm").onsubmit=save;$("#resetAll").onclick=()=>{Object.keys(S.g).forEach(k=>S.g[k]="");Object.keys(S.o).forEach(k=>S.o[k]="");S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc();tab("grape")};D.grapes.forEach(g=>{let o=document.createElement("option");o.value=g.name;$("#grapeNames").append(o)});wineTheme();forms();ref();treeRender();histRender();calc();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{})})();

@@ -83,3 +83,13 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Recherche universelle : une recherche d'appellation (ex. Cornas) remonte l'unité diagnostique parente.
 - Navigation croisée depuis les fiches Cépages vers leurs unités diagnostiques.
 - Filtre horizontal par pays dans le mode Origines.
+
+## V10.1 — Diagnostic guidé adaptatif
+- Ancien arbre binaire remplacé par une banque de 40+ questions discriminantes.
+- Séquence adaptative : la prochaine question maximise la séparation des candidats encore plausibles.
+- Réponses Oui / Non / Incertain ; aucun texte de correction ne s'affiche après une réponse.
+- Historique complet des questions/réponses, chaque étape pouvant être modifiée.
+- Nombre de questions variable, typiquement 6–15, plafond à 18.
+- Jauge de convergence plutôt qu'un nombre fixe d'étapes.
+- Sortie sur 3–5 cépages probables avec critères discriminants pour les départager.
+- Bouton « Continuer à départager » et transfert vers le Diagnostic Cépage complet.
