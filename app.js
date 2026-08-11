@@ -39,13 +39,99 @@ function ofit(o){let w=D.weights.origin,n=0,d=0,c=0;[["acid","acid",w.acid],["ta
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nt=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 function detectBlend(){if(!S.gr.length)return null;let scores=new Map(S.gr.map((g,i)=>[g.name,{s:g.score,r:i+1}])),best=null;(V.blends||[]).filter(b=>b.type===S.type).forEach(b=>{let hits=b.grapes.filter(g=>scores.has(g)),prim=b.primary.filter(g=>scores.has(g));if(hits.length<2||!prim.length)return;let avg=hits.reduce((a,g)=>a+scores.get(g).s,0)/hits.length,coverage=hits.length/Math.min(4,b.grapes.length),primaryBoost=prim.some(g=>scores.get(g).r<=3)?10:0,score=avg*.72+coverage*18+primaryBoost;if(!best||score>best.score)best={...b,score,hits}});return best&&best.score>=62?best:null}
-function appScore(a,o){let score=0,gn=nt(o.grape),an=nt(a.grapes),rn=nt(o.region),hay=nt([a.name,a.region,a.country].join(" "));if(an.includes(gn)||gn.includes(an))score+=42;let toks=rn.split(" ").filter(x=>x.length>3),matches=toks.filter(t=>hay.includes(t)).length;score+=Math.min(30,matches*10);if(a.wset)score+=12;if((a.confidence||"").toLowerCase().includes("très"))score+=10;else if(a.confidence)score+=6;if(nt(o.style).includes(nt(a.name))||nt(a.name).includes(nt(o.style)))score+=22;if(S.blend&&S.blend.primary.some(g=>nt(a.grapes+" "+a.blend).includes(nt(g))))score+=5;return score}
-function appsForOrigin(o,limit=3){return(V.appellations||[]).map(a=>({...a,_s:appScore(a,o)})).filter(a=>a._s>=45).sort((a,b)=>b._s-a._s||Number(!!b.wset)-Number(!!a.wset)).filter((a,i,arr)=>arr.findIndex(x=>nt(x.name)===nt(a.name)&&nt(x.country)===nt(a.country))===i).slice(0,limit)}
-function originConfidence(o){let a=appsForOrigin(o,4),gap=S.or.length>1?o.score-S.or[1].score:12;if(a.length&&o.score>=78&&gap>=5)return"Forte";if(a.length&&o.score>=62)return"Moyenne";return"Région > appellation"}
+
+const GEO={
+ "rhone sud":{country:"france",include:["chateauneuf du pape","gigondas","vacqueyras","lirac","tavel","cotes du rhone","cotes du rhone villages","beaumes de venise","rasteau","cairanne","vinsobres","laudun"],exclude:["cote rotie","condrieu","cornas","hermitage","crozes hermitage","saint joseph"]},
+ "rhone nord":{country:"france",include:["cote rotie","condrieu","cornas","hermitage","crozes hermitage","saint joseph","saint peray"],exclude:["chateauneuf","gigondas","vacqueyras","tavel"]},
+ "rhone":{country:"france",include:["cotes du rhone","chateauneuf","gigondas","vacqueyras","lirac","tavel","cote rotie","condrieu","cornas","hermitage","crozes hermitage","saint joseph","saint peray"]},
+ "sud ouest":{country:"france",include:["cahors","madiran","jurancon","bergerac","monbazillac","gaillac","fronton","irouleguy","pacherenc","saint mont","cotes de gascogne","comte tolosan"]},
+ "provence":{country:"france",include:["bandol","cotes de provence","coteaux d aix","coteaux varois","palette","bellet","var","maures","mont caume","alpilles"]},
+ "bordeaux":{country:"france",include:["bordeaux","medoc","haut medoc","pauillac","margaux","saint estephe","saint julien","pessac leognan","graves","saint emilion","pomerol","sauternes","barsac","entre deux mers"]},
+ "bourgogne":{country:"france",include:["bourgogne","chablis","gevrey","vougeot","vosne","nuits saint georges","aloxe corton","beaune","pommard","volnay","meursault","puligny","chassagne","rully","mercurey","givry","montagny","macon","pouilly fuisse","saint veran","bouzeron","saint bris"]},
+ "loire":{country:"france",include:["muscadet","anjou","savennieres","saumur","vouvray","touraine","bourgueil","chinon","sancerre","pouilly fume","menetou salon","coteaux du layon","val de loire"]},
+ "alsace":{country:"france",include:["alsace"]},
+ "champagne":{country:"france",include:["champagne"]},
+ "catalogne":{country:"espagne",include:["priorat","penedes","catalunya","cava"]},
+ "castilla y leon":{country:"espagne",include:["ribera del duero","rueda","toro","bierzo","castilla y leon"]},
+ "venetie":{country:"italie",include:["valpolicella","amarone","recioto","soave","prosecco","veneto","delle venezie","conegliano"]},
+ "toscane":{country:"italie",include:["chianti","brunello","montalcino","vino nobile","bolgheri","toscana"]},
+ "piemonte":{country:"italie",include:["barolo","barbaresco","barbera d asti","dolcetto d alba","gavi","gattinara","ghemme"]},
+ "campanie":{country:"italie",include:["taurasi","fiano di avellino","greco di tufo"]},
+ "sicile":{country:"italie",include:["sicilia","terre siciliane","etna"]},
+ "mendoza":{country:"argentine",include:["mendoza","lujan de cuyo","uco valley","maipu"]},
+ "salta":{country:"argentine",include:["salta","cafayate"]},
+ "californie":{country:"etats unis",include:["california","napa","oakville","rutherford","stags leap","sonoma","russian river","carneros","paso robles","santa barbara","monterey","lodi","mendocino","santa cruz"]},
+ "columbia valley":{country:"etats unis",include:["columbia valley","yakima valley"]},
+ "oregon":{country:"etats unis",include:["willamette valley"]},
+ "maipo valley":{country:"chili",include:["maipo valley"]},
+ "central valley":{country:"chili",include:["central valley","cachapoal","colchagua","curico","maule","rapel"]},
+ "barossa valley":{country:"australie",include:["barossa valley"]},
+ "mclaren vale":{country:"australie",include:["mclaren vale"]},
+ "south australia":{country:"australie",include:["barossa","eden valley","clare valley","adelaide hills","mclaren vale","coonawarra","south australia"]},
+ "western australia":{country:"australie",include:["margaret river","great southern","western australia"]},
+ "victoria":{country:"australie",include:["yarra valley","mornington","geelong","heathcote","goulburn","victoria"]},
+ "new south wales":{country:"australie",include:["hunter valley","riverina","new south wales"]},
+ "western cape":{country:"afrique du sud",include:["western cape","stellenbosch","paarl","swartland","constantia","walker bay","hemel en aarde","elgin","robertson","worcester","durbanville"]},
+ "marlborough":{country:"nouvelle zelande",include:["marlborough"]},
+ "hawke s bay":{country:"nouvelle zelande",include:["hawke s bay"]},
+ "central otago":{country:"nouvelle zelande",include:["central otago"]},
+ "martinborough":{country:"nouvelle zelande",include:["martinborough","wairarapa"]},
+ "mosel":{country:"allemagne",include:["mosel","bernkastel","wehlen","piesport"]},
+ "rheingau":{country:"allemagne",include:["rheingau","rudesheim","johannisberg"]},
+ "pfalz":{country:"allemagne",include:["pfalz","forst","deidesheim"]},
+ "tokaj":{country:"hongrie",include:["tokaj"]},
+ "santorin":{country:"grece",include:["santorini"]},
+ "naoussa":{country:"grece",include:["naoussa"]},
+ "nemea":{country:"grece",include:["nemea"]}
+};
+function geoRule(o){
+ let r=nt(o.region),s=nt(o.style),hay=r+" "+s,keys=Object.keys(GEO).sort((a,b)=>b.length-a.length);
+ return keys.map(k=>[k,GEO[k]]).find(([k])=>hay.includes(k))?.[1]||null
+}
+function countryCompatible(a,o,rule){
+ if(rule&&rule.country)return nt(a.country).includes(rule.country)||rule.country.includes(nt(a.country));
+ let r=nt(o.region);
+ const countries=["france","italie","espagne","portugal","allemagne","autriche","hongrie","grece","argentine","chili","australie","canada","uruguay","chine","afrique du sud","nouvelle zelande"];
+ let c=countries.find(x=>r.includes(x)); if(!c&&r.includes("usa"))c="etats unis";
+ return !c||nt(a.country).includes(c)||c.includes(nt(a.country))
+}
+function appInMotherRegion(a,o){
+ let rule=geoRule(o),hay=nt([a.name,a.region,a.country].join(" "));
+ if(!countryCompatible(a,o,rule))return false;
+ if(rule){
+   if((rule.exclude||[]).some(x=>hay.includes(x)))return false;
+   return (rule.include||[]).some(x=>hay.includes(x))
+ }
+ let rn=nt(o.region),tokens=rn.split(" ").filter(x=>x.length>4&&!["france","italie","espagne","australie","argentine","chili"].includes(x));
+ return !tokens.length||tokens.some(t=>hay.includes(t))
+}
+function appScore(a,o){
+ let score=0,gn=nt(o.grape),an=nt(a.grapes),hay=nt([a.name,a.region].join(" "));
+ if(an.includes(gn)||gn.includes(an))score+=48;
+ if(nt(o.style).includes(nt(a.name))||nt(a.name).includes(nt(o.style)))score+=26;
+ if(a.wset)score+=12;
+ if((a.confidence||"").toLowerCase().includes("très"))score+=9;else if(a.confidence)score+=5;
+ let rn=nt(o.region),matches=rn.split(" ").filter(x=>x.length>4&&hay.includes(x)).length;score+=Math.min(15,matches*5);
+ return score
+}
+function appsForOrigin(o,limit=3){
+ return(V.appellations||[]).filter(a=>appInMotherRegion(a,o)).map(a=>({...a,_s:appScore(a,o)})).filter(a=>a._s>=45)
+ .sort((a,b)=>b._s-a._s||Number(!!b.wset)-Number(!!a.wset))
+ .filter((a,i,arr)=>arr.findIndex(x=>nt(x.name)===nt(a.name)&&nt(x.country)===nt(a.country))===i).slice(0,limit)
+}
+function blendForOrigin(o){
+ if(!S.blend)return null;
+ let b=S.blend,oh=nt(o.region+" "+o.style),bh=nt(b.country+" "+b.region),sameCountry=!b.country||oh.includes(nt(b.country))||nt(o.region).includes(nt(b.country));
+ let rule=geoRule(o);
+ if(rule&&b.country&&nt(b.country)!==rule.country)return null;
+ let regionHit=nt(b.region).split(" ").filter(x=>x.length>4).some(t=>oh.includes(t))||nt(o.style).includes(nt(b.region));
+ let grapeHit=b.grapes.includes(o.grape);
+ return grapeHit&&(regionHit||sameCountry&&(!rule||appInMotherRegion({country:b.country,region:b.region,name:b.region},o)))?b:null
+}
 function blendRender(){let e=$("#blendInsight");if(!e)return;S.blend=detectBlend();if(!S.blend){e.classList.add("hidden");e.innerHTML="";return}e.classList.remove("hidden");e.innerHTML=`<div><span>ASSEMBLAGE COMPATIBLE</span><b>${esc(S.blend.name)}</b><small>${esc(S.blend.hits.join(" + "))}</small></div><div class="blend-score">${Math.round(S.blend.score)}</div>`}
 function calc(){S.gr=D.grapes.map(g=>({...g,...geval(g)})).filter(g=>g.type===S.type&&g.score>0).sort((a,b)=>b.score-a.score).slice(0,10);S.blend=detectBlend();let map=new Map(S.gr.map((g,i)=>[g.name,{score:g.score,rank:i+1}])),w=D.weights.origin;S.or=D.origins.filter(o=>map.has(o.grape)).map(o=>{let p=map.get(o.grape),fit=ofit(o),blendBonus=S.blend&&S.blend.grapes.includes(o.grape)&&nt(o.region+" "+o.style).split(" ").some(t=>t.length>4&&nt(S.blend.region+" "+S.blend.country).includes(t))?5:0;return{...o,grapeScore:p.score,fit,score:Math.min(100,w.grapePrior*p.score+w.styleFit*fit+blendBonus)}}).sort((a,b)=>b.score-a.score).slice(0,10);results();inherited()}
 function reasons(r){r=(r||[]).slice(0,4);return r.length?`<div class="reason-box"><div class="reason-chips">${r.map(x=>`<span class="reason-chip ${x.w?"warn":""}">${x.t}</span>`).join("")}</div></div>`:""}
-function card(x,i,orig){let e=document.createElement("div");e.className="result-card";let apps=orig?appsForOrigin(x,3):[],conf=orig?originConfidence(x):"",appHtml=orig&&apps.length?`<div class="app-chips">${apps.map(a=>`<span>${esc(a.name)}</span>`).join("")}</div>`:"";e.innerHTML=`<div class="result-top"><span class="rank">${i+1}</span><div><div class="result-name">${orig?x.style:x.name}</div>${orig?`<div class="result-origin">${x.grape} · ${x.region}</div>`:""}</div><span class="score">${Math.round(x.score)}</span></div><div class="bar"><span style="width:${Math.max(2,Math.min(100,x.score))}%"></span></div><div class="result-meta">${orig?(x.diagnostic||""):(x.keyMarker||"")}</div>${appHtml}${orig?`<div class="reason-box"><div class="reason-chips"><span class="reason-chip">Cépage ${Math.round(x.grapeScore)}</span><span class="reason-chip neutral">Style ${Math.round(x.fit)}</span><span class="reason-chip confidence-chip">${conf}</span></div></div>`:reasons(x.reasons)}`;e.onclick=()=>orig?showO(x):showG(x);return e}
+function card(x,i,orig){let e=document.createElement("div");e.className="result-card";let apps=orig?appsForOrigin(x,3):[],appHtml=orig&&apps.length?`<div class="app-chips">${apps.map(a=>`<span>${esc(a.name)}</span>`).join("")}</div>`:"";e.innerHTML=`<div class="result-top"><span class="rank">${i+1}</span><div><div class="result-name">${orig?x.style:x.name}</div>${orig?`<div class="result-origin">${x.grape} · ${x.region}</div>`:""}</div><span class="score">${Math.round(x.score)}</span></div><div class="bar"><span style="width:${Math.max(2,Math.min(100,x.score))}%"></span></div><div class="result-meta">${orig?(x.diagnostic||""):(x.keyMarker||"")}</div>${appHtml}${orig?`<div class="reason-box"><div class="reason-chips"><span class="reason-chip">Cépage ${Math.round(x.grapeScore)}</span><span class="reason-chip neutral">Style ${Math.round(x.fit)}</span></div></div>`:reasons(x.reasons)}`;e.onclick=()=>orig?showO(x):showG(x);return e}
 function diagnosticMeta(){
  let keys=S.type==="Rouge"?["color","intensity","acid","tannin","body","alcohol","fruit","signature","texture"]:["color","intensity","acid","body","alcohol","fruit","signature","texture"];
  let filled=keys.filter(k=>S.g[k]).length,ratio=filled/keys.length;
@@ -95,9 +181,9 @@ function productionHTML(g){
  return `<div class="detail-block"><b>Régions de production</b><p class="production-line">${parts.join(", ")}</p></div>`;
 }
 function grapeAppsHTML(g){let arr=(V.grapeAppellations&&V.grapeAppellations[g.name])||[];if(!arr.length)return"";let shown=arr.slice(0,8),rest=arr.length-shown.length;return`<div class="detail-block"><b>Appellations & zones clés</b><div class="detail-apps">${shown.map(a=>`<span>${esc(a.name)}${a.country?` <em>${esc(a.country)}</em>`:""}</span>`).join("")}</div>${rest>0?`<details class="more-apps"><summary>Voir ${rest} autres</summary><div class="detail-apps">${arr.slice(8).map(a=>`<span>${esc(a.name)}${a.country?` <em>${esc(a.country)}</em>`:""}</span>`).join("")}</div></details>`:""}</div>`}
-function grapeBlendsHTML(g){let arr=(V.blends||[]).filter(b=>b.grapes.includes(g.name)).slice(0,5);if(!arr.length)return"";return`<div class="detail-block"><b>Associations à connaître</b>${arr.map(b=>`<div class="blend-row"><strong>${esc(b.name)}</strong><span>${esc(b.logic)}</span><small>${esc(b.region)}</small></div>`).join("")}</div>`}
+function grapeBlendsHTML(g){let arr=(V.blends||[]).filter(b=>b.grapes.includes(g.name)).slice(0,8);if(!arr.length)return"";return`<div class="detail-block"><b>Associations à connaître</b><div class="detail-apps blend-chips">${arr.map(b=>`<span title="${esc(b.logic)}">${esc(b.name)}</span>`).join("")}</div></div>`}
 function showG(g){let f=favs(),sig=g.keyMarker||g.differentiation||"";$("#detailType").textContent=g.type+" · Cépage";$("#detailTitle").textContent=g.name;$("#detailBody").innerHTML=`<button id="detailFav" class="favorite-detail ${f.has(g.name)?"active":""}">${f.has(g.name)?"♥ À réviser":"♡ Ajouter à réviser"}</button><div class="identity-signature"><span>SIGNATURE AVEUGLE</span><strong>${sig}</strong></div><div class="detail-grid">${met("Acidité",g.acid,true)}${g.type==="Rouge"?met("Tanins",g.tannin,true):""}${met("Alcool",g.alcohol,true)}${met("Corps",g.body,true)}${met("Couleur",g.color,true)}${met("Intensité",g.intensity,true)}</div>${blk("Arômes & marqueurs",g.primaryAromas)}${productionHTML(g)}${grapeAppsHTML(g)}${grapeBlendsHTML(g)}${blk("Comment le départager",g.differentiation)}${blk("Contre-indices",g.redFlags)}${blk("Confusions fréquentes",g.confusions)}`;$("#detailFav").onclick=()=>{toggleFav(g.name);showG(g)};$("#detailDialog").showModal()}
-function showO(o){let apps=appsForOrigin(o,8),conf=originConfidence(o),appBlock=apps.length?`<div class="detail-block"><b>Appellations compatibles</b><div class="origin-app-list">${apps.map(a=>`<div><strong>${esc(a.name)}</strong><span>${esc(a.country)}${a.region?" · "+esc(a.region):""}</span><small>${esc(a.blend||a.grapes)}</small></div>`).join("")}</div></div>`:"";$("#detailType").textContent=o.grape+" · Origine";$("#detailTitle").textContent=o.style;$("#detailBody").innerHTML=`<div class="detail-grid">${met("Score",Math.round(o.score))}${met("Cépage",Math.round(o.grapeScore))}${met("Style",Math.round(o.fit))}</div><div class="origin-confidence"><b>Précision</b><span>${conf}</span></div>${S.blend?blk("Assemblage compatible",`${S.blend.name} — ${S.blend.logic}`):""}${blk("Région",o.region)}${appBlock}${blk("Pourquoi ça colle",o.diagnostic)}${blk("À vérifier",o.differentiation)}${blk("Confusions",o.confusions)}`;$("#detailDialog").showModal()}
+function showO(o){let apps=appsForOrigin(o,8),b=blendForOrigin(o),appBlock=apps.length?`<div class="detail-block"><b>Appellations de cette région</b><div class="origin-app-list">${apps.map(a=>`<div><strong>${esc(a.name)}</strong><span>${esc(a.country)}${a.region?" · "+esc(a.region):""}</span><small>${esc(a.blend||a.grapes)}</small></div>`).join("")}</div></div>`:"";$("#detailType").textContent=o.grape+" · Origine";$("#detailTitle").textContent=o.style;$("#detailBody").innerHTML=`<div class="origin-score-hero"><span>SCORE GLOBAL</span><strong>${Math.round(o.score)}</strong></div><div class="origin-subscores"><div><span>Cépage</span><b>${Math.round(o.grapeScore)}</b></div><div><span>Style</span><b>${Math.round(o.fit)}</b></div></div>${b?blk("Assemblage compatible",`${b.name} — ${b.logic}`):""}${blk("Région",o.region)}${appBlock}${blk("Pourquoi ça colle",o.diagnostic)}${blk("À vérifier",o.differentiation)}${blk("Confusions",o.confusions)}`;$("#detailDialog").showModal()}
 function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();scrollTo({top:0,behavior:"smooth"})}
 const FK="wineBlindFavoritesV7",favs=()=>{try{return new Set(JSON.parse(localStorage.getItem(FK)||"[]"))}catch{return new Set()}};
 function toggleFav(name){let f=favs();f.has(name)?f.delete(name):f.add(name);localStorage.setItem(FK,JSON.stringify([...f]));ref($("#searchGrape").value)}

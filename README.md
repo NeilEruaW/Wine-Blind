@@ -9,3 +9,10 @@ V9 centrée sur :
 La couche V10.6 est dans `v106.js`. Toutes les fonctions V8 sont conservées.
 Pour GitHub Pages : remplace les fichiers du dépôt par le contenu de cette archive.
 Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour sur iPhone.
+
+## V9.1
+- Appellations filtrées strictement par région mère avant scoring.
+- Score global mis en avant, Cépage/Style en sous-scores.
+- Assemblage affiché uniquement s'il est compatible avec l'origine ouverte.
+- Indice de précision retiré.
+- Associations cépage compactées en badges.
