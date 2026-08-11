@@ -23,3 +23,12 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Correction de complétude : Cornas est notamment présent dans la fiche Syrah.
 - Recherche référentiel étendue aux appellations, assemblages, régions, arômes, marqueurs, confusions et autres champs de fiche.
 - Le sous-titre d'un résultat indique le contexte du match (ex. « Monocépage · Cornas »).
+
+## V9.3 — présentation / UX
+- Suppression de la mention WSET · Blind tasting.
+- Thème rouge conservé ; thème blanc en palette jaune/dorée.
+- Marqueurs complémentaires allégés ; Signature déplacée après Fruit et Texture/élevage.
+- Encadré assemblage réellement masqué en l'absence de détection.
+- Comparaison via icône ⇄ sur chaque candidat et ouverture automatique dès 2 candidats sélectionnés (3 maximum).
+- Suppression du bouton intermédiaire « Comparer X candidats ».
+- Référentiel : suppression de l'encart introductif, accès immédiat à la recherche.
