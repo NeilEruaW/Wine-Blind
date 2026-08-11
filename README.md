@@ -47,3 +47,9 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Suppression des cartes introductives Diagnostic cépage, Diagnostic origine, Entraînement et Historique.
 - Continuums Dock corrigés : valeurs non sélectionnées réellement réduites et disparition du pavé blanc autour de la sélection.
 - Top 3 matérialisé par de petites coupes vectorielles ; suppression du badge plein peu esthétique du rang 1.
+
+## V9.6 — micro-ajustements UX
+- Continuums SAT sans libellés F / M− / M / M+ / E sous l’échelle ; la valeur sélectionnée reste affichée dans l’en-tête du critère.
+- Les positions du continuum sont représentées par des points de taille progressive.
+- Espacement renforcé entre « À vérifier / Assemblage » et « Enregistrer / Affiner l’origine » ; actions rendues non-sticky.
+- Suppression des légendes directionnelles Climat, Maturité et Bois dans « Affiner le style ».
