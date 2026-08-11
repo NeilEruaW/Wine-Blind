@@ -68,3 +68,10 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Aucun cumul des profils : le meilleur profil d'une unité représente seul cette unité.
 - Pondération décroissante des candidats cépages : 100 / 75 / 55 / 35 / 20 % pour les cinq premiers.
 - Bonus modéré de spécificité géographique du cépage (max. environ +10 % sur la composante cépage).
+
+## V9.9 — Référentiel alphabétique
+- Cépages triés systématiquement de A à Z, y compris après filtre ou recherche.
+- Séparateurs alphabétiques discrets dans la liste.
+- Index vertical A–Z à droite, type répertoire téléphonique.
+- Glissement continu sur l'index avec effet loupe « Dock » sur la lettre active et ses voisines.
+- Lettres absentes du résultat courant automatiquement atténuées.

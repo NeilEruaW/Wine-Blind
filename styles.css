@@ -393,3 +393,37 @@ main{padding-top:12px!important;padding-bottom:calc(var(--tabbar-h) + env(safe-a
 /* V9.7 — Top Origine V10.7 : Région → enfants */
 .origin-path{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:8px 0 10px;padding:8px 10px;background:var(--soft-wine);border-radius:11px;font-size:12px}.origin-path i{font-style:normal;color:var(--muted)}.origin-path strong{color:var(--wine)}
 .origin-child-group{margin-top:10px}.origin-child-group>span{display:block;font-size:10px;font-weight:850;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 5px}.origin-child-group>div,.origin-child-group details>div{display:grid;gap:2px;padding:8px 9px;border-top:1px solid var(--line)}.origin-child-group strong{font-size:12px}.origin-child-group small{font-size:10px;color:var(--muted)}.origin-child-group summary{font-size:11px;color:var(--wine);padding:8px 0;cursor:pointer}
+
+/* V9.9 — Référentiel alphabétique type répertoire */
+.reference-directory{position:relative;padding-right:22px}
+.ref-letter-heading{
+ position:sticky;top:60px;z-index:3;
+ margin:8px 0 3px;padding:4px 2px 3px;
+ font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--wine);
+ background:linear-gradient(to bottom,var(--paper) 72%,transparent);
+}
+.alpha-index{
+ position:fixed;right:max(5px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);
+ z-index:36;width:27px;height:min(64vh,520px);
+ display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ padding:4px 1px;border-radius:14px;
+ background:rgba(255,255,255,.30);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+ touch-action:none;user-select:none;-webkit-user-select:none;
+}
+body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
+.alpha-letter{
+ appearance:none;border:0;background:transparent;color:var(--muted);
+ padding:0;margin:0;width:25px;min-height:12px;
+ display:grid;place-items:center;
+ font-size:8px;line-height:1;font-weight:750;
+ transform:scale(.82);opacity:.72;
+ transition:transform .09s ease,opacity .09s ease,color .09s ease,font-weight .09s ease;
+}
+.alpha-letter.near2{transform:scale(.95);opacity:.84}
+.alpha-letter.near{transform:scale(1.20);opacity:.94;color:var(--text)}
+.alpha-letter.active{transform:scale(1.58);opacity:1;color:var(--wine);font-weight:950}
+.alpha-letter.disabled{opacity:.18;pointer-events:none}
+#tab-reference:not(.active) .alpha-index{display:none}
+@media (min-width:700px){
+ .alpha-index{right:calc((100vw - 720px)/2 + 8px)}
+}

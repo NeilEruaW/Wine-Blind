@@ -215,16 +215,58 @@ function searchContext(g,q){
  if(nt(g.regions).includes(nq)||nt(JSON.stringify(g.productionWorld||{})).includes(nq))return"Région de production";
  return"";
 }
+const ALPHA="ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+function refLetter(name){
+ let x=nt(name).charAt(0).toUpperCase();
+ return /[A-Z]/.test(x)?x:"#"
+}
+function alphaMagnify(active){
+ $$("#alphaIndex .alpha-letter").forEach((b,i,arr)=>{
+   let ai=arr.findIndex(x=>x.dataset.letter===active),d=ai<0?99:Math.abs(i-ai);
+   b.classList.toggle("active",d===0);b.classList.toggle("near",d===1);b.classList.toggle("near2",d===2)
+ })
+}
+function alphaJump(letter){
+ let target=document.querySelector(`[data-ref-letter="${letter}"]`);
+ if(!target)return;
+ alphaMagnify(letter);
+ target.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function alphaRender(letters){
+ let rail=$("#alphaIndex");if(!rail)return;rail.innerHTML="";
+ ALPHA.forEach(letter=>{
+   let b=document.createElement("button");b.type="button";b.className="alpha-letter"+(letters.has(letter)?"":" disabled");
+   b.dataset.letter=letter;b.textContent=letter;b.setAttribute("aria-label","Aller à "+letter);
+   if(letters.has(letter))b.onclick=e=>{e.stopPropagation();alphaJump(letter)};
+   rail.append(b)
+ });
+ let dragging=false;
+ const fromY=y=>{
+   let r=rail.getBoundingClientRect(),p=Math.max(0,Math.min(.999,(y-r.top)/r.height)),i=Math.min(ALPHA.length-1,Math.floor(p*ALPHA.length));
+   return ALPHA[i]
+ };
+ rail.onpointerdown=e=>{dragging=true;rail.setPointerCapture(e.pointerId);let l=fromY(e.clientY);alphaMagnify(l);if(letters.has(l))alphaJump(l);e.preventDefault()};
+ rail.onpointermove=e=>{if(!dragging)return;let l=fromY(e.clientY);alphaMagnify(l);if(letters.has(l)){let t=document.querySelector(`[data-ref-letter="${l}"]`);t?.scrollIntoView({behavior:"auto",block:"start"})}e.preventDefault()};
+ rail.onpointerup=e=>{dragging=false;rail.releasePointerCapture?.(e.pointerId);setTimeout(()=>alphaMagnify(""),180);e.preventDefault()};
+ rail.onpointercancel=()=>{dragging=false;alphaMagnify("")}
+}
 function ref(q=""){
  let l=$("#referenceList");l.innerHTML="";let nq=nt(q),f=favs();
- D.grapes.filter(g=>{
+ let arr=D.grapes.filter(g=>{
    if(S.refFilter==="Rouge"&&g.type!=="Rouge"||S.refFilter==="Blanc"&&g.type!=="Blanc"||S.refFilter==="fav"&&!f.has(g.name))return false;
    return !nq||grapeSearchText(g).includes(nq)
- }).slice(0,100).forEach(g=>{
+ }).sort((a,b)=>a.name.localeCompare(b.name,"fr",{sensitivity:"base"}));
+ let letters=new Set(arr.map(g=>refLetter(g.name))),last="";
+ arr.forEach(g=>{
+   let letter=refLetter(g.name);
+   if(letter!==last){
+     let h=document.createElement("div");h.className="ref-letter-heading";h.dataset.refLetter=letter;h.textContent=letter;l.append(h);last=letter
+   }
    let r=document.createElement("div");r.className="ref-row";let ctx=searchContext(g,q),zones=Object.keys(g.productionWorld||{}).slice(0,3).join(" · ");
    r.innerHTML=`<div><strong>${g.name}</strong><br><small>${ctx||g.type+(zones?" · "+zones:"")}</small></div><div class="ref-actions"><button class="fav-btn ${f.has(g.name)?"active":""}" aria-label="À réviser">${f.has(g.name)?"♥":"♡"}</button><span>›</span></div>`;
    r.onclick=()=>showG(g);r.querySelector(".fav-btn").onclick=e=>{e.stopPropagation();toggleFav(g.name)};l.append(r)
- })
+ });
+ alphaRender(letters);
 }function quizNew(){
  let pool=D.grapes.filter(g=>g.type===S.type),answer=pool[Math.floor(Math.random()*pool.length)];
  let others=pool.filter(g=>g.name!==answer.name).sort(()=>Math.random()-.5).slice(0,3),choices=[answer,...others].sort(()=>Math.random()-.5);
