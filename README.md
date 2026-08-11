@@ -16,3 +16,10 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Assemblage affiché uniquement s'il est compatible avec l'origine ouverte.
 - Indice de précision retiré.
 - Associations cépage compactées en badges.
+
+## V9.2
+- Appellations des fiches cépages séparées en Monocépage / Assemblages.
+- Suppression de la limite de 24 associations dans la couche de données.
+- Correction de complétude : Cornas est notamment présent dans la fiche Syrah.
+- Recherche référentiel étendue aux appellations, assemblages, régions, arômes, marqueurs, confusions et autres champs de fiche.
+- Le sous-titre d'un résultat indique le contexte du match (ex. « Monocépage · Cornas »).

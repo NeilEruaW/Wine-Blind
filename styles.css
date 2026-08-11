@@ -235,3 +235,7 @@ dialog::backdrop{background:rgba(32,26,28,.45);backdrop-filter:blur(3px)}
 .origin-score-hero span{font-size:10px;letter-spacing:.12em;font-weight:800;color:#776a61}.origin-score-hero strong{font-size:30px;line-height:1}
 .origin-subscores{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}.origin-subscores>div{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:11px;background:#faf9f7;border:1px solid #eee8e2}.origin-subscores span{font-size:11px;color:#81776f}.origin-subscores b{font-size:14px}
 .blend-chips span{background:#f7f3ee}
+
+/* V9.2 — appellations mono/assemblage & recherche exhaustive */
+.app-subgroup{margin-top:10px}.app-subtitle{display:block;font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:#7a6d64;margin-bottom:5px}
+.app-subgroup+.app-subgroup{padding-top:7px;border-top:1px solid #eee8e1}
