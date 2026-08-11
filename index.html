@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#7c2d3f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Wine Blind">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <title>Wine Blind — WSET Diagnostic</title>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <div class="eyebrow">WSET · Dégustation à l’aveugle</div>
+      <h1>Wine Blind</h1>
+    </div>
+    <button id="resetAll" class="ghost-btn" type="button">Réinitialiser</button>
+  </header>
+
+  <nav class="tabbar" aria-label="Navigation">
+    <button class="tab active" data-tab="grape">Cépage</button>
+    <button class="tab" data-tab="origin">Origine</button>
+    <button class="tab" data-tab="reference">Référentiel</button>
+  </nav>
+
+  <main>
+    <section id="tab-grape" class="screen active">
+      <div class="intro-card">
+        <div>
+          <span class="step">1</span>
+          <strong>Diagnostic cépage</strong>
+        </div>
+        <p>Commence par la structure. Les marqueurs complémentaires servent à départager les candidats proches.</p>
+      </div>
+
+      <div class="segmented" role="group" aria-label="Type de vin">
+        <button id="typeRed" class="seg active" type="button">Rouge</button>
+        <button id="typeWhite" class="seg" type="button">Blanc</button>
+      </div>
+
+      <div class="form-card">
+        <h2>Structure</h2>
+        <div id="structureFields" class="fields"></div>
+      </div>
+
+      <div class="form-card">
+        <div class="card-title-row">
+          <h2>Marqueurs complémentaires</h2>
+          <span class="low-weight">poids modéré</span>
+        </div>
+        <div id="markerFields" class="fields"></div>
+      </div>
+
+      <section class="results-section">
+        <div class="section-heading">
+          <div>
+            <span class="step">2</span>
+            <h2>Top 10 cépages</h2>
+          </div>
+          <span id="grapeCount" class="muted"></span>
+        </div>
+        <div id="grapeResults" class="results"></div>
+      </section>
+
+      <button id="goOrigin" class="primary-btn sticky-action" type="button">Affiner l’origine →</button>
+    </section>
+
+    <section id="tab-origin" class="screen">
+      <div class="intro-card">
+        <div>
+          <span class="step">3</span>
+          <strong>Diagnostic origine</strong>
+        </div>
+        <p>La structure est reprise automatiquement. Le classement considère les dix meilleurs cépages, pas seulement le premier.</p>
+      </div>
+
+      <div id="inheritedSummary" class="inherited"></div>
+
+      <div class="form-card">
+        <h2>Affiner le style</h2>
+        <div id="originFields" class="fields"></div>
+      </div>
+
+      <section class="results-section">
+        <div class="section-heading">
+          <div>
+            <span class="step">4</span>
+            <h2>Top 10 origines</h2>
+          </div>
+        </div>
+        <div id="originResults" class="results"></div>
+      </section>
+    </section>
+
+    <section id="tab-reference" class="screen">
+      <div class="intro-card">
+        <div><strong>Référentiel cépages</strong></div>
+        <p>Recherche rapide dans la base issue de la V9.</p>
+      </div>
+      <input id="searchGrape" class="search" type="search" placeholder="Rechercher un cépage…">
+      <div id="referenceList" class="reference-list"></div>
+    </section>
+  </main>
+
+  <dialog id="detailDialog">
+    <div class="dialog-head">
+      <div>
+        <div id="detailType" class="eyebrow"></div>
+        <h2 id="detailTitle"></h2>
+      </div>
+      <button id="closeDialog" class="close-btn" type="button">×</button>
+    </div>
+    <div id="detailBody"></div>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
