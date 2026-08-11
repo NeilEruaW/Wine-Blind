@@ -53,3 +53,10 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Les positions du continuum sont représentées par des points de taille progressive.
 - Espacement renforcé entre « À vérifier / Assemblage » et « Enregistrer / Affiner l’origine » ; actions rendues non-sticky.
 - Suppression des légendes directionnelles Climat, Maturité et Bois dans « Affiner le style ».
+
+## V9.7 — moteur Origine normalisé V10.7
+- Top 10 Origine limité aux régions normalisées de V10.7 : aucun mélange région/appellation.
+- Plusieurs profils sensoriels d’une même région sont consolidés ; seul le meilleur profil représente la région.
+- Sous-régions/appellations filtrées exclusivement par Parent_ID de la région sélectionnée.
+- Libellés principaux raccourcis : la carte affiche la région, puis le cépage et le pays séparément.
+- Détail Origine structuré Pays → Région → Sous-régions / Appellations.

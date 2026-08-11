@@ -389,3 +389,7 @@ main{padding-top:12px!important;padding-bottom:calc(var(--tabbar-h) + env(safe-a
 .results-section + .action-row{clear:both}
 #saveTastingOrigin{display:block;margin-top:16px!important;margin-bottom:14px!important}
 .rail-hint:empty{display:none!important}
+
+/* V9.7 — Top Origine V10.7 : Région → enfants */
+.origin-path{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:8px 0 10px;padding:8px 10px;background:var(--soft-wine);border-radius:11px;font-size:12px}.origin-path i{font-style:normal;color:var(--muted)}.origin-path strong{color:var(--wine)}
+.origin-child-group{margin-top:10px}.origin-child-group>span{display:block;font-size:10px;font-weight:850;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 5px}.origin-child-group>div,.origin-child-group details>div{display:grid;gap:2px;padding:8px 9px;border-top:1px solid var(--line)}.origin-child-group strong{font-size:12px}.origin-child-group small{font-size:10px;color:var(--muted)}.origin-child-group summary{font-size:11px;color:var(--wine);padding:8px 0;cursor:pointer}
