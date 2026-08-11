@@ -1,4 +1,4 @@
-(()=>{const D=WSET_DATA,T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},G=window.WSET_V107||{regions:[],profiles:[],children:[]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+(()=>{const D=WSET_DATA,T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},G=window.WSET_V107||{regions:[],profiles:[],children:[]},G8=window.WSET_V108||{units:[],profiles:[],children:[],specificity:{},rankWeights:[1,.75,.55,.35,.2,.12,.08,.05,.03,.02]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",intensity:"",fruit:"",signature:"",texture:""},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{cur:"1",stack:[]},compare:new Set(),refFilter:"all"};
 const L={acid:"Acidité",tannin:"Tanins",alcohol:"Alcool",body:"Corps",color:"Couleur",intensity:"Intensité",fruit:"Fruit",signature:"Signature",texture:"Texture"},sat=["F","M-","M","M+","E"],lev=v=>({"F":1,"M-":2,"M":3,"M+":4,"E":5}[v]||0),cmp=d=>d<=.01?1:d<=.5?.92:d<=1?.82:d<=1.5?.65:d<=2?.42:d<=2.5?.2:.05,has=(a,b)=>(a||"").toLowerCase().includes((b||"").toLowerCase());
 function wineTheme(){document.body.classList.toggle("wine-white",S.type==="Blanc");document.body.classList.toggle("wine-red",S.type==="Rouge");let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=S.type==="Blanc"?"#9a6b16":"#7c2d3f"}
@@ -52,12 +52,12 @@ function childCompatibility(a,o){
  return score
 }
 function appsForOrigin(o,limit=3){
- return (G.children||[]).filter(a=>a.parentId===o.originId&&nt(a.label)!==nt(o.style))
+ return (G8.children||[]).filter(a=>a.unitId===o.unitId&&nt(a.label)!==nt(o.style))
    .map(a=>({...a,_s:childCompatibility(a,o)})).filter(a=>a._s>=42)
    .sort((a,b)=>b._s-a._s||String(a.label).localeCompare(String(b.label),'fr')).slice(0,limit)
 }
 function groupedChildren(o){
- let arr=(G.children||[]).filter(a=>a.parentId===o.originId&&nt(a.label)!==nt(o.style))
+ let arr=(G8.children||[]).filter(a=>a.unitId===o.unitId&&nt(a.label)!==nt(o.style))
    .map(a=>({...a,_s:childCompatibility(a,o)})).filter(a=>a._s>=42)
    .sort((a,b)=>b._s-a._s||String(a.label).localeCompare(String(b.label),'fr'));
  let sub=arr.filter(a=>/région|region|zone|gi/i.test(a.level)&&!/appellation/i.test(a.level));
@@ -82,10 +82,22 @@ function blendRender(){
 }
 function calc(){
  S.gr=D.grapes.map(g=>({...g,...geval(g)})).filter(g=>g.type===S.type&&g.score>0).sort((a,b)=>b.score-a.score).slice(0,10);
- S.blend=detectBlend();let map=new Map(S.gr.map((g,i)=>[g.name,{score:g.score,rank:i+1}])),w=D.weights.origin;
- let scored=(G.profiles||[]).filter(p=>map.has(p.grape)).map(p=>{let prior=map.get(p.grape),fit=ofit(p),blendBonus=S.blend&&S.blend.grapes.includes(p.grape)?2.5:0;return{...p,grapeScore:prior.score,fit,score:Math.min(100,w.grapePrior*prior.score+w.styleFit*fit+blendBonus)}});
- let byOrigin=new Map();scored.forEach(p=>{if(!p.originId)return;let old=byOrigin.get(p.originId);if(!old||p.score>old.score)byOrigin.set(p.originId,p)});
- S.or=[...byOrigin.entries()].map(([originId,p])=>{let r=(G.regions||[]).find(x=>x.id===originId)||{};return{...p,profileStyle:p.style,originId,style:r.label||p.regionLabel,country:r.country||p.country,mother:r.mother||p.mother,subregion:r.subregion||p.subregion,region:r.country||p.country,regionGrapes:r.grapes||'',childCount:r.childCount||0}}).sort((a,b)=>b.score-a.score).slice(0,10);
+ S.blend=detectBlend();
+ let map=new Map(S.gr.map((g,i)=>[g.name,{score:g.score,rank:i+1,rankWeight:(G8.rankWeights||[])[i]??.02}])),w=D.weights.origin;
+ let scored=(G8.profiles||[]).filter(p=>map.has(p.grape)).map(p=>{
+   let prior=map.get(p.grape),fit=ofit(p),spec=Number(p.specificity||1),adjustedPrior=prior.score*prior.rankWeight*spec;
+   let blendBonus=S.blend&&S.blend.grapes.includes(p.grape)?2.5:0;
+   return{...p,grapeScore:prior.score,grapeRank:prior.rank,rankWeight:prior.rankWeight,specificity:spec,adjustedPrior,fit,
+     score:Math.min(100,w.grapePrior*adjustedPrior+w.styleFit*fit+blendBonus)}
+ });
+ let byUnit=new Map();
+ scored.forEach(p=>{if(!p.unitId)return;let old=byUnit.get(p.unitId);if(!old||p.score>old.score)byUnit.set(p.unitId,p)});
+ S.or=[...byUnit.entries()].map(([unitId,p])=>{
+   let u=(G8.units||[]).find(x=>x.id===unitId)||{};
+   return{...p,profileStyle:p.style,unitId,originId:unitId,style:u.label||p.unitLabel||p.regionLabel,
+     country:u.country||p.country,mother:u.mother||p.mother,subregion:u.subregion||"",
+     region:u.country||p.country,regionGrapes:(u.grapes||[]).join?u.grapes.join("; "):u.grapes||"",childCount:(G8.children||[]).filter(a=>a.unitId===unitId).length}
+ }).sort((a,b)=>b.score-a.score).slice(0,10);
  results();inherited()
 }
 function reasons(r){r=(r||[]).slice(0,4);return r.length?`<div class="reason-box"><div class="reason-chips">${r.map(x=>`<span class="reason-chip ${x.w?"warn":""}">${x.t}</span>`).join("")}</div></div>`:""}
@@ -96,7 +108,7 @@ function card(x,i,orig){
  let gap=!orig&&i===0&&S.gr[1]?Math.max(0,Math.round(x.score-S.gr[1].score)):null;
  let gapHtml=gap!==null?`<span class="score-gap" title="Écart avec le 2e">+${gap}</span>`:"";
  let rankVisual=i<3?`<span class="rank podium podium-${i+1}" aria-label="Rang ${i+1}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8v4c0 3-1.8 5-4 5S8 10 8 7V3Z"/><path d="M8 5H5v2c0 2 1.2 3 3.4 3"/><path d="M16 5h3v2c0 2-1.2 3-3.4 3"/><path d="M12 12v4"/><path d="M9 20h6M10 16h4"/></svg><small>${i+1}</small></span>`:`<span class="rank plain-rank">${i+1}</span>`;
- e.innerHTML=`<div class="result-top">${rankVisual}<div class="result-main"><div class="result-name">${orig?x.style:x.name}</div>${orig?`<div class="result-origin">${x.grape} · ${x.country}</div>`:""}</div><div class="score-actions"><span class="score">${Math.round(x.score)}</span>${gapHtml}${compareIcon}</div></div><div class="bar"><span style="width:${Math.max(2,Math.min(100,x.score))}%"></span></div><div class="result-meta">${orig?(x.diagnostic||""):(x.keyMarker||"")}</div>${appHtml}${orig?`<div class="reason-box"><div class="reason-chips"><span class="reason-chip">Cépage ${Math.round(x.grapeScore)}</span><span class="reason-chip neutral">Style ${Math.round(x.fit)}</span></div></div>`:reasons(x.reasons)}`;
+ e.innerHTML=`<div class="result-top">${rankVisual}<div class="result-main"><div class="result-name">${orig?x.style:x.name}</div>${orig?`<div class="result-origin">${x.grape} · ${x.country}</div>`:""}</div><div class="score-actions"><span class="score">${Math.round(x.score)}</span>${gapHtml}${compareIcon}</div></div><div class="bar"><span style="width:${Math.max(2,Math.min(100,x.score))}%"></span></div><div class="result-meta">${orig?(x.diagnostic||""):(x.keyMarker||"")}</div>${appHtml}${orig?`<div class="reason-box"><div class="reason-chips"><span class="reason-chip">Cépage ${Math.round(x.grapeScore)} · rang ${x.grapeRank||"—"}</span><span class="reason-chip neutral">Style ${Math.round(x.fit)}</span></div></div>`:reasons(x.reasons)}`;
  e.onclick=()=>orig?showO(x):showG(x);
  if(!orig){let b=e.querySelector(".compare-icon");b.onclick=ev=>{ev.stopPropagation();if(S.compare.has(x.name))S.compare.delete(x.name);else{if(S.compare.size>=3){let first=S.compare.values().next().value;S.compare.delete(first)}S.compare.add(x.name)}results()}}
  return e
@@ -173,9 +185,9 @@ function showG(g){let f=favs(),sig=g.keyMarker||g.differentiation||"";$("#detail
 function showO(o){
  let groups=groupedChildren(o),b=blendForOrigin(o);
  const childRows=(title,arr)=>!arr.length?"":`<div class="origin-child-group"><span>${title}</span>${arr.slice(0,10).map(a=>`<div><strong>${esc(a.label)}</strong><small>${esc(a.grapes||a.blend)}</small></div>`).join("")}${arr.length>10?`<details><summary>Voir ${arr.length-10} autres</summary>${arr.slice(10).map(a=>`<div><strong>${esc(a.label)}</strong><small>${esc(a.grapes||a.blend)}</small></div>`).join("")}</details>`:""}</div>`;
- let hierarchy=(groups.subregions.length||groups.appellations.length)?`<div class="detail-block"><b>Du général au précis</b><div class="origin-path"><span>${esc(o.country)}</span><i>›</i><strong>${esc(o.style)}</strong></div>${childRows("Sous-régions / zones",groups.subregions)}${childRows("Appellations / indications",groups.appellations)}</div>`:"";
- $("#detailType").textContent=o.grape+" · Origine";$("#detailTitle").textContent=o.style;
- $("#detailBody").innerHTML=`<div class="origin-score-hero"><span>SCORE GLOBAL</span><strong>${Math.round(o.score)}</strong></div><div class="origin-subscores"><div><span>Cépage</span><b>${Math.round(o.grapeScore)}</b></div><div><span>Style</span><b>${Math.round(o.fit)}</b></div></div>${blk("Pays",o.country)}${o.mother&&o.mother!==o.style?blk("Région mère",o.mother):""}${b?blk("Assemblage compatible",`${b.name} — ${b.logic}`):""}${hierarchy}${blk("Profil sensoriel retenu",o.profileStyle||o.grape)}${blk("Pourquoi ça colle",o.diagnostic)}${blk("À vérifier",o.differentiation)}${blk("Confusions",o.confusions)}`;
+ let hierarchy=(groups.subregions.length||groups.appellations.length)?`<div class="detail-block"><b>Du général au précis</b><div class="origin-path"><span>${esc(o.country)}</span><i>›</i><span>${esc(o.mother||o.style)}</span>${o.mother&&o.mother!==o.style?`<i>›</i><strong>${esc(o.style)}</strong>`:""}</div>${childRows("Sous-régions / zones",groups.subregions)}${childRows("Appellations / indications",groups.appellations)}</div>`:"";
+ $("#detailType").textContent=o.grape+" · Unité diagnostique";$("#detailTitle").textContent=o.style;
+ $("#detailBody").innerHTML=`<div class="origin-score-hero"><span>SCORE GLOBAL</span><strong>${Math.round(o.score)}</strong></div><div class="origin-subscores"><div><span>Cépage</span><b>${Math.round(o.grapeScore)}</b></div><div><span>Style</span><b>${Math.round(o.fit)}</b></div></div><div class="reason-box"><div class="reason-chips"><span class="reason-chip">Rang cépage ${o.grapeRank||"—"} · poids ${Math.round((o.rankWeight||0)*100)}%</span><span class="reason-chip neutral">Spécificité ×${Number(o.specificity||1).toFixed(2)}</span></div></div>${blk("Pays",o.country)}${o.mother&&o.mother!==o.style?blk("Région mère",o.mother):""}${b?blk("Assemblage compatible",`${b.name} — ${b.logic}`):""}${hierarchy}${blk("Profil sensoriel retenu",o.profileStyle||o.grape)}${blk("Pourquoi ça colle",o.diagnostic)}${blk("À vérifier",o.differentiation)}${blk("Confusions",o.confusions)}`;
  $("#detailDialog").showModal()
 }
 function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();scrollTo({top:0,behavior:"smooth"})}

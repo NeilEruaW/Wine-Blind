@@ -60,3 +60,11 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Sous-régions/appellations filtrées exclusivement par Parent_ID de la région sélectionnée.
 - Libellés principaux raccourcis : la carte affiche la région, puis le cépage et le pays séparément.
 - Détail Origine structuré Pays → Région → Sous-régions / Appellations.
+
+## V9.8 / V10.8 — unités diagnostiques
+- Le Top 10 Origine classe désormais des unités diagnostiques œnologiquement homogènes, pas des régions administratives de granularité inégale.
+- Grandes régions subdivisées (Loire, Bordeaux, Bourgogne, Rhône, Piemonte, Veneto, Duero, Galice, etc.).
+- Régions déjà discriminantes conservées (Mosel, Santorini, Coonawarra, Central Otago...).
+- Aucun cumul des profils : le meilleur profil d'une unité représente seul cette unité.
+- Pondération décroissante des candidats cépages : 100 / 75 / 55 / 35 / 20 % pour les cinq premiers.
+- Bonus modéré de spécificité géographique du cépage (max. environ +10 % sur la composante cépage).
