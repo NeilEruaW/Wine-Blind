@@ -313,3 +313,57 @@ body.wine-white .blend-insight{background:#faf4df}
 @supports not (color:color-mix(in srgb,black,white)){
  .result-rank-1{border-color:var(--wine)}.result-rank-2,.result-rank-3{border-color:var(--line)}
 }
+
+/* V9.5 — navigation placement, cleaner continuum, podium */
+.tabbar{
+ position:fixed!important;
+ top:auto!important;
+ left:10px!important;right:10px!important;
+ bottom:calc(7px + env(safe-area-inset-bottom))!important;
+ z-index:100!important;
+}
+main{padding-top:12px!important;padding-bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 22px)!important}
+.screen{scroll-margin-top:76px}
+.screen.active{animation:screenIn .16s ease}
+@keyframes screenIn{from{opacity:.72;transform:translateY(3px)}to{opacity:1;transform:none}}
+.action-row{margin-bottom:10px}
+#saveTastingOrigin{margin-bottom:10px}
+@media (max-width:560px){
+ main{padding-bottom:calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 26px)!important}
+ .action-row{position:relative;z-index:1}
+}
+
+/* Dock continuum: large selected value, genuinely smaller alternatives, no white tile */
+.sat-continuum{min-height:43px!important;padding:0 2px!important}
+.sat-point{
+ width:30px!important;height:30px!important;
+ min-width:44px!important;min-height:44px!important;
+ padding:0!important;border:0!important;border-radius:50%!important;
+ background:transparent!important;box-shadow:none!important;
+ transform:scale(.52)!important;opacity:.46!important;
+ font-size:11px!important;color:var(--muted)!important;
+ transition:transform .13s ease,opacity .13s ease,color .13s ease,font-size .13s ease!important;
+}
+.sat-point.near{transform:scale(.76)!important;opacity:.72!important;color:var(--text)!important}
+.sat-point.active{
+ transform:scale(1.16)!important;opacity:1!important;
+ background:transparent!important;box-shadow:none!important;
+ color:var(--wine)!important;font-size:13px!important;font-weight:900!important;
+}
+.sat-point.active::after{
+ content:"";position:absolute;left:50%;bottom:4px;transform:translateX(-50%);
+ width:4px;height:4px;border-radius:50%;background:var(--wine)
+}
+.sat-point:focus,.sat-point:focus-visible{outline:none!important;box-shadow:none!important}
+.sat-field.is-set{padding-top:3px!important;padding-bottom:0!important}
+
+/* Podium: trophy line icon instead of a filled #1 badge */
+.result-card .rank{flex:0 0 30px}
+.result-rank-1 .rank{background:transparent!important;color:inherit!important}
+.podium{position:relative;width:30px;height:31px;display:grid;place-items:center;background:transparent!important;border:0!important}
+.podium svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+.podium small{position:absolute;top:7px;font-size:8px;font-weight:900;line-height:1}
+.podium-1{color:var(--wine)!important}
+.podium-2{color:#77716e!important}
+.podium-3{color:#9a7156!important}
+.plain-rank{width:30px;height:30px;display:grid;place-items:center;background:transparent!important;color:var(--muted)!important;font-size:11px;font-weight:800}

@@ -41,3 +41,9 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Barre de navigation basse flottante inspirée des tab bars iOS, avec icônes vectorielles.
 - Icônes sémantiques discrètes pour les phases de dégustation et les aides.
 - Thème navigateur synchronisé Rouge/Blanc.
+
+## V9.5 — corrections UX
+- Tab bar forcée en bas de l'écran, avec marge de sécurité pour éviter tout chevauchement avec les actions.
+- Suppression des cartes introductives Diagnostic cépage, Diagnostic origine, Entraînement et Historique.
+- Continuums Dock corrigés : valeurs non sélectionnées réellement réduites et disparition du pavé blanc autour de la sélection.
+- Top 3 matérialisé par de petites coupes vectorielles ; suppression du badge plein peu esthétique du rang 1.
