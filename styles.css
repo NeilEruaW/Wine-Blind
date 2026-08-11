@@ -204,3 +204,14 @@ dialog::backdrop{background:rgba(32,26,28,.45);backdrop-filter:blur(3px)}
 .metric-level-3 b{color:#7c7038}
 .metric-level-4 b{color:#916241}
 .metric-level-5 b{color:#8b4353}
+
+/* V6 — diagnostic hierarchy, confidence and comparison */
+.sense-label{font-size:10px;letter-spacing:.16em;font-weight:900;color:var(--wine);margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+.sense-label:first-child{margin-top:0;border-top:0;padding-top:0}
+.confidence-badge{font-size:10px;font-weight:850;padding:5px 8px;border-radius:999px;background:#f2eeee;color:#6f6266}
+.conf-moyenne{background:#f6f0d9;color:#78662e}.conf-élevée{background:#e7f1e9;color:#3e674a}
+.completion{height:4px;background:#eee7e9;border-radius:99px;overflow:hidden;margin:2px 0 10px}.completion span{display:block;height:100%;background:var(--wine);border-radius:99px;transition:width .2s}
+.next-check{display:grid;gap:4px;padding:12px 13px;margin-bottom:10px;border-radius:14px;background:#fff8e9;border:1px solid #efdfb7;font-size:13px}.next-check b{color:#765d1d}.next-check span{line-height:1.4;color:#5d5350}
+.compact-results .result-card{padding-bottom:10px}.compact-results .result-meta{display:none}.compact-results .reason-box{margin-top:7px}
+.candidate-wrap{position:relative}.compare-toggle{position:absolute;right:10px;bottom:8px;border:0;background:transparent;color:#8a7379;font-size:10px;font-weight:800;z-index:2}.compare-toggle.active{color:var(--wine)}
+.compare-main{width:100%;margin:10px 0}.compare-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:9px}.compare-head{display:flex;justify-content:space-between}.close-mini{border:0;background:transparent;font-size:20px}.compare-scroll{overflow:auto;margin-top:8px}.compare-panel table{width:100%;border-collapse:collapse;font-size:11px}.compare-panel th,.compare-panel td{padding:7px;border-bottom:1px solid var(--line);text-align:center}.compare-panel th:first-child{text-align:left}.compare-tip{font-size:11px;color:var(--muted);line-height:1.4}

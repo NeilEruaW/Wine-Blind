@@ -1,13 +1,8 @@
-# Wine Blind PWA V5
+# Wine Blind PWA V6 — UX
+- Parcours structuré ŒIL / NEZ / BOUCHE.
+- Indicateur de complétude et niveau de confiance du diagnostic.
+- Top 10 plus compact.
+- Suggestion « À vérifier maintenant » selon le pouvoir discriminant des premiers candidats.
+- Sélection de 2 à 3 candidats et tableau comparatif.
 
-## Nouveautés
-- La rubrique « Régions de production » des fiches cépages est condensée sous la forme :
-  `Pays 1 (Région A, Région B), Pays 2, Pays 3`.
-- Suppression de la phrase introductive « Répartition qualitative... ».
-- Les six métriques de structure des fiches cépages disposent désormais d’un code couleur doux et progressif :
-  faible → tons froids/verts, moyen → ton neutre doré, élevé → tons chauds/rosés.
-- Aucun changement du moteur de scoring.
-
-## Mise à jour GitHub Pages
-Remplacer les fichiers du dépôt par ceux de ce dossier puis Commit changes.
-Le cache PWA est versionné `wine-blind-v5`.
+Toutes les données restent locales sur l'appareil.
