@@ -1,123 +1,13 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#7c2d3f">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Wine Blind">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="styles.css">
-  <title>Wine Blind — WSET Diagnostic</title>
-</head>
-<body>
-  <header class="app-header">
-    <div>
-      <div class="eyebrow">WSET · Dégustation à l’aveugle</div>
-      <h1>Wine Blind</h1>
-    </div>
-    <button id="resetAll" class="ghost-btn" type="button">Réinitialiser</button>
-  </header>
-
-  <nav class="tabbar" aria-label="Navigation">
-    <button class="tab active" data-tab="grape">Cépage</button>
-    <button class="tab" data-tab="origin">Origine</button>
-    <button class="tab" data-tab="reference">Référentiel</button>
-  </nav>
-
-  <main>
-    <section id="tab-grape" class="screen active">
-      <div class="intro-card">
-        <div>
-          <span class="step">1</span>
-          <strong>Diagnostic cépage</strong>
-        </div>
-        <p>Commence par la structure. Les marqueurs complémentaires servent à départager les candidats proches.</p>
-      </div>
-
-      <div class="segmented" role="group" aria-label="Type de vin">
-        <button id="typeRed" class="seg active" type="button">Rouge</button>
-        <button id="typeWhite" class="seg" type="button">Blanc</button>
-      </div>
-
-      <div class="form-card">
-        <h2>Structure</h2>
-        <div id="structureFields" class="fields"></div>
-      </div>
-
-      <div class="form-card">
-        <div class="card-title-row">
-          <h2>Marqueurs complémentaires</h2>
-          <span class="low-weight">poids modéré</span>
-        </div>
-        <div id="markerFields" class="fields"></div>
-      </div>
-
-      <section class="results-section">
-        <div class="section-heading">
-          <div>
-            <span class="step">2</span>
-            <h2>Top 10 cépages</h2>
-          </div>
-          <span id="grapeCount" class="muted"></span>
-        </div>
-        <div id="grapeResults" class="results"></div>
-      </section>
-
-      <button id="goOrigin" class="primary-btn sticky-action" type="button">Affiner l’origine →</button>
-    </section>
-
-    <section id="tab-origin" class="screen">
-      <div class="intro-card">
-        <div>
-          <span class="step">3</span>
-          <strong>Diagnostic origine</strong>
-        </div>
-        <p>La structure est reprise automatiquement. Le classement considère les dix meilleurs cépages, pas seulement le premier.</p>
-      </div>
-
-      <div id="inheritedSummary" class="inherited"></div>
-
-      <div class="form-card">
-        <h2>Affiner le style</h2>
-        <div id="originFields" class="fields"></div>
-      </div>
-
-      <section class="results-section">
-        <div class="section-heading">
-          <div>
-            <span class="step">4</span>
-            <h2>Top 10 origines</h2>
-          </div>
-        </div>
-        <div id="originResults" class="results"></div>
-      </section>
-    </section>
-
-    <section id="tab-reference" class="screen">
-      <div class="intro-card">
-        <div><strong>Référentiel cépages</strong></div>
-        <p>Recherche rapide dans la base issue de la V9.</p>
-      </div>
-      <input id="searchGrape" class="search" type="search" placeholder="Rechercher un cépage…">
-      <div id="referenceList" class="reference-list"></div>
-    </section>
-  </main>
-
-  <dialog id="detailDialog">
-    <div class="dialog-head">
-      <div>
-        <div id="detailType" class="eyebrow"></div>
-        <h2 id="detailTitle"></h2>
-      </div>
-      <button id="closeDialog" class="close-btn" type="button">×</button>
-    </div>
-    <div id="detailBody"></div>
-  </dialog>
-
-  <script src="data.js"></script>
-  <script src="app.js"></script>
-</body>
-</html>
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#7c2d3f"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Wine Blind"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css"><title>Wine Blind — WSET</title></head><body>
+<header class="app-header"><div><div class="eyebrow">WSET · Blind tasting</div><h1>Wine Blind</h1></div><button id="resetAll" class="ghost-btn">Réinitialiser</button></header>
+<nav class="tabbar"><button class="tab active" data-tab="grape">Cépage</button><button class="tab" data-tab="origin">Origine</button><button class="tab" data-tab="training">Entraînement</button><button class="tab" data-tab="history">Historique</button><button class="tab" data-tab="reference">Référentiel</button></nav>
+<main>
+<section id="tab-grape" class="screen active"><div class="intro-card"><div><span class="step">1</span><strong>Diagnostic cépage</strong></div><p>Touche directement le niveau SAT. « ? » neutralise le critère.</p></div><div class="segmented"><button id="typeRed" class="seg active">Rouge</button><button id="typeWhite" class="seg">Blanc</button></div><div class="form-card"><h2>Structure</h2><div id="structureFields" class="fields"></div></div><div class="form-card"><div class="card-title-row"><h2>Marqueurs complémentaires</h2><span class="low-weight">poids modéré</span></div><div id="markerFields" class="fields"></div></div><section class="results-section"><div class="section-heading"><div><span class="step">2</span><h2>Top 10 cépages</h2></div><span id="grapeCount" class="muted"></span></div><div id="grapeResults" class="results"></div></section><div class="action-row"><button id="saveTasting" class="secondary-btn">Enregistrer</button><button id="goOrigin" class="primary-btn">Affiner l’origine →</button></div></section>
+<section id="tab-origin" class="screen"><div class="intro-card"><div><span class="step">3</span><strong>Diagnostic origine</strong></div><p>Structure reprise automatiquement ; les 10 meilleurs cépages restent éligibles.</p></div><div id="inheritedSummary" class="inherited"></div><div class="form-card"><h2>Affiner le style</h2><div id="originFields" class="fields"></div></div><section class="results-section"><div class="section-heading"><div><span class="step">4</span><h2>Top 10 origines</h2></div></div><div id="originResults" class="results"></div></section><button id="saveTastingOrigin" class="primary-btn">Enregistrer cette dégustation</button></section>
+<section id="tab-training" class="screen"><div class="intro-card"><div><span class="step">◆</span><strong>Mode entraînement</strong></div><p>Arbre décisionnel interactif : raisonne d’abord, confronte ensuite au simulateur.</p></div><div class="training-card"><div class="training-progress"><span id="treeStep"></span><button id="treeRestart" class="ghost-btn small">Recommencer</button></div><h2 id="treeQuestion"></h2><div id="treeOrientation" class="orientation hidden"></div><div class="yesno"><button id="treeYes" class="yes-btn">Oui</button><button id="treeNo" class="no-btn">Non</button></div><div id="treeTip" class="tree-tip"></div><button id="treeBack" class="link-btn">← Réponse précédente</button></div><div id="treeTrail" class="trail"></div></section>
+<section id="tab-history" class="screen"><div class="intro-card"><div><strong>Historique des dégustations</strong></div><p>Stocké uniquement sur cet appareil. Renseigne la révélation pour mesurer Top 1 et Top 3.</p></div><div id="historyStats" class="stats-grid"></div><div id="historyList" class="history-list"></div></section>
+<section id="tab-reference" class="screen"><div class="intro-card"><div><strong>Référentiel cépages</strong></div><p>Recherche rapide dans la base V9.</p></div><input id="searchGrape" class="search" type="search" placeholder="Rechercher un cépage…"><div id="referenceList" class="reference-list"></div></section>
+</main>
+<dialog id="detailDialog"><div class="dialog-head"><div><div id="detailType" class="eyebrow"></div><h2 id="detailTitle"></h2></div><button id="closeDialog" class="close-btn">×</button></div><div id="detailBody"></div></dialog>
+<dialog id="saveDialog"><div class="dialog-head"><div><div class="eyebrow">Journal</div><h2>Enregistrer</h2></div><button id="closeSave" class="close-btn">×</button></div><form id="saveForm" class="save-form"><label>Vin / cuvée<input id="wineName" placeholder="Optionnel"></label><div class="two-col"><label>Millésime<input id="wineVintage" inputmode="numeric"></label><label>Date<input id="wineDate" type="date"></label></div><label>Cépage réel<input id="actualGrape" list="grapeNames" placeholder="Après révélation"></label><label>Origine réelle<input id="actualOrigin" placeholder="Optionnel"></label><label>Notes<textarea id="wineNotes" rows="3"></textarea></label><datalist id="grapeNames"></datalist><button class="primary-btn" type="submit">Enregistrer</button></form></dialog>
+<script src="data.js"></script><script src="tree.js"></script><script src="app.js"></script></body></html>
