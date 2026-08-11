@@ -1,7 +1,13 @@
-# Wine Blind PWA V2
-Nouveautés : boutons SAT tactiles, explication des scores, historique local avec statistiques Top 1/Top 3, arbre décisionnel V9 interactif.
+# Wine Blind PWA V3
+
+## Nouveautés
+- Échelle SAT tactile continue à 5 niveaux : F / M- / M / M+ / E.
+- Tap sur un niveau pour sélectionner ; nouveau tap sur le même niveau pour désaisir.
+- Glissement horizontal du doigt sur l’échelle pour sélectionner rapidement.
+- « Non détecté » ajouté au Bois du diagnostic Origine. Il constitue une observation active, différente de « Non renseigné ».
+- Navigation supérieure par icônes afin d’éviter tout chevauchement sur iPhone.
+- Les fonctionnalités V2 restent présentes : explication des scores, historique local, statistiques, arbre décisionnel interactif.
 
 ## Mise à jour GitHub Pages
-Remplacez les fichiers V1 du dépôt par le contenu de ce dossier et validez le commit. Le service worker V2 supprime l'ancien cache V1. Si nécessaire, fermez complètement la PWA sur iPhone puis rouvrez-la.
-
-L'historique reste uniquement dans le stockage local de l'iPhone et n'est envoyé à aucun serveur.
+Remplacer les fichiers du dépôt par ceux de ce dossier puis Commit changes.
+Le service worker utilise le cache `wine-blind-v3` et supprime les caches précédents lors de l’activation.

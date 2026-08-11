@@ -73,3 +73,68 @@ dialog::backdrop{background:rgba(32,26,28,.45);backdrop-filter:blur(3px)}
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.stat-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}.stat-card b{font-size:22px;color:var(--wine);display:block}.stat-card span{font-size:11px;color:var(--muted)}.history-list{display:grid;gap:9px}.history-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}.history-head{display:flex;justify-content:space-between;gap:10px}.history-card h3{margin:0;font-size:16px}.history-meta{font-size:12px;color:var(--muted);margin-top:3px}.history-result{margin-top:9px;font-size:13px;line-height:1.45}.delete-btn{border:0;background:transparent;color:#9a7d83;font-size:12px}
 .save-form{padding:16px 18px 22px;display:grid;gap:12px}.save-form label{font-size:12px;font-weight:750;color:#5f5356;display:grid;gap:5px}.save-form input,.save-form textarea{border:1px solid #d9cbce;border-radius:11px;padding:11px;font:inherit}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 @media(max-width:520px){.tab{min-width:74px}.sat-buttons{gap:4px}.sat-btn{min-height:38px;padding:5px 1px}}
+
+/* V3 — continuum SAT & compact icon navigation */
+.tabbar{
+  grid-template-columns:repeat(5,1fr);
+  gap:4px;
+  padding:7px 10px 8px;
+  overflow:visible;
+}
+.tab{
+  min-width:0!important;
+  height:46px;
+  padding:6px 4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+}
+.tab svg{
+  width:23px;height:23px;
+  fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+.tab[data-tab="grape"] svg circle{fill:currentColor;stroke:none}
+.nav-label{
+  position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+  overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+}
+.sat-field{gap:8px;padding:3px 0 7px}
+.sat-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.sat-value{font-size:12px;color:var(--wine);font-weight:800;min-width:82px;text-align:right}
+.sat-continuum{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:0;
+  height:46px;
+  padding:0 3px;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.sat-continuum::before{
+  content:"";position:absolute;left:9%;right:9%;top:22px;height:4px;border-radius:999px;
+  background:linear-gradient(90deg,#e7dcdf,#d8c6cb);
+}
+.sat-point{
+  position:relative;z-index:1;
+  border:0;background:transparent;color:#66595d;
+  font-size:12px;font-weight:850;padding:0;
+}
+.sat-point::before{
+  content:"";position:absolute;left:50%;top:17px;transform:translate(-50%,-50%);
+  width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #c9b7bc;
+  transition:width .12s,height .12s,background .12s,border-color .12s;
+}
+.sat-point.active{color:var(--wine)}
+.sat-point.active::before{
+  width:22px;height:22px;background:var(--wine);border:4px solid #f4e8eb;
+  box-shadow:0 2px 8px rgba(124,45,63,.22);
+}
+.sat-point{padding-top:26px}
+@media(max-width:520px){
+  .tabbar{gap:3px;padding-left:9px;padding-right:9px}
+  .tab{height:44px}
+  .tab svg{width:22px;height:22px}
+}
