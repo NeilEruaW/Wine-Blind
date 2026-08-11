@@ -182,3 +182,25 @@ dialog::backdrop{background:rgba(32,26,28,.45);backdrop-filter:blur(3px)}
  .choice-point>em{font-size:8.5px}
  .geo-group{grid-template-columns:1fr}
 }
+
+/* V5 — compact production regions & soft metric scale */
+.production-line{
+  margin-top:5px!important;
+  font-size:13px!important;
+  line-height:1.45!important;
+  color:#514649!important;
+}
+.metric{
+  border:1px solid rgba(90,70,76,.06);
+  transition:background .15s ease;
+}
+.metric-level-1{background:#eef5f6}
+.metric-level-2{background:#eef3eb}
+.metric-level-3{background:#f5f2df}
+.metric-level-4{background:#f7eadf}
+.metric-level-5{background:#f5e3e6}
+.metric-level-1 b{color:#486b72}
+.metric-level-2 b{color:#56705a}
+.metric-level-3 b{color:#7c7038}
+.metric-level-4 b{color:#916241}
+.metric-level-5 b{color:#8b4353}

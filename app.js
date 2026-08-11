@@ -41,12 +41,27 @@ function reasons(r){r=(r||[]).slice(0,4);return r.length?`<div class="reason-box
 function card(x,i,orig){let e=document.createElement("div");e.className="result-card";e.innerHTML=`<div class="result-top"><span class="rank">${i+1}</span><div><div class="result-name">${orig?x.style:x.name}</div>${orig?`<div class="result-origin">${x.grape} · ${x.region}</div>`:""}</div><span class="score">${Math.round(x.score)}</span></div><div class="bar"><span style="width:${Math.max(2,Math.min(100,x.score))}%"></span></div><div class="result-meta">${orig?(x.diagnostic||""):(x.keyMarker||"")}</div>${orig?`<div class="reason-box"><div class="reason-chips"><span class="reason-chip">Cépage ${Math.round(x.grapeScore)}</span><span class="reason-chip neutral">Style ${Math.round(x.fit)}</span></div></div>`:reasons(x.reasons)}`;e.onclick=()=>orig?showO(x):showG(x);return e}
 function results(){let a=$("#grapeResults");a.innerHTML=S.gr.length?"":'<div class="empty">Renseigne au moins un critère.</div>';S.gr.forEach((x,i)=>a.append(card(x,i,0)));$("#grapeCount").textContent=S.gr.length?S.gr.length+" candidats":"";let b=$("#originResults");b.innerHTML=S.or.length?"":'<div class="empty">Le Top 10 apparaît après le diagnostic cépage.</div>';S.or.forEach((x,i)=>b.append(card(x,i,1)))}
 function inherited(){let e=$("#inheritedSummary");e.innerHTML="";[["Acidité","acid"],["Tanins","tannin"],["Alcool","alcohol"],["Corps","body"],["Couleur","color"]].forEach(([l,k])=>{if(k==="tannin"&&S.type==="Blanc"||!S.g[k])return;let p=document.createElement("span");p.className="pill";p.textContent=l+" · "+S.g[k];e.append(p)});if(S.gr[0]){let p=document.createElement("span");p.className="pill";p.textContent="Top 1 · "+S.gr[0].name;e.append(p)}}
-const met=(l,v)=>`<div class="metric"><b>${v??"—"}</b><span>${l}</span></div>`,blk=(l,v)=>v?`<div class="detail-block"><b>${l}</b><p>${v}</p></div>`:"";
+const metricLevel=v=>{let n=Number(v);if(!Number.isFinite(n)||n<=0)return 0;return Math.max(1,Math.min(5,Math.round(n)))};
+const met=(l,v,colored=false)=>`<div class="metric ${colored?`metric-level-${metricLevel(v)}`:""}"><b>${v??"—"}</b><span>${l}</span></div>`,blk=(l,v)=>v?`<div class="detail-block"><b>${l}</b><p>${v}</p></div>`:"";
 function productionHTML(g){
  let groups=g.productionWorld||{},keys=Object.keys(groups);if(!keys.length)return "";
- return `<div class="detail-block"><b>Régions de production</b><p class="region-intro">Répartition qualitative issue des régions clés de la base V9.</p><div class="geo-groups">${keys.map(k=>`<div class="geo-group"><strong>${k}</strong><span>${groups[k].join(" · ")}</span></div>`).join("")}</div></div>`;
+ const countryName=k=>({
+   "France":"France","Italie":"Italie","Espagne":"Espagne","Portugal":"Portugal","Allemagne":"Allemagne",
+   "Autriche":"Autriche","Europe centrale / orientale":"Europe centrale / orientale","États-Unis":"États-Unis",
+   "Canada":"Canada","Argentine":"Argentine","Chili":"Chili","Afrique du Sud":"Afrique du Sud",
+   "Australie":"Australie","Nouvelle-Zélande":"Nouvelle-Zélande","Chine / Asie":"Chine / Asie",
+   "Autres régions":"Autres régions"
+ }[k]||k);
+ const parts=keys.map(k=>{
+   let vals=(groups[k]||[]).filter(Boolean);
+   let country=countryName(k);
+   if(!vals.length)return country;
+   let cleaned=vals.filter(v=>v.toLowerCase()!==country.toLowerCase() && !["nz","australie","chili","allemagne","argentine","canada","portugal"].includes(v.toLowerCase()));
+   return cleaned.length?`${country} (${cleaned.join(", ")})`:country;
+ });
+ return `<div class="detail-block"><b>Régions de production</b><p class="production-line">${parts.join(", ")}</p></div>`;
 }
-function showG(g){$("#detailType").textContent=g.type+" · Cépage";$("#detailTitle").textContent=g.name;$("#detailBody").innerHTML=`<div class="detail-grid">${met("Acidité",g.acid)}${g.type==="Rouge"?met("Tanins",g.tannin):""}${met("Alcool",g.alcohol)}${met("Corps",g.body)}${met("Couleur",g.color)}${met("Intensité",g.intensity)}</div>${reasons(g.reasons)}${blk("Marqueur clé",g.keyMarker)}${blk("Différenciation",g.differentiation)}${blk("Contre-indices",g.redFlags)}${blk("Arômes",g.primaryAromas)}${productionHTML(g)}${blk("Confusions",g.confusions)}`;$("#detailDialog").showModal()}
+function showG(g){$("#detailType").textContent=g.type+" · Cépage";$("#detailTitle").textContent=g.name;$("#detailBody").innerHTML=`<div class="detail-grid">${met("Acidité",g.acid,true)}${g.type==="Rouge"?met("Tanins",g.tannin,true):""}${met("Alcool",g.alcohol,true)}${met("Corps",g.body,true)}${met("Couleur",g.color,true)}${met("Intensité",g.intensity,true)}</div>${reasons(g.reasons)}${blk("Marqueur clé",g.keyMarker)}${blk("Différenciation",g.differentiation)}${blk("Contre-indices",g.redFlags)}${blk("Arômes",g.primaryAromas)}${productionHTML(g)}${blk("Confusions",g.confusions)}`;$("#detailDialog").showModal()}
 function showO(o){$("#detailType").textContent=o.grape+" · Origine";$("#detailTitle").textContent=o.style;$("#detailBody").innerHTML=`<div class="detail-grid">${met("Score",Math.round(o.score))}${met("Cépage",Math.round(o.grapeScore))}${met("Style",Math.round(o.fit))}</div>${blk("Région",o.region)}${blk("Pourquoi ça colle",o.diagnostic)}${blk("À vérifier",o.differentiation)}${blk("Confusions",o.confusions)}`;$("#detailDialog").showModal()}
 function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();scrollTo({top:0,behavior:"smooth"})}
 function ref(q=""){let l=$("#referenceList");l.innerHTML="";q=q.toLowerCase();D.grapes.filter(g=>!q||g.name.toLowerCase().includes(q)||(g.synonyms||"").toLowerCase().includes(q)).slice(0,100).forEach(g=>{let r=document.createElement("div");r.className="ref-row";let zones=Object.keys(g.productionWorld||{}).slice(0,3).join(" · ");r.innerHTML=`<div><strong>${g.name}</strong><br><small>${g.type}${zones?" · "+zones:""}</small></div><span>›</span>`;r.onclick=()=>showG(g);l.append(r)})}
