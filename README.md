@@ -1,9 +1,11 @@
-# Wine Blind PWA V8 — Progression
-Inclut V6 + V7, plus :
-- Les observations de chaque nouvelle dégustation sont conservées localement.
-- Analyse des confusions récurrentes entre cépage réel et Top 1.
-- Détection progressive des biais d'évaluation (acidité, tanins, alcool, corps, couleur, intensité).
-- Priorité de révision suggérée dans l'Historique.
-Note : les analyses de biais nécessitent de nouvelles dégustations enregistrées avec la V8 ; l'ancien historique reste lisible.
+# Wine Blind — PWA V9
 
-Toutes les données restent locales sur l'appareil.
+V9 centrée sur :
+- détection légère des assemblages à partir du Top 10 cépages ;
+- 2–3 appellations compatibles sous chaque candidat du Top 10 Origine ;
+- niveau de précision origine/appellation, sans créer un Top 10 Appellations supplémentaire ;
+- fiches cépages enrichies avec appellations/zones clés et associations d'assemblage.
+
+La couche V10.6 est dans `v106.js`. Toutes les fonctions V8 sont conservées.
+Pour GitHub Pages : remplace les fichiers du dépôt par le contenu de cette archive.
+Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour sur iPhone.
