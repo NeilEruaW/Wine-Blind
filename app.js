@@ -1,5 +1,5 @@
 (()=>{const D=WSET_DATA,T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},G=window.WSET_V107||{regions:[],profiles:[],children:[]},G8=window.WSET_V108||{units:[],profiles:[],children:[],specificity:{},rankWeights:[1,.75,.55,.35,.2,.12,.08,.05,.03,.02]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",intensity:"",fruit:"",signature:"",texture:""},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{cur:"1",stack:[]},compare:new Set(),refFilter:"all"};
+const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",intensity:"",fruit:"",signature:"",texture:""},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{cur:"1",stack:[]},compare:new Set(),refFilter:"all",refMode:"grapes",refCountry:"all"};
 const L={acid:"Acidité",tannin:"Tanins",alcohol:"Alcool",body:"Corps",color:"Couleur",intensity:"Intensité",fruit:"Fruit",signature:"Signature",texture:"Texture"},sat=["F","M-","M","M+","E"],lev=v=>({"F":1,"M-":2,"M":3,"M+":4,"E":5}[v]||0),cmp=d=>d<=.01?1:d<=.5?.92:d<=1?.82:d<=1.5?.65:d<=2?.42:d<=2.5?.2:.05,has=(a,b)=>(a||"").toLowerCase().includes((b||"").toLowerCase());
 function wineTheme(){document.body.classList.toggle("wine-white",S.type==="Blanc");document.body.classList.toggle("wine-red",S.type==="Rouge");let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=S.type==="Blanc"?"#9a6b16":"#7c2d3f"}
 function satField(k,l){
@@ -181,7 +181,13 @@ function grapeAppsHTML(g){
  return `<div class="detail-block"><b>Appellations & zones clés</b>${appGroupHTML("Monocépage",mono)}${appGroupHTML("Assemblages",blend)}</div>`;
 }
 function grapeBlendsHTML(g){let arr=(V.blends||[]).filter(b=>b.grapes.includes(g.name)).slice(0,8);if(!arr.length)return"";return`<div class="detail-block"><b>Associations à connaître</b><div class="detail-apps blend-chips">${arr.map(b=>`<span title="${esc(b.logic)}">${esc(b.name)}</span>`).join("")}</div></div>`}
-function showG(g){let f=favs(),sig=g.keyMarker||g.differentiation||"";$("#detailType").textContent=g.type+" · Cépage";$("#detailTitle").textContent=g.name;$("#detailBody").innerHTML=`<button id="detailFav" class="favorite-detail ${f.has(g.name)?"active":""}">${f.has(g.name)?"♥ À réviser":"♡ Ajouter à réviser"}</button><div class="identity-signature"><span>SIGNATURE AVEUGLE</span><strong>${sig}</strong></div><div class="detail-grid">${met("Acidité",g.acid,true)}${g.type==="Rouge"?met("Tanins",g.tannin,true):""}${met("Alcool",g.alcohol,true)}${met("Corps",g.body,true)}${met("Couleur",g.color,true)}${met("Intensité",g.intensity,true)}</div>${blk("Arômes & marqueurs",g.primaryAromas)}${productionHTML(g)}${grapeAppsHTML(g)}${grapeBlendsHTML(g)}${blk("Comment le départager",g.differentiation)}${blk("Contre-indices",g.redFlags)}${blk("Confusions fréquentes",g.confusions)}`;$("#detailFav").onclick=()=>{toggleFav(g.name);showG(g)};$("#detailDialog").showModal()}
+function grapeOriginLinksHTML(g){
+ let us=(G8.units||[]).filter(u=>(u.grapes||[]).includes(g.name)).sort((a,b)=>a.country.localeCompare(b.country,"fr")||a.label.localeCompare(b.label,"fr"));
+ if(!us.length)return"";
+ return `<div class="detail-block"><b>Origines diagnostiques</b><div class="origin-link-list">${us.slice(0,16).map(u=>`<button class="origin-link" data-unit="${u.id}"><span>${esc(u.label)}</span><small>${esc(u.country)}</small></button>`).join("")}</div></div>`
+}
+function wireOriginLinks(){document.querySelectorAll(".origin-link").forEach(b=>b.onclick=()=>{let u=(G8.units||[]).find(x=>x.id===b.dataset.unit);if(u)showOriginReference(u)})}
+function showG(g){let f=favs(),sig=g.keyMarker||g.differentiation||"";$("#detailType").textContent=g.type+" · Cépage";$("#detailTitle").textContent=g.name;$("#detailBody").innerHTML=`<button id="detailFav" class="favorite-detail ${f.has(g.name)?"active":""}">${f.has(g.name)?"♥ À réviser":"♡ Ajouter à réviser"}</button><div class="identity-signature"><span>SIGNATURE AVEUGLE</span><strong>${sig}</strong></div><div class="detail-grid">${met("Acidité",g.acid,true)}${g.type==="Rouge"?met("Tanins",g.tannin,true):""}${met("Alcool",g.alcohol,true)}${met("Corps",g.body,true)}${met("Couleur",g.color,true)}${met("Intensité",g.intensity,true)}</div>${blk("Arômes & marqueurs",g.primaryAromas)}${productionHTML(g)}${grapeAppsHTML(g)}${grapeBlendsHTML(g)}${grapeOriginLinksHTML(g)}${blk("Comment le départager",g.differentiation)}${blk("Contre-indices",g.redFlags)}${blk("Confusions fréquentes",g.confusions)}`;$("#detailFav").onclick=()=>{toggleFav(g.name);showG(g)};$("#detailDialog").showModal();wireOriginLinks()}
 function showO(o){
  let groups=groupedChildren(o),b=blendForOrigin(o);
  const childRows=(title,arr)=>!arr.length?"":`<div class="origin-child-group"><span>${title}</span>${arr.slice(0,10).map(a=>`<div><strong>${esc(a.label)}</strong><small>${esc(a.grapes||a.blend)}</small></div>`).join("")}${arr.length>10?`<details><summary>Voir ${arr.length-10} autres</summary>${arr.slice(10).map(a=>`<div><strong>${esc(a.label)}</strong><small>${esc(a.grapes||a.blend)}</small></div>`).join("")}</details>`:""}</div>`;
@@ -190,7 +196,7 @@ function showO(o){
  $("#detailBody").innerHTML=`<div class="origin-score-hero"><span>SCORE GLOBAL</span><strong>${Math.round(o.score)}</strong></div><div class="origin-subscores"><div><span>Cépage</span><b>${Math.round(o.grapeScore)}</b></div><div><span>Style</span><b>${Math.round(o.fit)}</b></div></div><div class="reason-box"><div class="reason-chips"><span class="reason-chip">Rang cépage ${o.grapeRank||"—"} · poids ${Math.round((o.rankWeight||0)*100)}%</span><span class="reason-chip neutral">Spécificité ×${Number(o.specificity||1).toFixed(2)}</span></div></div>${blk("Pays",o.country)}${o.mother&&o.mother!==o.style?blk("Région mère",o.mother):""}${b?blk("Assemblage compatible",`${b.name} — ${b.logic}`):""}${hierarchy}${blk("Profil sensoriel retenu",o.profileStyle||o.grape)}${blk("Pourquoi ça colle",o.diagnostic)}${blk("À vérifier",o.differentiation)}${blk("Confusions",o.confusions)}`;
  $("#detailDialog").showModal()
 }
-function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();scrollTo({top:0,behavior:"smooth"})}
+function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();if(n==="reference")ref($("#searchGrape").value);scrollTo({top:0,behavior:"smooth"})}
 const FK="wineBlindFavoritesV7",favs=()=>{try{return new Set(JSON.parse(localStorage.getItem(FK)||"[]"))}catch{return new Set()}};
 function toggleFav(name){let f=favs();f.has(name)?f.delete(name):f.add(name);localStorage.setItem(FK,JSON.stringify([...f]));ref($("#searchGrape").value)}
 function grapeSearchText(g){
@@ -250,7 +256,7 @@ function alphaRender(letters){
  rail.onpointerup=e=>{dragging=false;rail.releasePointerCapture?.(e.pointerId);setTimeout(()=>alphaMagnify(""),180);e.preventDefault()};
  rail.onpointercancel=()=>{dragging=false;alphaMagnify("")}
 }
-function ref(q=""){
+function refGrapes(q=""){
  let l=$("#referenceList");l.innerHTML="";let nq=nt(q),f=favs();
  let arr=D.grapes.filter(g=>{
    if(S.refFilter==="Rouge"&&g.type!=="Rouge"||S.refFilter==="Blanc"&&g.type!=="Blanc"||S.refFilter==="fav"&&!f.has(g.name))return false;
@@ -267,7 +273,62 @@ function ref(q=""){
    r.onclick=()=>showG(g);r.querySelector(".fav-btn").onclick=e=>{e.stopPropagation();toggleFav(g.name)};l.append(r)
  });
  alphaRender(letters);
-}function quizNew(){
+}
+function originProfiles(u){return (G8.profiles||[]).filter(p=>p.unitId===u.id)}
+function originChildren(u){return (G8.children||[]).filter(a=>a.unitId===u.id)}
+function originSearchText(u){
+ let pp=originProfiles(u),cc=originChildren(u);
+ return nt([u.label,u.country,u.mother,(u.grapes||[]).join(" "),
+   ...pp.flatMap(p=>[p.grape,p.style,p.diagnostic,p.differentiation,p.confusions,p.marker,p.sourceGeo]),
+   ...cc.flatMap(a=>[a.label,a.name,a.country,a.region,a.grapes,a.blend,a.status])
+ ].join(" "))
+}
+function countryRender(){
+ let box=$("#originCountryFilters");if(!box)return;
+ if(S.refMode!=="origins"){box.classList.add("hidden");box.innerHTML="";return}
+ let countries=[...new Set((G8.units||[]).map(u=>u.country).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
+ box.classList.remove("hidden");box.innerHTML=`<button class="country-chip ${S.refCountry==="all"?"active":""}" data-country="all">Tous</button>`+
+ countries.map(c=>`<button class="country-chip ${S.refCountry===c?"active":""}" data-country="${esc(c)}">${esc(c)}</button>`).join("");
+ box.querySelectorAll(".country-chip").forEach(b=>b.onclick=()=>{S.refCountry=b.dataset.country;countryRender();ref($("#searchGrape").value)})
+}
+function showOriginReference(u){
+ let pp=originProfiles(u),cc=originChildren(u),grapes=[...new Set(pp.map(p=>p.grape))],best=pp[0]||{},mother=u.mother||u.label;
+ let apps=[...new Map(cc.map(a=>[a.label||a.name,a])).values()];
+ let profileRows=pp.slice(0,6).map(p=>`<div class="origin-profile-row"><b>${esc(p.grape)}</b><span>${esc(p.diagnostic||p.style||"")}</span></div>`).join("");
+ let appRows=apps.length?`<div class="detail-block"><b>Appellations & zones</b><div class="app-pill-list">${apps.slice(0,18).map(a=>`<span class="app-pill">${esc(a.label||a.name)}</span>`).join("")}</div>${apps.length>18?`<small>+ ${apps.length-18} autres zones dans la base</small>`:""}</div>`:"";
+ $("#detailType").textContent=`${u.country} · Origine`;$("#detailTitle").textContent=u.label;
+ $("#detailBody").innerHTML=`<div class="origin-path"><span>${esc(u.country)}</span>${mother!==u.label?`<i>›</i><span>${esc(mother)}</span>`:""}<i>›</i><strong>${esc(u.label)}</strong></div>
+ ${blk("Cépages clés",grapes.join(" · "))}
+ ${profileRows?`<div class="detail-block"><b>Profils à l’aveugle</b>${profileRows}</div>`:""}
+ ${appRows}
+ ${best.differentiation?blk("Clés de différenciation",best.differentiation):""}
+ ${best.confusions?blk("À distinguer de",best.confusions):""}`;
+ $("#detailDialog").showModal()
+}
+function refOrigins(q=""){
+ let l=$("#referenceList");l.innerHTML="";let nq=nt(q);
+ let arr=(G8.units||[]).filter(u=>(S.refCountry==="all"||u.country===S.refCountry)&&(!nq||originSearchText(u).includes(nq)))
+   .sort((a,b)=>a.country.localeCompare(b.country,"fr")||a.label.localeCompare(b.label,"fr",{sensitivity:"base"}));
+ let lastCountry="",lastLetter="",letters=new Set();
+ arr.forEach(u=>{
+   if(u.country!==lastCountry){
+     let h=document.createElement("div");h.className="ref-country-heading";h.textContent=u.country;l.append(h);lastCountry=u.country;lastLetter=""
+   }
+   let letter=refLetter(u.label);letters.add(letter);
+   if(letter!==lastLetter){let h=document.createElement("div");h.className="ref-letter-heading";h.dataset.refLetter=letter;h.textContent=letter;l.append(h);lastLetter=letter}
+   let r=document.createElement("div");r.className="ref-row origin-ref-row";
+   let pp=originProfiles(u),cc=originChildren(u),gs=(u.grapes||[]).join(" · ");
+   let matched=nq?cc.find(a=>nt([a.label,a.name,a.region,a.grapes].join(" ")).includes(nq)):null;
+   r.innerHTML=`<div><strong>${esc(u.label)}</strong><br><small>${matched?`Appellation · ${esc(matched.label||matched.name)} · `:""}${esc(gs||u.mother||"")}${cc.length?` · ${cc.length} zone${cc.length>1?"s":""}`:""}</small></div><div class="ref-actions"><span>›</span></div>`;
+   r.onclick=()=>showOriginReference(u);l.append(r)
+ });
+ alphaRender(letters)
+}
+function ref(q=""){
+ countryRender();
+ if(S.refMode==="origins")refOrigins(q);else refGrapes(q)
+}
+function quizNew(){
  let pool=D.grapes.filter(g=>g.type===S.type),answer=pool[Math.floor(Math.random()*pool.length)];
  let others=pool.filter(g=>g.name!==answer.name).sort(()=>Math.random()-.5).slice(0,3),choices=[answer,...others].sort(()=>Math.random()-.5);
  let clues=[`Couleur ${answer.color} · Acidité ${answer.acid}${answer.type==="Rouge"?` · Tanins ${answer.tannin}`:""}`,answer.primaryAromas||answer.keyMarker,answer.regions?`Régions typiques : ${answer.regions.split(";").slice(0,2).join(", ")}`:""].filter(Boolean);
@@ -305,4 +366,4 @@ function histRender(){
  h.forEach(r=>{let d=document.createElement("div");d.className="history-card";let hit=r.actualGrape&&r.topGrape?r.actualGrape.toLowerCase()===r.topGrape.toLowerCase():null;d.innerHTML=`<div class="history-head"><div><h3>${r.name||"Dégustation sans nom"}${r.vintage?" · "+r.vintage:""}</h3><div class="history-meta">${r.date||""} · ${r.type}${hit===true?" · ✓ Top 1":hit===false?" · à revoir":""}</div></div><button class="delete-btn" data-id="${r.id}">Supprimer</button></div><div class="history-result"><b>Diagnostic :</b> ${r.topGrape||"—"}${r.topGrapeScore?` (${r.topGrapeScore})`:""}${r.topOrigin?" · "+r.topOrigin:""}<br><b>Révélation :</b> ${r.actualGrape||"non renseignée"}${r.actualOrigin?" · "+r.actualOrigin:""}${r.notes?`<br><span class="muted">${r.notes}</span>`:""}</div>`;l.append(d)});
  $$(".delete-btn").forEach(b=>b.onclick=()=>{localStorage.setItem(HK,JSON.stringify(hist().filter(x=>String(x.id)!==b.dataset.id)));histRender()})
 }
-$("#typeRed").onclick=()=>{S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc()};$("#typeWhite").onclick=()=>{S.type="Blanc";S.g.tannin="";$("#typeWhite").classList.add("active");$("#typeRed").classList.remove("active");wineTheme();forms();calc()};$$(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));$("#goOrigin").onclick=()=>tab("origin");$("#closeDialog").onclick=()=>$("#detailDialog").close();$("#searchGrape").oninput=e=>ref(e.target.value);$$(".filter-chip").forEach(b=>b.onclick=()=>{$$(".filter-chip").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.refFilter=b.dataset.ref;ref($("#searchGrape").value)});$("#modeTree").onclick=()=>{$("#modeTree").classList.add("active");$("#modeQuiz").classList.remove("active");$("#treeMode").classList.remove("hidden");$("#quizMode").classList.add("hidden")};$("#modeQuiz").onclick=()=>{$("#modeQuiz").classList.add("active");$("#modeTree").classList.remove("active");$("#quizMode").classList.remove("hidden");$("#treeMode").classList.add("hidden");quizNew()};$("#newQuiz").onclick=quizNew;$("#treeYes").onclick=()=>treeAns(1);$("#treeNo").onclick=()=>treeAns(0);$("#treeBack").onclick=back;$("#treeRestart").onclick=()=>{S.tree={cur:"1",stack:[]};treeRender();trail()};$("#saveTasting").onclick=openSave;$("#saveTastingOrigin").onclick=openSave;$("#closeSave").onclick=()=>$("#saveDialog").close();$("#saveForm").onsubmit=save;$("#resetAll").onclick=()=>{Object.keys(S.g).forEach(k=>S.g[k]="");Object.keys(S.o).forEach(k=>S.o[k]="");S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc();tab("grape")};D.grapes.forEach(g=>{let o=document.createElement("option");o.value=g.name;$("#grapeNames").append(o)});wineTheme();forms();ref();treeRender();histRender();calc();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{})})();
+$("#typeRed").onclick=()=>{S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc()};$("#typeWhite").onclick=()=>{S.type="Blanc";S.g.tannin="";$("#typeWhite").classList.add("active");$("#typeRed").classList.remove("active");wineTheme();forms();calc()};$$(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));$("#goOrigin").onclick=()=>tab("origin");$("#closeDialog").onclick=()=>$("#detailDialog").close();$("#searchGrape").oninput=e=>ref(e.target.value);$$(".ref-mode-btn").forEach(b=>b.onclick=()=>{S.refMode=b.dataset.refmode;S.refCountry="all";$$(".ref-mode-btn").forEach(x=>x.classList.toggle("active",x===b));ref($("#searchGrape").value)});$$(".filter-chip").forEach(b=>b.onclick=()=>{$$(".filter-chip").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.refFilter=b.dataset.ref;ref($("#searchGrape").value)});$("#modeTree").onclick=()=>{$("#modeTree").classList.add("active");$("#modeQuiz").classList.remove("active");$("#treeMode").classList.remove("hidden");$("#quizMode").classList.add("hidden")};$("#modeQuiz").onclick=()=>{$("#modeQuiz").classList.add("active");$("#modeTree").classList.remove("active");$("#quizMode").classList.remove("hidden");$("#treeMode").classList.add("hidden");quizNew()};$("#newQuiz").onclick=quizNew;$("#treeYes").onclick=()=>treeAns(1);$("#treeNo").onclick=()=>treeAns(0);$("#treeBack").onclick=back;$("#treeRestart").onclick=()=>{S.tree={cur:"1",stack:[]};treeRender();trail()};$("#saveTasting").onclick=openSave;$("#saveTastingOrigin").onclick=openSave;$("#closeSave").onclick=()=>$("#saveDialog").close();$("#saveForm").onsubmit=save;$("#resetAll").onclick=()=>{Object.keys(S.g).forEach(k=>S.g[k]="");Object.keys(S.o).forEach(k=>S.o[k]="");S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc();tab("grape")};D.grapes.forEach(g=>{let o=document.createElement("option");o.value=g.name;$("#grapeNames").append(o)});wineTheme();forms();ref();treeRender();histRender();calc();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{})})();

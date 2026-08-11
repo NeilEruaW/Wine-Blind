@@ -75,3 +75,11 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Index vertical A–Z à droite, type répertoire téléphonique.
 - Glissement continu sur l'index avec effet loupe « Dock » sur la lettre active et ses voisines.
 - Lettres absentes du résultat courant automatiquement atténuées.
+
+## V10.0 — Référentiel géographique
+- Le Référentiel comporte désormais deux entrées : Cépages et Origines.
+- Origines : navigation Pays → région mère → unité diagnostique → appellations/zones.
+- Fiches Origine pédagogiques : cépages clés, profils à l'aveugle, appellations/zones, différenciation et confusions.
+- Recherche universelle : une recherche d'appellation (ex. Cornas) remonte l'unité diagnostique parente.
+- Navigation croisée depuis les fiches Cépages vers leurs unités diagnostiques.
+- Filtre horizontal par pays dans le mode Origines.

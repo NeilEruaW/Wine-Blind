@@ -427,3 +427,22 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 @media (min-width:700px){
  .alpha-index{right:calc((100vw - 720px)/2 + 8px)}
 }
+
+/* V10.0 — Référentiel Cépages ↔ Origines */
+.ref-mode{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0 7px;padding:3px;border-radius:13px;background:rgba(120,110,100,.09)}
+.ref-mode-btn{border:0;background:transparent;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:800;color:var(--muted)}
+.ref-mode-btn.active{background:rgba(255,255,255,.78);color:var(--text);box-shadow:0 1px 5px rgba(40,30,25,.08)}
+.origin-country-filters{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;margin:3px 0 8px;padding:1px 22px 2px 0}
+.origin-country-filters::-webkit-scrollbar{display:none}
+.country-chip{flex:0 0 auto;border:1px solid rgba(110,95,85,.14);background:rgba(255,255,255,.4);color:var(--muted);border-radius:999px;padding:5px 9px;font-size:10px;font-weight:750}
+.country-chip.active{background:var(--wine);color:white;border-color:transparent}
+.ref-country-heading{position:sticky;top:58px;z-index:4;margin:10px 0 1px;padding:7px 2px 4px;font-size:13px;font-weight:900;color:var(--text);background:var(--paper)}
+.origin-ref-row small{line-height:1.35}
+.origin-profile-row{display:grid;grid-template-columns:minmax(90px,.7fr) 1.5fr;gap:10px;padding:8px 0;border-bottom:1px solid rgba(120,105,95,.09)}
+.origin-profile-row span{font-size:12px;color:var(--muted);line-height:1.35}
+.app-pill-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.app-pill{font-size:10px;font-weight:700;padding:5px 7px;border-radius:999px;background:rgba(120,105,95,.08)}
+.origin-link-list{display:grid;gap:5px;margin-top:8px}
+.origin-link{border:0;background:rgba(120,105,95,.07);border-radius:10px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;text-align:left;color:var(--text)}
+.origin-link span{font-size:12px;font-weight:800}.origin-link small{font-size:10px;color:var(--muted)}
+.hidden{display:none!important}
