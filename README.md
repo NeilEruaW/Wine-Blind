@@ -32,3 +32,12 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Comparaison via icône ⇄ sur chaque candidat et ouverture automatique dès 2 candidats sélectionnés (3 maximum).
 - Suppression du bouton intermédiaire « Comparer X candidats ».
 - Référentiel : suppression de l'encart introductif, accès immédiat à la recherche.
+
+## V9.4 — UX production
+- Continuums SAT à effet « Dock » : valeur sélectionnée agrandie, voisines intermédiaires, autres atténuées.
+- Top 10 affiché avant les aides contextuelles.
+- Assemblage et « À vérifier » convertis en pastilles compactes et totalement absents s'ils ne sont pas pertinents.
+- Hiérarchie Top 1 / Top 2–3 / Top 4–10 et écart Top 1–Top 2.
+- Barre de navigation basse flottante inspirée des tab bars iOS, avec icônes vectorielles.
+- Icônes sémantiques discrètes pour les phases de dégustation et les aides.
+- Thème navigateur synchronisé Rouge/Blanc.

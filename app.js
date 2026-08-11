@@ -1,15 +1,17 @@
 (()=>{const D=WSET_DATA,T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",intensity:"",fruit:"",signature:"",texture:""},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{cur:"1",stack:[]},compare:new Set(),refFilter:"all"};
 const L={acid:"Acidité",tannin:"Tanins",alcohol:"Alcool",body:"Corps",color:"Couleur",intensity:"Intensité",fruit:"Fruit",signature:"Signature",texture:"Texture"},sat=["F","M-","M","M+","E"],lev=v=>({"F":1,"M-":2,"M":3,"M+":4,"E":5}[v]||0),cmp=d=>d<=.01?1:d<=.5?.92:d<=1?.82:d<=1.5?.65:d<=2?.42:d<=2.5?.2:.05,has=(a,b)=>(a||"").toLowerCase().includes((b||"").toLowerCase());
-function wineTheme(){document.body.classList.toggle("wine-white",S.type==="Blanc");document.body.classList.toggle("wine-red",S.type==="Rouge")}
+function wineTheme(){document.body.classList.toggle("wine-white",S.type==="Blanc");document.body.classList.toggle("wine-red",S.type==="Rouge");let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=S.type==="Blanc"?"#9a6b16":"#7c2d3f"}
 function satField(k,l){
- let w=document.createElement("div");w.className="sat-field";
+ let w=document.createElement("div");w.className="sat-field"+(S.g[k]?" is-set":"");
  w.innerHTML=`<div class="sat-head"><div class="sat-label">${l}</div><div class="sat-value">${S.g[k]||"Non renseigné"}</div></div>`;
  let track=document.createElement("div");track.className="sat-continuum";track.setAttribute("role","slider");track.setAttribute("aria-label",l);track.setAttribute("aria-valuemin","1");track.setAttribute("aria-valuemax","5");track.setAttribute("aria-valuetext",S.g[k]||"Non renseigné");
  let buttons=[];
- sat.forEach(v=>{let x=document.createElement("button");x.type="button";x.className="sat-point"+(S.g[k]===v?" active":"");x.textContent=v;x.dataset.value=v;track.append(x);buttons.push(x)});
+ const magnify=v=>{let idx=sat.indexOf(v);buttons.forEach((b,i)=>{b.classList.toggle("active",i===idx);b.classList.toggle("near",idx>=0&&Math.abs(i-idx)===1);b.classList.toggle("far",idx>=0&&Math.abs(i-idx)>1)})};
+ sat.forEach(v=>{let x=document.createElement("button");x.type="button";x.className="sat-point";x.textContent=v;x.dataset.value=v;track.append(x);buttons.push(x)});
+ magnify(S.g[k]);
  let dragging=false,moved=false,startX=0,startValue="",pending="";
- const paint=v=>{pending=v;buttons.forEach(b=>b.classList.toggle("active",b.dataset.value===v));w.querySelector(".sat-value").textContent=v||"Non renseigné"};
+ const paint=v=>{pending=v;magnify(v);w.classList.toggle("is-set",!!v);w.querySelector(".sat-value").textContent=v||"Non renseigné"};
  const fromX=x=>{let r=track.getBoundingClientRect(),p=Math.max(0,Math.min(.999,(x-r.left)/r.width)),i=Math.min(4,Math.floor(p*5));return sat[i]};
  track.addEventListener("pointerdown",e=>{dragging=true;moved=false;startX=e.clientX;startValue=S.g[k];track.setPointerCapture(e.pointerId);paint(fromX(e.clientX));e.preventDefault()});
  track.addEventListener("pointermove",e=>{if(!dragging)return;if(Math.abs(e.clientX-startX)>5)moved=true;paint(fromX(e.clientX));e.preventDefault()});
@@ -33,7 +35,7 @@ function choiceRail(k,l,opts,target,hint){
  track.addEventListener("pointercancel",()=>{drag=false;forms()});
  w.append(track);return w
 }
-function forms(){let a=$("#structureFields");a.innerHTML="";let last="";[["ŒIL","color","Couleur / intensité"],["NEZ","intensity","Intensité aromatique"],["BOUCHE","acid","Acidité"],["BOUCHE","tannin","Tanins"],["BOUCHE","body","Corps"],["BOUCHE","alcohol","Alcool"]].forEach(x=>{if(x[1]==="tannin"&&S.type==="Blanc")return;if(x[0]!==last){let h=document.createElement("div");h.className="sense-label";h.textContent=x[0];a.append(h);last=x[0]}a.append(satField(x[1],x[2]))});let m=$("#markerFields");m.innerHTML="";m.append(choiceRail("fruit","Famille de fruit",D.options.fruit,"g",""));m.append(choiceRail("texture","Texture / élevage",["","Bois discret / neutre","Fin / soyeux","Tendu / linéaire","Ferme / structuré","Ample / onctueux","Boisé / MLF"],"g",""));m.append(sel("signature","Marqueur signature",D.options.signature,"g"));let f=$("#originFields");f.innerHTML="";f.append(choiceRail("climate","Climat perçu",D.options.climate,"o","Frais → chaud"));f.append(choiceRail("maturity","Maturité du fruit",D.options.maturity,"o","Frais → très mûr / séché"));f.append(choiceRail("oak","Bois",D.options.oak,"o","Non détecté → marqué"));f.append(sel("marker","Marqueur dominant",D.options.originMarker,"o"))}
+function forms(){let a=$("#structureFields");a.innerHTML="";let last="";[["ŒIL","color","Couleur / intensité"],["NEZ","intensity","Intensité aromatique"],["BOUCHE","acid","Acidité"],["BOUCHE","tannin","Tanins"],["BOUCHE","body","Corps"],["BOUCHE","alcohol","Alcool"]].forEach(x=>{if(x[1]==="tannin"&&S.type==="Blanc")return;if(x[0]!==last){let h=document.createElement("div");h.className="sense-label";let ico=x[0]==="ŒIL"?'<svg viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg>':x[0]==="NEZ"?'<svg viewBox="0 0 24 24"><path d="M13 3c-1 4-1 7 1 10 1.5 2.2.5 4-2 4h-2"/><path d="M9 20c2 1 4 1 6 0"/></svg>':'<svg viewBox="0 0 24 24"><path d="M4 12c2.5 4 5 6 8 6s5.5-2 8-6c-3 1-5.7 1-8 0-2.3 1-5 1-8 0Z"/><path d="M7 11c3-1.8 7-1.8 10 0"/></svg>';h.innerHTML=ico+'<span>'+x[0]+'</span>';a.append(h);last=x[0]}a.append(satField(x[1],x[2]))});let m=$("#markerFields");m.innerHTML="";m.append(choiceRail("fruit","Famille de fruit",D.options.fruit,"g",""));m.append(choiceRail("texture","Texture / élevage",["","Bois discret / neutre","Fin / soyeux","Tendu / linéaire","Ferme / structuré","Ample / onctueux","Boisé / MLF"],"g",""));m.append(sel("signature","Marqueur signature",D.options.signature,"g"));let f=$("#originFields");f.innerHTML="";f.append(choiceRail("climate","Climat perçu",D.options.climate,"o","Frais → chaud"));f.append(choiceRail("maturity","Maturité du fruit",D.options.maturity,"o","Frais → très mûr / séché"));f.append(choiceRail("oak","Bois",D.options.oak,"o","Non détecté → marqué"));f.append(sel("marker","Marqueur dominant",D.options.originMarker,"o"))}
 function geval(g){if(g.type!==S.type)return{score:0,reasons:[]};let w=D.weights.grape,n=0,d=0,c=0,r=[];[["acid","acid",w.acid],["tannin","tannin",w.tannin],["alcohol","alcohol",w.alcohol],["body","body",w.body],["color","color",w.color],["intensity","intensity",w.intensity]].forEach(([sk,gk,wt])=>{if(sk==="tannin"&&S.type==="Blanc")return;let o=lev(S.g[sk]);if(!o)return;let q=Number(g[gk]);if(!Number.isFinite(q))return;let z=Math.abs(q-o);n+=wt*5*cmp(z);d+=wt*5;if(z<=.5)r.push({t:L[sk]+" très cohérent",w:0});else if(z>=2){r.push({t:L[sk]+" en tension",w:1});if(["acid","tannin","alcohol","body"].includes(sk))c++}});[["fruit","fruitCompatible",w.fruit,.3],["signature","signaturesCompatible",w.signature,.1],["texture","textureCompatible",w.texture,.3]].forEach(([sk,gk,wt,res])=>{let o=S.g[sk];if(!o)return;let hit=has(g[gk],o);n+=wt*5*(hit?1:res);d+=wt*5;if(hit)r.push({t:L[sk]+" compatible",w:0});else if(sk==="signature")r.push({t:"Signature non typique",w:1})});if(!d)return{score:0,reasons:[]};let s=n/d*100;if(c>=4)s*=.65;else if(c===3)s*=.8;return{score:s,reasons:r}}
 function ofit(o){let w=D.weights.origin,n=0,d=0,c=0;[["acid","acid",w.acid],["tannin","tannin",w.tannin],["alcohol","alcohol",w.alcohol],["body","body",w.body],["color","color",w.color]].forEach(([sk,ok,wt])=>{if(sk==="tannin"&&S.type==="Blanc")return;let a=lev(S.g[sk]);if(!a)return;let q=Number(o[ok]);if(!Number.isFinite(q))return;let z=Math.abs(q-a);n+=wt*5*cmp(z);d+=wt*5;if(["acid","tannin","alcohol","body"].includes(sk)&&z>=2)c++});[["climate","climate",w.climate,{"Frais":1,"Tempéré":2,"Chaud":3}],["maturity","maturity",w.maturity,{"Frais":1,"Mûr":2,"Très mûr / séché":3}]].forEach(([sk,ok,wt,map])=>{let v=S.o[sk];if(!v)return;let a=map[v],q=Number(o[ok]);if(!a||!Number.isFinite(q))return;let z=Math.abs(q-a);n+=wt*5*(z===0?1:z===1?.82:.5);d+=wt*5});
  if(S.o.oak){let q=Number(o.oak);if(Number.isFinite(q)){let oc;if(S.o.oak==="Non détecté")oc=q<=1?.85:q===2?.35:.10;else{let a={"Faible":1,"Modéré":2,"Marqué":3}[S.o.oak],z=Math.abs(q-a);oc=z===0?1:z===1?.82:.5}n+=w.oak*5*oc;d+=w.oak*5}};if(S.o.marker){n+=w.marker*5*(o.marker===S.o.marker?1:.35);d+=w.marker*5}if(!d)return 0;let s=n/d*100;if(c>=4)s*=.65;else if(c===3)s*=.8;return s}
@@ -129,14 +131,28 @@ function blendForOrigin(o){
  let grapeHit=b.grapes.includes(o.grape);
  return grapeHit&&(regionHit||sameCountry&&(!rule||appInMotherRegion({country:b.country,region:b.region,name:b.region},o)))?b:null
 }
-function blendRender(){let e=$("#blendInsight");if(!e)return;S.blend=detectBlend();if(!S.blend){e.classList.add("hidden");e.innerHTML="";return}e.classList.remove("hidden");e.innerHTML=`<div><span>ASSEMBLAGE COMPATIBLE</span><b>${esc(S.blend.name)}</b><small>${esc(S.blend.hits.join(" + "))}</small></div><div class="blend-score">${Math.round(S.blend.score)}</div>`}
+function contextToolsVisibility(){
+ let c=$("#contextTools");if(!c)return;
+ let visible=!$("#blendInsight").classList.contains("hidden")||!$("#nextCheck").classList.contains("hidden");
+ c.classList.toggle("hidden",!visible)
+}
+function blendRender(){
+ let e=$("#blendInsight");if(!e)return;S.blend=detectBlend();
+ if(!S.blend){e.classList.add("hidden");e.innerHTML="";contextToolsVisibility();return}
+ e.classList.remove("hidden");
+ e.innerHTML=`<span class="pill-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4c4 2 6 5 5 9-1 4-4 6-8 7"/><path d="M17 4c-4 2-6 5-5 9 1 4 4 6 8 7"/></svg></span><span><small>Assemblage</small><b>${esc(S.blend.name)}</b></span>`;
+ e.onclick=()=>{let top=S.gr.find(g=>S.blend.grapes.includes(g.name));if(top)showG(top)};
+ contextToolsVisibility()
+}
 function calc(){S.gr=D.grapes.map(g=>({...g,...geval(g)})).filter(g=>g.type===S.type&&g.score>0).sort((a,b)=>b.score-a.score).slice(0,10);S.blend=detectBlend();let map=new Map(S.gr.map((g,i)=>[g.name,{score:g.score,rank:i+1}])),w=D.weights.origin;S.or=D.origins.filter(o=>map.has(o.grape)).map(o=>{let p=map.get(o.grape),fit=ofit(o),blendBonus=S.blend&&S.blend.grapes.includes(o.grape)&&nt(o.region+" "+o.style).split(" ").some(t=>t.length>4&&nt(S.blend.region+" "+S.blend.country).includes(t))?5:0;return{...o,grapeScore:p.score,fit,score:Math.min(100,w.grapePrior*p.score+w.styleFit*fit+blendBonus)}}).sort((a,b)=>b.score-a.score).slice(0,10);results();inherited()}
 function reasons(r){r=(r||[]).slice(0,4);return r.length?`<div class="reason-box"><div class="reason-chips">${r.map(x=>`<span class="reason-chip ${x.w?"warn":""}">${x.t}</span>`).join("")}</div></div>`:""}
 function card(x,i,orig){
- let e=document.createElement("div");e.className="result-card";
+ let e=document.createElement("div");e.className=`result-card result-rank-${Math.min(i+1,4)} ${!orig&&i===0?"top-candidate":""}`;
  let apps=orig?appsForOrigin(x,3):[],appHtml=orig&&apps.length?`<div class="app-chips">${apps.map(a=>`<span>${esc(a.name)}</span>`).join("")}</div>`:"";
- let compareIcon=!orig?`<button class="compare-icon ${S.compare.has(x.name)?"active":""}" type="button" aria-label="${S.compare.has(x.name)?"Retirer de la comparaison":"Ajouter à la comparaison"}" title="Comparer">${S.compare.has(x.name)?"✓":"⇄"}</button>`:"";
- e.innerHTML=`<div class="result-top"><span class="rank">${i+1}</span><div><div class="result-name">${orig?x.style:x.name}</div>${orig?`<div class="result-origin">${x.grape} · ${x.region}</div>`:""}</div><div class="score-actions"><span class="score">${Math.round(x.score)}</span>${compareIcon}</div></div><div class="bar"><span style="width:${Math.max(2,Math.min(100,x.score))}%"></span></div><div class="result-meta">${orig?(x.diagnostic||""):(x.keyMarker||"")}</div>${appHtml}${orig?`<div class="reason-box"><div class="reason-chips"><span class="reason-chip">Cépage ${Math.round(x.grapeScore)}</span><span class="reason-chip neutral">Style ${Math.round(x.fit)}</span></div></div>`:reasons(x.reasons)}`;
+ let compareIcon=!orig?`<button class="compare-icon ${S.compare.has(x.name)?"active":""}" type="button" aria-label="${S.compare.has(x.name)?"Retirer de la comparaison":"Ajouter à la comparaison"}" title="Comparer"><svg viewBox="0 0 24 24"><path d="M7 7h11l-3-3"/><path d="m18 7-3 3"/><path d="M17 17H6l3 3"/><path d="m6 17 3-3"/></svg></button>`:"";
+ let gap=!orig&&i===0&&S.gr[1]?Math.max(0,Math.round(x.score-S.gr[1].score)):null;
+ let gapHtml=gap!==null?`<span class="score-gap" title="Écart avec le 2e">+${gap}</span>`:"";
+ e.innerHTML=`<div class="result-top"><span class="rank">${i+1}</span><div class="result-main"><div class="result-name">${orig?x.style:x.name}</div>${orig?`<div class="result-origin">${x.grape} · ${x.region}</div>`:""}</div><div class="score-actions"><span class="score">${Math.round(x.score)}</span>${gapHtml}${compareIcon}</div></div><div class="bar"><span style="width:${Math.max(2,Math.min(100,x.score))}%"></span></div><div class="result-meta">${orig?(x.diagnostic||""):(x.keyMarker||"")}</div>${appHtml}${orig?`<div class="reason-box"><div class="reason-chips"><span class="reason-chip">Cépage ${Math.round(x.grapeScore)}</span><span class="reason-chip neutral">Style ${Math.round(x.fit)}</span></div></div>`:reasons(x.reasons)}`;
  e.onclick=()=>orig?showO(x):showG(x);
  if(!orig){let b=e.querySelector(".compare-icon");b.onclick=ev=>{ev.stopPropagation();if(S.compare.has(x.name))S.compare.delete(x.name);else{if(S.compare.size>=3){let first=S.compare.values().next().value;S.compare.delete(first)}S.compare.add(x.name)}results()}}
  return e
@@ -150,12 +166,15 @@ function diagnosticMeta(){
  $("#completionBar span").style.width=`${Math.round(ratio*100)}%`;
 }
 function nextCheck(){
- let e=$("#nextCheck");if(S.gr.length<2){e.classList.add("hidden");return}
+ let e=$("#nextCheck");if(S.gr.length<2){e.classList.add("hidden");e.innerHTML="";contextToolsVisibility();return}
  let top=S.gr.slice(0,4),fields=[["color","Couleur / intensité"],["intensity","Intensité aromatique"],["acid","Acidité"],["tannin","Tanins"],["body","Corps"],["alcohol","Alcool"]];
  let best=null;
  fields.forEach(([k,l])=>{if(k==="tannin"&&S.type==="Blanc")return;let vals=top.map(g=>Number(g[k])).filter(Number.isFinite);if(vals.length<2)return;let spread=Math.max(...vals)-Math.min(...vals),unfilled=!S.g[k];let utility=spread*(unfilled?1.45:.65);if(!best||utility>best.u)best={k,l,u:utility,spread,unfilled}});
- if(!best||best.spread<.6){e.classList.add("hidden");return}
- e.classList.remove("hidden");e.innerHTML=`<b>🔎 À vérifier maintenant</b><span>${best.l} — c’est actuellement l’un des critères qui sépare le mieux les premiers candidats${best.unfilled?" et il n’est pas encore renseigné":""}.</span>`;
+ if(!best||best.spread<.6){e.classList.add("hidden");e.innerHTML="";contextToolsVisibility();return}
+ e.classList.remove("hidden");
+ e.innerHTML=`<span class="pill-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/><path d="M8 11h6"/></svg></span><span><small>À vérifier</small><b>${best.l}</b></span>`;
+ e.onclick=()=>{let field=[...document.querySelectorAll(".sat-field")].find(x=>x.querySelector(".sat-label")?.textContent===best.l);field?.scrollIntoView({behavior:"smooth",block:"center"});field?.classList.add("attention");setTimeout(()=>field?.classList.remove("attention"),900)};
+ contextToolsVisibility()
 }
 function compareRender(){
  let panel=$("#comparePanel"),arr=S.gr.filter(g=>S.compare.has(g.name)).slice(0,3);
@@ -167,11 +186,10 @@ function compareRender(){
  $("#closeCompare").onclick=()=>{S.compare.clear();results()}
 }
 function results(){
- blendRender();
  let a=$("#grapeResults");a.innerHTML=S.gr.length?"":'<div class="empty">Renseigne au moins un critère.</div>';
  S.gr.forEach((x,i)=>a.append(card(x,i,0)));
  $("#grapeCount").textContent=S.gr.length?S.gr.length+" candidats":"";
- diagnosticMeta();nextCheck();compareRender();
+ diagnosticMeta();nextCheck();blendRender();compareRender();
  let b=$("#originResults");b.innerHTML=S.or.length?"":'<div class="empty">Le Top 10 apparaît après le diagnostic cépage.</div>';
  S.or.forEach((x,i)=>b.append(card(x,i,1)))
 }
