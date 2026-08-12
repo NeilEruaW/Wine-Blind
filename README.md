@@ -229,3 +229,11 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Les familles aromatiques sont désormais toujours visibles : plus besoin de déplier une catégorie préalable.
 - Un bouton ⓘ affiche à la demande la définition pédagogique de chaque niveau aromatique.
 - L'indice discriminant affiche uniquement « Optionnel » lorsqu'il n'est pas renseigné.
+
+## V10.6.2 — finitions visuelles du diagnostic
+- « Dégustation SAT » devient simplement « Dégustation ».
+- Les points des échelles à trois positions (intensité visuelle et alcool) sont encore décalés vers la droite pour mieux s'aligner sur leur barre.
+- L'échelle « Couleur » devient chromatique : chaque point est affiché avec une teinte correspondant au vin décrit.
+- Palette blancs : jaune-vert, jaune citron, or, ambré, brun.
+- Palette rouges : violacé, rubis, grenat, tuilé, brun.
+- La valeur active conserve sa teinte propre et est simplement accentuée par la taille et le halo.

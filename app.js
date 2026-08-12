@@ -31,7 +31,11 @@ function scaleField(k,l,opts,target="g"){
  track.setAttribute("role","slider");track.setAttribute("aria-label",l);track.setAttribute("aria-valuemin","1");track.setAttribute("aria-valuemax",String(opts.length));track.setAttribute("aria-valuetext",displayScaleValue(k,cur,opts)||"Non renseigné");
  let buttons=[];
  const magnify=v=>{let idx=opts.findIndex(x=>x[0]===v);buttons.forEach((b,i)=>{b.classList.toggle("active",i===idx);b.classList.toggle("near",idx>=0&&Math.abs(i-idx)===1);b.classList.toggle("far",idx>=0&&Math.abs(i-idx)>1)})};
- opts.forEach(([v,label])=>{let x=document.createElement("button");x.type="button";x.className="sat-point";x.textContent="";x.dataset.value=v;x.setAttribute("aria-label",label);track.append(x);buttons.push(x)});
+ opts.forEach(([v,label],i)=>{
+   let x=document.createElement("button");x.type="button";x.className="sat-point";x.textContent="";x.dataset.value=v;x.setAttribute("aria-label",label);
+   if(k==="colorShade"){x.classList.add("wine-colour-point");x.dataset.wineColour=nt(v).replace(/ /g,"-")}
+   track.append(x);buttons.push(x)
+ });
  magnify(cur);
  let dragging=false,moved=false,startX=0,startValue="",pending="";
  const paint=v=>{pending=v;magnify(v);w.classList.toggle("is-set",!!v);w.querySelector(".sat-value").textContent=displayScaleValue(k,v,opts)};
