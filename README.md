@@ -159,3 +159,12 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - 100 exercices « Application multi-étapes » reliant profil sensoriel, cépage, contexte régional et critère de vérification.
 - Nouveau filtre « Raisonnement & application ».
 - SommBench vérifié : 1 024 WTQA + 1 000 WFC + 1 000 FWP, huit langues ; dépôt sous Apache-2.0. Cette version l'utilise comme benchmark de couverture sans importer textuellement ses questions.
+
+## V10.5.4 — audit croisé et enrichissement ciblé
+- Audit croisé de la banque V10.5.3 avec l'architecture WSET Level 3, les documents WSET D1/D2/D4/D5, Fine Vintage et SommBench.
+- Banque finale : 989 questions uniques, dont 804 au niveau L3.
+- Aucun quota d'examen non documenté n'a été inventé : la matrice mesure une couverture pédagogique par grands domaines.
+- Lacunes V10.5.3 identifiées : dégustation/service/accords, viticulture, vinification/élevage, qualité-prix-droit, effervescents et fortifiés.
+- 58 questions L3 originales ajoutées uniquement dans ces domaines ; aucune augmentation des catégories géographiques déjà très fortement couvertes.
+- Examen blanc désormais stratifié par grands thèmes lorsque « Tous les thèmes » est sélectionné, afin d'éviter qu'une session soit dominée par la géographie.
+- Fichiers d'audit : coverage_audit_v10_5_4.csv et coverage_audit_v10_5_4.json.

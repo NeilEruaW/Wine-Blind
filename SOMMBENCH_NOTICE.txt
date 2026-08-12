@@ -1,5 +1,10 @@
-SommBench reference notice
-Wine Blind V10.5.3 uses SommBench as a benchmark/reference for coverage, difficulty design and future interoperability.
-SommBench repository: https://github.com/sommify/sommbench
-SommBench is distributed under the Apache License 2.0 (verified 2026-08-12).
-This Wine Blind release does not embed a verbatim copy of the SommBench WTQA dataset; its added questions are independently authored or generated from the Wine Blind reference database.
+SommBench cross-audit notice — V10.5.4
+
+SommBench is used in Wine Blind V10.5.4 as an external benchmark for breadth, difficulty levels and task design.
+Verified 2026-08-12:
+- Paper: 1,024 WTQA questions, 1,000 Wine Feature Completion examples, 1,000 Food-Wine Pairing examples.
+- GitHub repository LICENSE file: Apache License 2.0.
+- Hugging Face dataset card currently displays the dataset license tag cc-by-nc-4.0.
+
+Because the repository and dataset metadata are not fully aligned on licensing, V10.5.4 does NOT import or redistribute the SommBench question dataset.
+No SommBench question text is embedded in this release. It is used only as a coverage/task-design benchmark.

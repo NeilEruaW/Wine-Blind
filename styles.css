@@ -548,3 +548,7 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 /* V10.5.2 — filtres théoriques et examen blanc */
 .theory-topic-picker{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 1px 9px;font-size:9px;font-weight:850;color:var(--muted)}
 .theory-topic-picker select{max-width:210px;border:1px solid rgba(110,95,85,.12);background:rgba(255,255,255,.68);color:var(--text);border-radius:10px;padding:7px 28px 7px 9px;font-size:10px;font-weight:750}
+
+/* V10.5.4 — audit de couverture */
+.theory-audit-badge{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 1px 9px;padding:7px 9px;border-radius:10px;background:rgba(95,130,85,.07);color:var(--muted)}
+.theory-audit-badge span{font-size:9px;font-weight:900;color:#557650}.theory-audit-badge small{font-size:8px;text-align:right;line-height:1.25}
