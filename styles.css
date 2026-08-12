@@ -518,3 +518,7 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 @media (min-width:700px){
  .alpha-index{right:auto!important}
 }
+
+/* V10.3.1 — index A–Z : saut symétrique haut/bas */
+.alpha-index{touch-action:pan-y}
+.alpha-index .alpha-letter{touch-action:manipulation}

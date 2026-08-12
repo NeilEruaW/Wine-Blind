@@ -109,3 +109,8 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Le glissement sur l’index fonctionne dans les deux sens avec saut direct, sans animation qui bloque les remontées.
 - Les Origines sont triées alphabétiquement par libellé ; le pays reste visible et filtrable.
 - Petit compteur de résultats et légende couleur intégrés au-dessus de la liste.
+
+## V10.3.1 — correction index alphabétique
+- Un toucher sur une lettre effectue désormais un saut absolu direct, vers le haut comme vers le bas.
+- Le toucher simple et le glissement sur l'index sont distingués : un toucher ne peut plus être interprété comme une succession de lettres intermédiaires.
+- Le glissement reste disponible, avec déclenchement seulement après un déplacement réel du doigt.

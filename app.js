@@ -232,41 +232,54 @@ function alphaMagnify(active){
    b.classList.toggle("active",d===0);b.classList.toggle("near",d===1);b.classList.toggle("near2",d===2)
  })
 }
+let alphaJumpLock=false;
 function refScrollTarget(el,behavior="auto"){
  if(!el)return;
- let top=window.scrollY+el.getBoundingClientRect().top-82;
- window.scrollTo({top:Math.max(0,top),behavior})
+ const top=Math.max(0,el.getBoundingClientRect().top+window.scrollY-82);
+ window.scrollTo({top,behavior})
 }
 function alphaJump(letter){
- let target=[...document.querySelectorAll(`[data-ref-letter="${letter}"]`)][0];
+ const target=document.querySelector(`[data-ref-letter="${letter}"]`);
  if(!target)return;
- alphaMagnify(letter);refScrollTarget(target,"auto")
+ alphaJumpLock=true;
+ alphaMagnify(letter);
+ const top=Math.max(0,target.getBoundingClientRect().top+window.scrollY-82);
+ // Direct absolute jump: identical behavior upward and downward.
+ window.scrollTo(0,top);
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{alphaJumpLock=false}));
 }
 function alphaRender(letters){
  let rail=$("#alphaIndex");if(!rail)return;rail.innerHTML="";
  let top=document.createElement("button");top.type="button";top.className="alpha-letter alpha-top";top.textContent="↑";top.setAttribute("aria-label","Revenir au début de la liste");
- top.onclick=e=>{e.stopPropagation();refScrollTarget($("#referenceList"),"auto")};rail.append(top);
+ top.onclick=e=>{e.stopPropagation();window.scrollTo(0,Math.max(0,$("#referenceList").getBoundingClientRect().top+window.scrollY-82))};rail.append(top);
  ALPHA.forEach(letter=>{
    let b=document.createElement("button");b.type="button";b.className="alpha-letter"+(letters.has(letter)?"":" disabled");
    b.dataset.letter=letter;b.textContent=letter;b.setAttribute("aria-label","Aller à "+letter);
    if(letters.has(letter))b.onclick=e=>{e.stopPropagation();alphaJump(letter)};
    rail.append(b)
  });
- let dragging=false;
- const buttons=[...rail.querySelectorAll(".alpha-letter[data-letter]")];
+ let pointerId=null,startY=0,dragging=false,lastLetter="";
  const fromY=y=>{
-   let r=rail.getBoundingClientRect(),topBtn=rail.querySelector(".alpha-top")?.getBoundingClientRect(),usableTop=topBtn?topBtn.bottom:r.top;
-   let p=Math.max(0,Math.min(.999,(y-usableTop)/(r.bottom-usableTop))),i=Math.min(ALPHA.length-1,Math.floor(p*ALPHA.length));
-   return ALPHA[i]
+   const letterButtons=[...rail.querySelectorAll(".alpha-letter[data-letter]")];
+   if(!letterButtons.length)return"";
+   let nearest=null,dist=Infinity;
+   letterButtons.forEach(b=>{let r=b.getBoundingClientRect(),d=Math.abs(y-(r.top+r.height/2));if(d<dist){dist=d;nearest=b}});
+   return nearest?.dataset.letter||""
  };
- rail.onpointerdown=e=>{dragging=true;rail.setPointerCapture(e.pointerId);let l=fromY(e.clientY);alphaMagnify(l);if(letters.has(l))alphaJump(l);e.preventDefault()};
- rail.onpointermove=e=>{if(!dragging)return;let l=fromY(e.clientY);alphaMagnify(l);if(letters.has(l)){let t=[...document.querySelectorAll(`[data-ref-letter="${l}"]`)][0];refScrollTarget(t,"auto")}e.preventDefault()};
- rail.onpointerup=e=>{dragging=false;rail.releasePointerCapture?.(e.pointerId);setTimeout(()=>alphaMagnify(""),150);e.preventDefault()};
- rail.onpointercancel=()=>{dragging=false;alphaMagnify("")}
-}
-function refMetaRender(count,label,mode){
- let e=$("#refMeta");if(!e)return;
- e.innerHTML=`<span>${count} ${label}${count>1?"s":""}</span><div class="ref-legend"><i class="legend-red"></i>Rouge <i class="legend-white"></i>Blanc${mode==="origins"?` <i class="legend-mixed"></i>Mixte`:""}</div>`
+ rail.onpointerdown=e=>{
+   if(e.target.closest("button")){pointerId=e.pointerId;startY=e.clientY;dragging=false;lastLetter="";return}
+   pointerId=e.pointerId;startY=e.clientY;dragging=false;lastLetter=""
+ };
+ rail.onpointermove=e=>{
+   if(pointerId!==e.pointerId||alphaJumpLock)return;
+   if(!dragging&&Math.abs(e.clientY-startY)<7)return;
+   dragging=true;
+   let l=fromY(e.clientY);
+   if(l&&l!==lastLetter){lastLetter=l;alphaMagnify(l);if(letters.has(l))alphaJump(l)}
+   e.preventDefault()
+ };
+ rail.onpointerup=e=>{pointerId=null;dragging=false;lastLetter="";setTimeout(()=>alphaMagnify(""),120)};
+ rail.onpointercancel=()=>{pointerId=null;dragging=false;lastLetter="";alphaMagnify("")}
 }
 function grapeTypeByName(name){return D.grapes.find(g=>g.name===name)?.type||""}
 function originColourClass(u){
