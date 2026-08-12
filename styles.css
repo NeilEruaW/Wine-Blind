@@ -571,3 +571,7 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 /* V10.5.7 — Quiz UX */
 .difficulty-picker .cfg-diff{color:var(--muted)!important;font-weight:700}
 .difficulty-picker .cfg-diff.active{color:#111!important;font-weight:900;background:rgba(255,255,255,.92)!important;border-color:rgba(20,20,20,.32)!important;box-shadow:0 1px 4px rgba(0,0,0,.10)}
+
+/* V10.5.8 — largeur uniforme des catégories Quiz */
+.quiz-home-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;align-items:stretch}
+.quiz-home-grid .training-mode-card{width:100%!important;max-width:none!important;box-sizing:border-box!important;margin-left:0!important;margin-right:0!important}
