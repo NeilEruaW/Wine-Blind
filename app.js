@@ -249,7 +249,7 @@ function alphaJump(letter){
  requestAnimationFrame(()=>requestAnimationFrame(()=>{alphaJumpLock=false}));
 }
 function alphaRender(letters){
- let rail=$("#alphaIndex");if(!rail)return;rail.innerHTML="";
+ let rail=$("#alphaIndex");if(!rail)return;rail.innerHTML="";rail.style.removeProperty("display");rail.style.removeProperty("visibility");rail.style.removeProperty("opacity");
  let top=document.createElement("button");top.type="button";top.className="alpha-letter alpha-top";top.textContent="↑";top.setAttribute("aria-label","Revenir au début de la liste");
  top.onclick=e=>{e.stopPropagation();window.scrollTo(0,Math.max(0,$("#referenceList").getBoundingClientRect().top+window.scrollY-82))};rail.append(top);
  ALPHA.forEach(letter=>{

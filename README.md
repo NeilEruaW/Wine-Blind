@@ -119,3 +119,10 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Correction d'une collision CSS qui pouvait masquer totalement l'index dans l'onglet Référentiel.
 - L'index est désormais explicitement forcé en affichage flex uniquement lorsque l'onglet Référentiel est actif.
 - Le saut direct haut/bas corrigé en V10.3.1 est conservé.
+
+## V10.3.3 — reconstruction complète de l’index A–Z
+- Suppression des anciennes règles CSS concurrentes relatives à l’index.
+- Reconstruction avec une seule logique : grille 2 colonnes + index sticky dans la colonne droite.
+- Index explicitement affiché uniquement lorsque l’onglet Référentiel est actif.
+- `alphaRender()` nettoie désormais toute propriété inline susceptible de masquer l’index.
+- Les sauts directs haut/bas de V10.3.1 sont conservés.
