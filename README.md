@@ -110,19 +110,9 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Les Origines sont triées alphabétiquement par libellé ; le pays reste visible et filtrable.
 - Petit compteur de résultats et légende couleur intégrés au-dessus de la liste.
 
-## V10.3.1 — correction index alphabétique
-- Un toucher sur une lettre effectue désormais un saut absolu direct, vers le haut comme vers le bas.
-- Le toucher simple et le glissement sur l'index sont distingués : un toucher ne peut plus être interprété comme une succession de lettres intermédiaires.
-- Le glissement reste disponible, avec déclenchement seulement après un déplacement réel du doigt.
-
-## V10.3.2 — restauration index A–Z
-- Correction d'une collision CSS qui pouvait masquer totalement l'index dans l'onglet Référentiel.
-- L'index est désormais explicitement forcé en affichage flex uniquement lorsque l'onglet Référentiel est actif.
-- Le saut direct haut/bas corrigé en V10.3.1 est conservé.
-
-## V10.3.3 — reconstruction complète de l’index A–Z
-- Suppression des anciennes règles CSS concurrentes relatives à l’index.
-- Reconstruction avec une seule logique : grille 2 colonnes + index sticky dans la colonne droite.
-- Index explicitement affiché uniquement lorsque l’onglet Référentiel est actif.
-- `alphaRender()` nettoie désormais toute propriété inline susceptible de masquer l’index.
-- Les sauts directs haut/bas de V10.3.1 sont conservés.
+## V10.3-clickfix — correction minimale de l'index
+- Base strictement reprise de la V10.3, où l'index A–Z était visible et correctement positionné.
+- Aucun changement CSS ni de positionnement de l'index.
+- Un toucher simple n'active plus la logique de glissement au `pointerdown`.
+- Le clic natif déclenche un seul saut direct vers la lettre choisie, que celle-ci soit au-dessus ou au-dessous de la position actuelle.
+- Le mode glissement ne s'active qu'après un déplacement vertical volontaire d'au moins 7 px.

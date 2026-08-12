@@ -46,7 +46,7 @@ select:focus,.search:focus{outline:2px solid #c99daa;outline-offset:1px}
 .sticky-action{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:10}
 .inherited{display:flex;flex-wrap:wrap;gap:6px;margin:10px 2px}
 .inherited .pill{background:var(--soft-green);color:var(--green)}
-
+.reference-list{display:grid;gap:8px;margin-top:12px}
 .ref-row{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;display:flex;justify-content:space-between;align-items:center}
 .ref-row small{color:var(--muted)}
 dialog{border:0;border-radius:22px;max-width:680px;width:calc(100% - 24px);padding:0;box-shadow:0 30px 80px rgba(40,20,25,.28)}
@@ -395,23 +395,37 @@ main{padding-top:12px!important;padding-bottom:calc(var(--tabbar-h) + env(safe-a
 .origin-child-group{margin-top:10px}.origin-child-group>span{display:block;font-size:10px;font-weight:850;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 5px}.origin-child-group>div,.origin-child-group details>div{display:grid;gap:2px;padding:8px 9px;border-top:1px solid var(--line)}.origin-child-group strong{font-size:12px}.origin-child-group small{font-size:10px;color:var(--muted)}.origin-child-group summary{font-size:11px;color:var(--wine);padding:8px 0;cursor:pointer}
 
 /* V9.9 — Référentiel alphabétique type répertoire */
-
+.reference-directory{position:relative;padding-right:22px}
 .ref-letter-heading{
  position:sticky;top:60px;z-index:3;
  margin:8px 0 3px;padding:4px 2px 3px;
  font-size:11px;font-weight:900;letter-spacing:.08em;color:var(--wine);
  background:linear-gradient(to bottom,var(--paper) 72%,transparent);
 }
-
-body.wine-white 
-
-
-
-
-
-#tab-reference:not(.active) 
+.alpha-index{
+ position:fixed;right:max(5px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);
+ z-index:36;width:27px;height:min(64vh,520px);
+ display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+ padding:4px 1px;border-radius:14px;
+ background:rgba(255,255,255,.30);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+ touch-action:none;user-select:none;-webkit-user-select:none;
+}
+body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
+.alpha-letter{
+ appearance:none;border:0;background:transparent;color:var(--muted);
+ padding:0;margin:0;width:25px;min-height:12px;
+ display:grid;place-items:center;
+ font-size:8px;line-height:1;font-weight:750;
+ transform:scale(.82);opacity:.72;
+ transition:transform .09s ease,opacity .09s ease,color .09s ease,font-weight .09s ease;
+}
+.alpha-letter.near2{transform:scale(.95);opacity:.84}
+.alpha-letter.near{transform:scale(1.20);opacity:.94;color:var(--text)}
+.alpha-letter.active{transform:scale(1.58);opacity:1;color:var(--wine);font-weight:950}
+.alpha-letter.disabled{opacity:.18;pointer-events:none}
+#tab-reference:not(.active) .alpha-index{display:none}
 @media (min-width:700px){
- 
+ .alpha-index{right:calc((100vw - 720px)/2 + 8px)}
 }
 
 /* V10.0 — Référentiel Cépages ↔ Origines */
@@ -466,19 +480,28 @@ body.wine-white
  color:var(--muted);font-size:10px;line-height:1.4
 }
 
-
+/* V10.3 — couleurs du Référentiel & index alphabétique ancré à la liste */
 .ref-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 2px 7px;font-size:9px;color:var(--muted)}
 .ref-meta>span{font-weight:800}
 .ref-legend{display:flex;align-items:center;gap:4px;white-space:nowrap}
 .ref-legend i{width:7px;height:7px;border-radius:50%;display:inline-block;margin-left:3px;border:1px solid rgba(70,60,55,.08)}
 .legend-red{background:#ead6dc}.legend-white{background:#f0dfaa}.legend-mixed{background:linear-gradient(90deg,#ead6dc 0 50%,#f0dfaa 50% 100%)}
 
-
-
-
-
-
-#tab-reference:not(.active) 
+.reference-directory{
+ position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr) 25px!important;
+ align-items:start!important;gap:1px!important;padding-right:0!important
+}
+.reference-list{min-width:0}
+.alpha-index{
+ position:sticky!important;top:74px!important;right:auto!important;transform:none!important;
+ align-self:start!important;z-index:20!important;width:25px!important;height:min(66vh,540px)!important;
+ margin-top:0!important;padding:3px 0!important;
+ background:rgba(255,255,255,.22)!important;border-radius:13px!important;
+ backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)
+}
+.alpha-top{color:var(--wine)!important;font-size:12px!important;font-weight:950!important;opacity:.92!important;border-bottom:1px solid rgba(100,85,75,.08)!important;margin-bottom:1px!important}
+.alpha-letter{min-height:11px!important}
+#tab-reference:not(.active) .alpha-index{display:none!important}
 
 .ref-row{position:relative;overflow:hidden;transition:background .16s ease,border-color .16s ease}
 .ref-row.ref-red{background:linear-gradient(90deg,rgba(124,45,63,.075),rgba(124,45,63,.018) 64%,transparent)}
@@ -493,93 +516,5 @@ body.wine-white
 
 .ref-letter-heading{scroll-margin-top:82px}
 @media (min-width:700px){
- 
+ .alpha-index{right:auto!important}
 }
-
-
-
-.alpha-index 
-
-
-#tab-reference.active 
-#tab-reference 
-
-#tab-reference:not(.active) 
-
-
-/* V10.3.3 — index alphabétique reconstruit sans règles concurrentes */
-.reference-directory{
-  position:relative;
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 28px;
-  align-items:start;
-  gap:2px;
-  padding-right:0;
-  overflow:visible;
-}
-.reference-list{
-  min-width:0;
-}
-#tab-reference .alpha-index{
-  position:sticky;
-  top:76px;
-  align-self:start;
-  z-index:40;
-  width:28px;
-  height:min(68vh,560px);
-  min-height:390px;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:space-between;
-  padding:4px 1px;
-  margin:0;
-  border-radius:14px;
-  background:rgba(255,255,255,.42);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  box-shadow:0 2px 10px rgba(40,30,25,.06);
-  touch-action:none;
-  user-select:none;
-  -webkit-user-select:none;
-  visibility:visible;
-  opacity:1;
-}
-#tab-reference.active .alpha-index{
-  display:flex;
-}
-body.wine-white #tab-reference .alpha-index{
-  background:rgba(255,252,242,.5);
-}
-.alpha-letter{
-  appearance:none;
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  width:26px;
-  min-height:12px;
-  padding:0;
-  margin:0;
-  display:grid;
-  place-items:center;
-  font-size:8px;
-  line-height:1;
-  font-weight:760;
-  transform:scale(.82);
-  opacity:.72;
-  transition:transform .08s ease,opacity .08s ease,color .08s ease,font-weight .08s ease;
-  touch-action:manipulation;
-}
-.alpha-letter.near2{transform:scale(.95);opacity:.84}
-.alpha-letter.near{transform:scale(1.18);opacity:.94;color:var(--text)}
-.alpha-letter.active{transform:scale(1.52);opacity:1;color:var(--wine);font-weight:950}
-.alpha-letter.disabled{opacity:.18;pointer-events:none}
-.alpha-top{
-  color:var(--wine);
-  font-size:12px;
-  font-weight:950;
-  opacity:.95;
-  border-bottom:1px solid rgba(100,85,75,.08);
-  margin-bottom:1px;
-}
-.ref-letter-heading{scroll-margin-top:84px}

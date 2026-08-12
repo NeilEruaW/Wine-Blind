@@ -232,26 +232,20 @@ function alphaMagnify(active){
    b.classList.toggle("active",d===0);b.classList.toggle("near",d===1);b.classList.toggle("near2",d===2)
  })
 }
-let alphaJumpLock=false;
 function refScrollTarget(el,behavior="auto"){
  if(!el)return;
- const top=Math.max(0,el.getBoundingClientRect().top+window.scrollY-82);
- window.scrollTo({top,behavior})
+ let top=window.scrollY+el.getBoundingClientRect().top-82;
+ window.scrollTo({top:Math.max(0,top),behavior})
 }
 function alphaJump(letter){
- const target=document.querySelector(`[data-ref-letter="${letter}"]`);
+ let target=[...document.querySelectorAll(`[data-ref-letter="${letter}"]`)][0];
  if(!target)return;
- alphaJumpLock=true;
- alphaMagnify(letter);
- const top=Math.max(0,target.getBoundingClientRect().top+window.scrollY-82);
- // Direct absolute jump: identical behavior upward and downward.
- window.scrollTo(0,top);
- requestAnimationFrame(()=>requestAnimationFrame(()=>{alphaJumpLock=false}));
+ alphaMagnify(letter);refScrollTarget(target,"auto")
 }
 function alphaRender(letters){
- let rail=$("#alphaIndex");if(!rail)return;rail.innerHTML="";rail.style.removeProperty("display");rail.style.removeProperty("visibility");rail.style.removeProperty("opacity");
+ let rail=$("#alphaIndex");if(!rail)return;rail.innerHTML="";
  let top=document.createElement("button");top.type="button";top.className="alpha-letter alpha-top";top.textContent="↑";top.setAttribute("aria-label","Revenir au début de la liste");
- top.onclick=e=>{e.stopPropagation();window.scrollTo(0,Math.max(0,$("#referenceList").getBoundingClientRect().top+window.scrollY-82))};rail.append(top);
+ top.onclick=e=>{e.stopPropagation();refScrollTarget($("#referenceList"),"auto")};rail.append(top);
  ALPHA.forEach(letter=>{
    let b=document.createElement("button");b.type="button";b.className="alpha-letter"+(letters.has(letter)?"":" disabled");
    b.dataset.letter=letter;b.textContent=letter;b.setAttribute("aria-label","Aller à "+letter);
@@ -260,26 +254,46 @@ function alphaRender(letters){
  });
  let pointerId=null,startY=0,dragging=false,lastLetter="";
  const fromY=y=>{
-   const letterButtons=[...rail.querySelectorAll(".alpha-letter[data-letter]")];
-   if(!letterButtons.length)return"";
-   let nearest=null,dist=Infinity;
-   letterButtons.forEach(b=>{let r=b.getBoundingClientRect(),d=Math.abs(y-(r.top+r.height/2));if(d<dist){dist=d;nearest=b}});
+   let buttons=[...rail.querySelectorAll(".alpha-letter[data-letter]")],nearest=null,dist=Infinity;
+   buttons.forEach(b=>{let r=b.getBoundingClientRect(),cy=r.top+r.height/2,d=Math.abs(y-cy);if(d<dist){dist=d;nearest=b}});
    return nearest?.dataset.letter||""
  };
  rail.onpointerdown=e=>{
-   if(e.target.closest("button")){pointerId=e.pointerId;startY=e.clientY;dragging=false;lastLetter="";return}
-   pointerId=e.pointerId;startY=e.clientY;dragging=false;lastLetter=""
+   pointerId=e.pointerId;startY=e.clientY;dragging=false;lastLetter="";
+   rail.setPointerCapture?.(e.pointerId);
+   // Aucun saut ici : un toucher simple sera traité uniquement par onclick.
  };
  rail.onpointermove=e=>{
-   if(pointerId!==e.pointerId||alphaJumpLock)return;
+   if(pointerId!==e.pointerId)return;
    if(!dragging&&Math.abs(e.clientY-startY)<7)return;
    dragging=true;
    let l=fromY(e.clientY);
-   if(l&&l!==lastLetter){lastLetter=l;alphaMagnify(l);if(letters.has(l))alphaJump(l)}
+   if(l&&l!==lastLetter){
+     lastLetter=l;alphaMagnify(l);
+     if(letters.has(l)){
+       let t=[...document.querySelectorAll(`[data-ref-letter="${l}"]`)][0];
+       refScrollTarget(t,"auto")
+     }
+   }
    e.preventDefault()
  };
- rail.onpointerup=e=>{pointerId=null;dragging=false;lastLetter="";setTimeout(()=>alphaMagnify(""),120)};
- rail.onpointercancel=()=>{pointerId=null;dragging=false;lastLetter="";alphaMagnify("")}
+ rail.onpointerup=e=>{
+   if(pointerId!==e.pointerId)return;
+   let wasDragging=dragging;
+   pointerId=null;dragging=false;lastLetter="";
+   rail.releasePointerCapture?.(e.pointerId);
+   setTimeout(()=>alphaMagnify(""),150);
+   // Ne pas preventDefault sur un toucher simple : le onclick de la lettre
+   // doit pouvoir produire un saut unique et direct.
+   if(wasDragging)e.preventDefault()
+ };
+ rail.onpointercancel=()=>{
+   pointerId=null;dragging=false;lastLetter="";alphaMagnify("")
+ }
+}
+function refMetaRender(count,label,mode){
+ let e=$("#refMeta");if(!e)return;
+ e.innerHTML=`<span>${count} ${label}${count>1?"s":""}</span><div class="ref-legend"><i class="legend-red"></i>Rouge <i class="legend-white"></i>Blanc${mode==="origins"?` <i class="legend-mixed"></i>Mixte`:""}</div>`
 }
 function grapeTypeByName(name){return D.grapes.find(g=>g.name===name)?.type||""}
 function originColourClass(u){
