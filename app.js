@@ -15,7 +15,8 @@ const SCALE={
  whiteColour:[["Jaune-vert","Jaune-vert"],["Jaune citron","Jaune citron"],["Or","Or"],["Ambré","Ambré"],["Brun","Brun"]]
 };
 function displayScaleValue(k,v,opts){
- let hit=(opts||[]).find(x=>x[0]===v);return hit?hit[1]:(v||"Non renseigné")
+ if(!v)return"";
+ let hit=(opts||[]).find(x=>x[0]===v);return hit?hit[1]:v
 }
 function normalizeScaleValue(k,v){
  if(!v)return"";
@@ -27,7 +28,7 @@ function scaleField(k,l,opts,target="g"){
  let w=document.createElement("div");w.className="sat-field"+(cur?" is-set":"");
  w.innerHTML=`<div class="sat-head"><div class="sat-label">${l}</div><div class="sat-value">${displayScaleValue(k,cur,opts)}</div></div>`;
  let track=document.createElement("div");track.className="sat-continuum sat-count-"+opts.length;track.style.setProperty("--sat-count",opts.length);
- track.setAttribute("role","slider");track.setAttribute("aria-label",l);track.setAttribute("aria-valuemin","1");track.setAttribute("aria-valuemax",String(opts.length));track.setAttribute("aria-valuetext",displayScaleValue(k,cur,opts));
+ track.setAttribute("role","slider");track.setAttribute("aria-label",l);track.setAttribute("aria-valuemin","1");track.setAttribute("aria-valuemax",String(opts.length));track.setAttribute("aria-valuetext",displayScaleValue(k,cur,opts)||"Non renseigné");
  let buttons=[];
  const magnify=v=>{let idx=opts.findIndex(x=>x[0]===v);buttons.forEach((b,i)=>{b.classList.toggle("active",i===idx);b.classList.toggle("near",idx>=0&&Math.abs(i-idx)===1);b.classList.toggle("far",idx>=0&&Math.abs(i-idx)>1)})};
  opts.forEach(([v,label])=>{let x=document.createElement("button");x.type="button";x.className="sat-point";x.textContent="";x.dataset.value=v;x.setAttribute("aria-label",label);track.append(x);buttons.push(x)});
@@ -45,12 +46,12 @@ function satField(k,l){return scaleField(k,l,SCALE[k]||SCALE.acid,"g")}
 function sel(k,l,opts,target){let w=document.createElement("div");w.className="field",a=document.createElement("label"),s=document.createElement("select");a.textContent=l;opts.forEach(v=>{let o=document.createElement("option");o.value=v;o.textContent=v||"Non renseigné";s.append(o)});s.value=S[target][k];s.onchange=()=>{S[target][k]=s.value;calc()};w.append(a,s);return w}
 function choiceRail(k,l,opts,target,hint){
  let vals=opts.filter(v=>v!=="");let w=document.createElement("div");w.className="choice-field";
- w.innerHTML=`<div class="sat-head"><div><div class="sat-label">${l}</div><div class="rail-hint">${hint||""}</div></div><div class="sat-value">${S[target][k]||"Non renseigné"}</div></div>`;
+ w.innerHTML=`<div class="sat-head"><div><div class="sat-label">${l}</div><div class="rail-hint">${hint||""}</div></div><div class="sat-value">${S[target][k]||""}</div></div>`;
  let track=document.createElement("div");track.className="choice-rail";track.style.setProperty("--count",vals.length);
  let pts=[],drag=false,moved=false,startX=0,startValue="",pending="";
  const short=v=>({"Fruits rouges":"Rouges","Fruits noirs":"Noirs","Fruits à pépins":"Pépins","Fruits à noyau":"Noyau","Raisin / muscaté":"Raisin","Bois discret / neutre":"Discret","Fin / soyeux":"Soyeux","Tendu / linéaire":"Tendu","Ferme / structuré":"Ferme","Ample / onctueux":"Ample","Boisé / MLF":"Boisé","Non détecté":"Non dét.","Très mûr / séché":"Très mûr"}[v]||v);
  vals.forEach(v=>{let b=document.createElement("button");b.type="button";b.className="choice-point"+(S[target][k]===v?" active":"");b.dataset.value=v;b.innerHTML=`<span></span><em>${short(v)}</em>`;track.append(b);pts.push(b)});
- const paint=v=>{pending=v;pts.forEach(b=>b.classList.toggle("active",b.dataset.value===v));w.querySelector(".sat-value").textContent=v||"Non renseigné"};
+ const paint=v=>{pending=v;pts.forEach(b=>b.classList.toggle("active",b.dataset.value===v));w.querySelector(".sat-value").textContent=v||""};
  const fromX=x=>{let r=track.getBoundingClientRect(),p=Math.max(0,Math.min(.999,(x-r.left)/r.width)),i=Math.min(vals.length-1,Math.floor(p*vals.length));return vals[i]};
  track.addEventListener("pointerdown",e=>{drag=true;moved=false;startX=e.clientX;startValue=S[target][k];track.setPointerCapture(e.pointerId);paint(fromX(e.clientX));e.preventDefault()});
  track.addEventListener("pointermove",e=>{if(!drag)return;if(Math.abs(e.clientX-startX)>5)moved=true;paint(fromX(e.clientX));e.preventDefault()});
@@ -106,14 +107,26 @@ function aromaGroup(type,group,descs){
  }
  return wrap
 }
-function aromaSection(type,title,subtitle){
- let det=document.createElement("details");det.className="aroma-section";let count=Object.keys(S.aromas[type]||{}).length;if(count)det.open=true;
- let sum=document.createElement("summary");sum.innerHTML=`<span>${title}</span><small>${count?count+" famille"+(count>1?"s":"")+" sélectionnée"+(count>1?"s":""):subtitle}</small>`;det.append(sum);
+const AROMA_HELP={
+ primary:"Arômes et saveurs dus au raisin et à la fermentation alcoolique.",
+ secondary:"Arômes et saveurs dus aux étapes de vinification suivant la fermentation alcoolique.",
+ tertiary:"Arômes et saveurs dus au vieillissement."
+};
+function aromaSection(type,title){
+ let section=document.createElement("section");section.className="aroma-section aroma-section-open";
+ let head=document.createElement("div");head.className="aroma-section-head";
+ head.innerHTML=`<span>${title}</span><button type="button" class="aroma-info-btn" aria-label="Définition ${title}" aria-expanded="false">ⓘ</button>`;
+ let info=document.createElement("div");info.className="aroma-info hidden";info.textContent=AROMA_HELP[type]||"";
+ head.querySelector(".aroma-info-btn").onclick=e=>{
+   let open=info.classList.toggle("hidden")===false;e.currentTarget.setAttribute("aria-expanded",open?"true":"false")
+ };
+ section.append(head,info);
  let grid=document.createElement("div");grid.className="aroma-groups";
- Object.entries(WINE_LEXICON[type]).forEach(([g,ds])=>grid.append(aromaGroup(type,g,ds)));det.append(grid);return det
+ Object.entries(WINE_LEXICON[type]).forEach(([g,ds])=>grid.append(aromaGroup(type,g,ds)));
+ section.append(grid);return section
 }
 function signatureField(){
- let det=document.createElement("details");det.className="signature-details";let sum=document.createElement("summary");sum.innerHTML=`<span>＋ Indice discriminant</span><small>${S.g.signature||"Optionnel · hors SAT"}</small>`;det.append(sum);
+ let det=document.createElement("details");det.className="signature-details";let sum=document.createElement("summary");sum.innerHTML=`<span>＋ Indice discriminant</span><small>${S.g.signature||"Optionnel"}</small>`;det.append(sum);
  let grid=document.createElement("div");grid.className="signature-grid";
  D.options.signature.filter(Boolean).forEach(v=>{let b=document.createElement("button");b.type="button";b.className="descriptor-chip"+(S.g.signature===v?" active":"");b.textContent=v;b.onclick=()=>{S.g.signature=S.g.signature===v?"":v;forms();calc()};grid.append(b)});
  det.append(grid);return det
@@ -165,9 +178,9 @@ function forms(){
  addSense("BOUCHE",palate);
 
  let m=$("#markerFields");m.innerHTML="";
- m.append(aromaSection("primary","Arômes & saveurs primaires","Familles variétales et fermentaires"));
- m.append(aromaSection("secondary","Arômes & saveurs secondaires","Levures · FML · bois"));
- m.append(aromaSection("tertiary","Arômes & saveurs tertiaires","Évolution et vieillissement"));
+ m.append(aromaSection("primary","Primaires"));
+ m.append(aromaSection("secondary","Secondaires"));
+ m.append(aromaSection("tertiary","Tertiaires"));
  m.append(signatureField());
 
  let f=$("#originFields");f.innerHTML="";

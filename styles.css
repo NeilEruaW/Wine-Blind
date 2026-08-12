@@ -634,3 +634,32 @@ body.wine-white .aroma-group.selected>.aroma-chip{
   .descriptor-chip{font-size:9px}
   .aroma-section summary>small,.signature-details summary>small{max-width:44%}
 }
+
+/* V10.6.1 — allègement SAT et blocs aromatiques */
+.sat-continuum.sat-count-3{
+  padding-left:8px!important;
+  padding-right:0!important;
+}
+.sat-field:not(.is-set) .sat-value{min-height:1em}
+.aroma-section-open{
+  border-top:1px solid rgba(105,90,82,.10);
+  padding:7px 0 3px;
+}
+.aroma-section-open:first-child{border-top:0;padding-top:2px}
+.aroma-section-head{
+  display:flex;align-items:center;justify-content:flex-start;gap:6px;
+  min-height:30px;margin-bottom:3px;
+}
+.aroma-section-head>span{font-size:12px;font-weight:900;color:var(--text)}
+.aroma-info-btn{
+  border:0;background:transparent;color:var(--muted);padding:3px;
+  width:25px;height:25px;border-radius:50%;font-size:13px;line-height:1;
+  display:grid;place-items:center
+}
+.aroma-info-btn:active,.aroma-info-btn[aria-expanded="true"]{background:var(--soft-wine);color:var(--wine)}
+.aroma-info{
+  margin:-1px 0 7px;padding:7px 9px;border-radius:9px;
+  background:rgba(120,105,95,.06);color:var(--muted);
+  font-size:9.5px;line-height:1.35
+}
+.aroma-section-open .aroma-groups{padding-top:1px}

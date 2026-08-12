@@ -221,3 +221,11 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Le champ historique `color` conserve en interne le sens d'intensité/profondeur visuelle afin de rester compatible avec la base cépages actuelle.
 - La teinte exacte (`colorShade`) et la douceur sont enregistrées mais ne reçoivent pas encore de poids propre, la V10.5.9 ne contenant pas de référence cépage suffisamment structurée pour les scorer sans inventer de données.
 - L'Arbre guidé conserve la compatibilité avec ses pré-renseignements existants ; les anciennes valeurs intermédiaires d'alcool/intensité visuelle sont rabattues sur l'échelle SAT 3 niveaux.
+
+## V10.6.1 — ajustements UX du diagnostic SAT
+- Recentrage visuel des continuums à trois positions (intensité visuelle et alcool).
+- Suppression de l'affichage « Non renseigné » lorsque les continuums/rails sont vides ; l'état reste conservé pour l'accessibilité.
+- Les blocs aromatiques sont renommés simplement « Primaires », « Secondaires » et « Tertiaires ».
+- Les familles aromatiques sont désormais toujours visibles : plus besoin de déplier une catégorie préalable.
+- Un bouton ⓘ affiche à la demande la définition pédagogique de chaque niveau aromatique.
+- L'indice discriminant affiche uniquement « Optionnel » lorsqu'il n'est pas renseigné.
