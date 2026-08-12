@@ -114,3 +114,8 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Un toucher sur une lettre effectue désormais un saut absolu direct, vers le haut comme vers le bas.
 - Le toucher simple et le glissement sur l'index sont distingués : un toucher ne peut plus être interprété comme une succession de lettres intermédiaires.
 - Le glissement reste disponible, avec déclenchement seulement après un déplacement réel du doigt.
+
+## V10.3.2 — restauration index A–Z
+- Correction d'une collision CSS qui pouvait masquer totalement l'index dans l'onglet Référentiel.
+- L'index est désormais explicitement forcé en affichage flex uniquement lorsque l'onglet Référentiel est actif.
+- Le saut direct haut/bas corrigé en V10.3.1 est conservé.

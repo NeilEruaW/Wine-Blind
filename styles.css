@@ -522,3 +522,24 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 /* V10.3.1 — index A–Z : saut symétrique haut/bas */
 .alpha-index{touch-action:pan-y}
 .alpha-index .alpha-letter{touch-action:manipulation}
+
+/* V10.3.2 — restauration robuste de l'index alphabétique */
+#tab-reference.active .alpha-index{
+ display:flex!important;
+ visibility:visible!important;
+ opacity:1!important;
+}
+#tab-reference .reference-directory{
+ overflow:visible!important;
+}
+.alpha-index{
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ min-height:360px!important;
+ pointer-events:auto!important;
+}
+#tab-reference:not(.active) .alpha-index{
+ display:none!important;
+}
