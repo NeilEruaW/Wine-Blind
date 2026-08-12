@@ -232,7 +232,7 @@ function structureMetric(label,g,key){
  if(p&&Number.isFinite(Number(p.min))&&Number.isFinite(Number(p.max))&&Number(p.min)!==Number(p.max)){
    range=`<small class="metric-range">[${fmt(p.min)}–${fmt(p.max)}]</small>`
  }
- return `<div class="metric metric-level-${lvl}"><b class="metric-typical">${typical}</b>${range}<span>${label}</span></div>`
+ return `<div class="metric metric-level-${lvl}"><div class="metric-value-line"><b class="metric-typical">${typical}</b>${range}</div><span>${label}</span></div>`
 }
 function fingerprintMatchText(item){return nt([item.group,...(item.evidence||[])].join(" "))}
 function aromaFingerprintHTML(g){

@@ -253,3 +253,8 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - La plage typique est affichée juste en dessous, en caractères plus petits et entre crochets : `[min–max]`.
 - Lorsqu'une plage se réduit à une valeur unique, elle n'est pas répétée.
 - Aucun changement du moteur de scoring ni de la base auditée V10.7.0.
+
+## V10.7.2 — plage en ligne
+- La plage typique est désormais placée à droite de la valeur typique.
+- Elle reste entre crochets, plus petite et visuellement atténuée.
+- Aucun changement de données ou de scoring.

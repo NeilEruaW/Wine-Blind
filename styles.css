@@ -753,3 +753,22 @@ body.wine-white .wine-colour-point[data-wine-colour="brun"]::before{
   color:var(--muted);
   letter-spacing:.01em;
 }
+
+/* V10.7.2 — plage placée à droite de la valeur typique */
+.metric .metric-value-line{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:4px;
+  line-height:1.05;
+  white-space:nowrap;
+}
+.metric .metric-range{
+  display:inline;
+  margin-top:0;
+  font-size:7.5px;
+  line-height:1;
+  font-weight:650;
+  color:var(--muted);
+  opacity:.72;
+}
