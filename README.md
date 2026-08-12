@@ -144,3 +144,10 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Couverture élargie : viticulture, vinification, service, styles, cépages, régions, appellations, géographie, profils régionaux, effervescents, fortifiés et unités Diploma.
 - Brainscape, Wine With Jimmy et autres ressources publiques servent de benchmark de couverture et de difficulté ; leurs flashcards/questions propriétaires ne sont pas copiées textuellement.
 - Le fichier `question_bank_audit.json` documente la couverture et les contrôles automatiques.
+
+## V10.5.2 — théorie renforcée et entraînement ciblé
+- Banque portée à 772 questions uniques.
+- Renforcement qualitatif de viticulture, vinification, élevage, stabilisation, défauts, service/accords, effervescents, fortifiés et raisonnement régional.
+- Nouveau filtre de thème pour la théorie.
+- Nouveau mode Examen blanc : 30 QCM au L1, 50 QCM aux L2/L3.
+- Brainscape, Quizlet, GrapeQuiz, ThirtyFifty et Wine With Jimmy servent de benchmarks de couverture et de style ; aucune banque propriétaire n'est reproduite textuellement.

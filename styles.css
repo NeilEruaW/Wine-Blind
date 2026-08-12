@@ -544,3 +544,7 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 .theory-level-btn{border:0;background:transparent;color:var(--muted);font-size:9px;font-weight:900;border-radius:8px;padding:6px 8px}
 .theory-level-btn.active{background:#fff;color:var(--wine);box-shadow:0 1px 5px rgba(40,30,25,.08)}
 .theory-featured{border-color:rgba(124,45,63,.18);background:linear-gradient(135deg,var(--soft-wine),rgba(255,255,255,.62))}
+
+/* V10.5.2 — filtres théoriques et examen blanc */
+.theory-topic-picker{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 1px 9px;font-size:9px;font-weight:850;color:var(--muted)}
+.theory-topic-picker select{max-width:210px;border:1px solid rgba(110,95,85,.12);background:rgba(255,255,255,.68);color:var(--text);border-radius:10px;padding:7px 28px 7px 9px;font-size:10px;font-weight:750}
