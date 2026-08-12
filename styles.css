@@ -737,3 +737,19 @@ body.wine-white .wine-colour-point[data-wine-colour="brun"]::before{
 .origin-range-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:7px}
 .origin-range-grid span{display:flex;justify-content:space-between;gap:8px;padding:6px 7px;border-radius:8px;background:rgba(120,105,95,.05);font-size:9px}
 .origin-range-grid span>b{font-size:9px;color:var(--muted)}
+
+/* V10.7.1 — hiérarchisation valeur typique / plage dans les fiches cépages */
+.metric .metric-typical{
+  display:inline-block;
+  font-size:1em;
+  line-height:1.05;
+}
+.metric .metric-range{
+  display:block;
+  margin-top:2px;
+  font-size:8px;
+  line-height:1;
+  font-weight:700;
+  color:var(--muted);
+  letter-spacing:.01em;
+}

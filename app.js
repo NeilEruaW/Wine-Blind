@@ -226,7 +226,13 @@ function rangeText(p){
 }
 function structureMetric(label,g,key){
  let p=profileFor(g,key),v=p?.typical??g[key],lvl=metricLevel(v);
- return `<div class="metric metric-level-${lvl}"><b>${rangeText(p)||(v??"—")}</b><span>${label}</span></div>`
+ const fmt=x=>Number.isInteger(Number(x))?String(Number(x)):String(Number(x)).replace(".",",");
+ let typical=Number.isFinite(Number(v))?fmt(v):"—";
+ let range="";
+ if(p&&Number.isFinite(Number(p.min))&&Number.isFinite(Number(p.max))&&Number(p.min)!==Number(p.max)){
+   range=`<small class="metric-range">[${fmt(p.min)}–${fmt(p.max)}]</small>`
+ }
+ return `<div class="metric metric-level-${lvl}"><b class="metric-typical">${typical}</b>${range}<span>${label}</span></div>`
 }
 function fingerprintMatchText(item){return nt([item.group,...(item.evidence||[])].join(" "))}
 function aromaFingerprintHTML(g){

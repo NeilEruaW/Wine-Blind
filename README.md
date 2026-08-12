@@ -247,3 +247,9 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Les fiches cépages affichent les plages et l'empreinte aromatique.
 - Les profils régionaux multiples sont conservés comme variantes de style explicites.
 - Ajout d'un rapport d'intégration et de simulations de cohérence interne.
+
+## V10.7.1 — présentation des plages dans les fiches cépages
+- La valeur typique redevient l'information visuellement dominante.
+- La plage typique est affichée juste en dessous, en caractères plus petits et entre crochets : `[min–max]`.
+- Lorsqu'une plage se réduit à une valeur unique, elle n'est pas répétée.
+- Aucun changement du moteur de scoring ni de la base auditée V10.7.0.
