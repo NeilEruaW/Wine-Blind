@@ -151,3 +151,11 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Nouveau filtre de thème pour la théorie.
 - Nouveau mode Examen blanc : 30 QCM au L1, 50 QCM aux L2/L3.
 - Brainscape, Quizlet, GrapeQuiz, ThirtyFifty et Wine With Jimmy servent de benchmarks de couverture et de style ; aucune banque propriétaire n'est reproduite textuellement.
+
+## V10.5.3 — approfondissement qualitatif
+- Banque portée à 931 QCM uniques.
+- Ajout d'un bloc de questions L3 causales : facteur → conséquence sur le raisin → décision de production → style/qualité/prix.
+- Renforcement de viticulture, vinification, économie de production, effervescents et fortifiés.
+- 100 exercices « Application multi-étapes » reliant profil sensoriel, cépage, contexte régional et critère de vérification.
+- Nouveau filtre « Raisonnement & application ».
+- SommBench vérifié : 1 024 WTQA + 1 000 WFC + 1 000 FWP, huit langues ; dépôt sous Apache-2.0. Cette version l'utilise comme benchmark de couverture sans importer textuellement ses questions.

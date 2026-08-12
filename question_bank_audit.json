@@ -1,8 +1,8 @@
 {
-  "total": 772,
+  "total": 931,
   "levels": {
     "2": 160,
-    "3": 587,
+    "3": 746,
     "1": 10,
     "4": 15
   },
@@ -12,12 +12,12 @@
     "Styles": 2,
     "Accords": 3,
     "Dégustation": 1,
-    "Effervescents": 8,
-    "Viticulture": 17,
-    "Vinification": 14,
-    "Élevage": 4,
+    "Effervescents": 18,
+    "Viticulture": 29,
+    "Vinification": 27,
+    "Élevage": 7,
     "Régions": 135,
-    "Fortifiés": 7,
+    "Fortifiés": 16,
     "D1 Production": 4,
     "D2 Business": 3,
     "D3 Monde": 4,
@@ -28,14 +28,17 @@
     "Styles régionaux": 130,
     "Stabilisation": 2,
     "Défauts": 3,
-    "Raisonnement régional": 20
+    "Raisonnement régional": 20,
+    "Qualité & prix": 12,
+    "Application multi-étapes": 100
   },
   "duplicate_question_texts": 0,
   "invalid_choice_sets": 0,
-  "quality_policy": [
-    "No verbatim copying from Brainscape, Quizlet, GrapeQuiz, ThirtyFifty or Wine With Jimmy.",
-    "Third-party resources used to identify syllabus coverage, concepts and plausible exam style.",
-    "New theoretical questions authored independently; database-derived questions grounded in Wine Blind V10.8.",
-    "Distractors checked for uniqueness and correct-answer inclusion."
-  ]
+  "sommbench": {
+    "license": "Apache-2.0",
+    "wtqa_examples": 1024,
+    "languages": 8,
+    "use_in_this_release": "benchmark/reference; no verbatim dataset import"
+  },
+  "v1053_focus": "causal chains, producer decisions, quality/price, sparkling, fortified, multi-step regional application"
 }

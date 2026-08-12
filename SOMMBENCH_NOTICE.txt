@@ -1,0 +1,5 @@
+SommBench reference notice
+Wine Blind V10.5.3 uses SommBench as a benchmark/reference for coverage, difficulty design and future interoperability.
+SommBench repository: https://github.com/sommify/sommbench
+SommBench is distributed under the Apache License 2.0 (verified 2026-08-12).
+This Wine Blind release does not embed a verbatim copy of the SommBench WTQA dataset; its added questions are independently authored or generated from the Wine Blind reference database.
