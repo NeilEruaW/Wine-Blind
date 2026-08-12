@@ -560,3 +560,10 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 .inline-config{margin:0}.cfg-diff,.cfg-level{border:0;background:var(--surface2);color:var(--text);border-radius:10px;padding:9px 10px;font-weight:800}.cfg-diff.active,.cfg-level.active{background:var(--accent);color:white}.config-level{margin:0 0 15px}.config-level>div{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 #cfgTheoryTopic{width:100%;padding:11px;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--text)}.config-actions{display:grid;gap:8px}.config-action{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--text)}.config-action b{font-size:13px}.config-action small{color:var(--muted)}
 .theme-challenge-grid{display:grid;gap:8px}.theme-challenge-grid button{padding:14px;border-radius:13px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-align:left}.config-start{width:100%;margin-top:8px}
+/* V10.5.6 — Quiz & Défis simplifié */
+.cfg-diff.active{color:#111!important}
+.topic-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.topic-card-grid button{min-height:58px;padding:11px;border-radius:13px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-align:left;display:flex;align-items:center;gap:7px}
+.topic-card-grid b{font-size:11px;line-height:1.25}
+.theme-challenge-grid button{display:flex;flex-direction:column;gap:3px}.theme-challenge-grid small{font-size:9px;color:var(--muted)}
+@media(max-width:380px){.topic-card-grid{grid-template-columns:1fr}}
