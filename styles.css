@@ -537,3 +537,10 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 .feedback-title{font-size:12px;font-weight:900;color:var(--text)}.takeaway{display:grid;gap:3px;margin-top:9px;padding:8px 9px;border-radius:10px;background:var(--soft-wine)}.takeaway b{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--wine)}.takeaway span{font-size:10px;line-height:1.4;color:var(--text)}
 #newQuiz{width:100%;margin-top:10px}
 .session-end{text-align:center}.session-end h2{font-size:28px;margin:8px 0}.session-ring{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;margin:8px auto;background:var(--soft-wine);color:var(--wine);font-size:20px;font-weight:950;border:6px solid rgba(120,105,95,.07)}.session-end p{font-size:11px;line-height:1.45;color:var(--muted);max-width:330px;margin:8px auto}
+
+/* V10.5 — banque théorique WSET */
+.theory-level-picker{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 1px 9px;font-size:9px;font-weight:850;color:var(--muted)}
+.theory-level-picker>div{display:flex;gap:3px;padding:2px;border-radius:10px;background:rgba(120,105,95,.07)}
+.theory-level-btn{border:0;background:transparent;color:var(--muted);font-size:9px;font-weight:900;border-radius:8px;padding:6px 8px}
+.theory-level-btn.active{background:#fff;color:var(--wine);box-shadow:0 1px 5px rgba(40,30,25,.08)}
+.theory-featured{border-color:rgba(124,45,63,.18);background:linear-gradient(135deg,var(--soft-wine),rgba(255,255,255,.62))}

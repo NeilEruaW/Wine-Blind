@@ -47,7 +47,12 @@
       <button class="difficulty-btn" data-difficulty="Avancé">Avancé</button>
       <button class="difficulty-btn" data-difficulty="Expert">Expert</button>
     </div>
-    <div class="training-grid">
+    <div class="theory-level-picker" role="group" aria-label="Niveau WSET">
+  <span>Niveau théorique</span>
+  <div><button class="theory-level-btn" data-wset="1">L1</button><button class="theory-level-btn" data-wset="2">L2</button><button class="theory-level-btn active" data-wset="3">L3</button><button class="theory-level-btn" data-wset="4">L4*</button></div>
+</div>
+<div class="training-grid">
+      <button class="training-mode-card theory-featured" data-session="theory"><span class="training-mode-icon">🎓</span><div><b>Théorie WSET</b><small>QCM originaux alignés sur le syllabus · viticulture, vinification, régions, effervescents, fortifiés</small></div><span>›</span></button>
       <button class="training-mode-card" data-session="quick"><span class="training-mode-icon">◎</span><div><b>Session rapide</b><small>10 questions variées · cépages, origines, appellations</small></div><span>›</span></button>
       <button class="training-mode-card" data-session="blind"><span class="training-mode-icon">◉</span><div><b>Aveugle</b><small>Profils sensoriels · cépages & origines, sans indices géographiques faciles</small></div><span>›</span></button>
       <button class="training-mode-card" data-session="geo"><span class="training-mode-icon">⌖</span><div><b>Origines & appellations</b><small>Hiérarchie, cépages clés et rattachements géographiques</small></div><span>›</span></button>
@@ -55,7 +60,7 @@
       <button class="training-mode-card" data-session="intruder"><span class="training-mode-icon">◇</span><div><b>Quel est l’intrus ?</b><small>Repérer l’appellation ou la région qui ne partage pas la même logique</small></div><span>›</span></button>
       <button class="training-mode-card" data-session="weak"><span class="training-mode-icon">↻</span><div><b>Mes points faibles</b><small>Questions ciblées à partir de tes erreurs enregistrées sur cet appareil</small></div><span>›</span></button>
     </div>
-    <div class="training-note"><b>🎓 WSET</b><span>La V10.4 exploite la base Wine Blind. Une banque théorique WSET dédiée pourra s’ajouter ensuite sans modifier cette architecture.</span></div>
+    <div class="training-note"><b>* Niveau 4</b><span>Le Diploma WSET est évalué principalement en réponses ouvertes : les QCM L4 sont donc des exercices originaux « Diploma-inspired » destinés à tester le raisonnement, et non une reproduction du format officiel.</span></div>
   </div>
   <div id="trainingSession" class="hidden">
     <div class="training-session-head"><button id="quitTraining" class="ghost-btn small">← Quitter</button><div><span id="sessionLabel"></span><b id="sessionProgress"></b></div><span id="sessionScore" class="session-score"></span></div>

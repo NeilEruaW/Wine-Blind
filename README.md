@@ -128,3 +128,11 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Sessions de 10 questions, score et progression.
 - Statistiques locales simples et mémorisation des erreurs pour le mode « Mes points faibles ».
 - La future banque théorique WSET peut être ajoutée en V10.5 sans modifier l'architecture.
+
+## V10.5 — Banque théorique WSET
+- Nouveau mode « Théorie WSET » dans Quiz & Défis.
+- Sélecteur L1 / L2 / L3 / L4.
+- 152 questions originales intégrées, dont des questions conceptuelles rédigées spécifiquement et des variantes générées depuis les référentiels Wine Blind.
+- Les niveaux L1–L3 reprennent la logique de difficulté et les domaines des specifications WSET sans reproduire les questions officielles ou commerciales.
+- Le niveau L4 est explicitement « Diploma-inspired » : le Diploma est évalué par réponses ouvertes, donc ces QCM servent à entraîner le raisonnement et non à simuler le format exact de l'examen.
+- Catégories : cépages, service/accords, viticulture, vinification, élevage, régions, effervescents, fortifiés, D1 Production, D2 Business, D3 Monde, D4 et D5.
