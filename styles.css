@@ -575,3 +575,6 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 /* V10.5.8 — largeur uniforme des catégories Quiz */
 .quiz-home-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;align-items:stretch}
 .quiz-home-grid .training-mode-card{width:100%!important;max-width:none!important;box-sizing:border-box!important;margin-left:0!important;margin-right:0!important}
+
+/* V10.5.9 — filtre pays partagé Cépages / Origines */
+#originCountryFilters{margin-top:2px}

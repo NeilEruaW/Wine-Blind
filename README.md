@@ -185,3 +185,9 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Mes points faibles déplacé en dernière position et lancé directement, sans sélecteur de difficulté.
 - Le niveau affiché sur chaque question reste celui de la question effectivement tirée.
 - Sélecteur Fondamentaux / Avancé / Expert corrigé : seules les valeurs actives sont en noir et renforcées visuellement.
+
+## V10.5.9 — filtre pays dans Référentiel > Cépages
+- Le filtre horizontal par pays est désormais disponible dans les deux modes du Référentiel : Cépages et Origines.
+- Pour les cépages, le pays est déduit des clés de la rubrique « Régions de production » (`productionWorld`).
+- Le filtre pays se combine avec Rouge / Blanc / À réviser et avec la recherche universelle.
+- Le filtre revient sur « Tous » lorsqu'on bascule entre Cépages et Origines, afin d'éviter un filtre invisible ou non pertinent.
