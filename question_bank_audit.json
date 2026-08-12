@@ -1,0 +1,33 @@
+{
+  "total": 716,
+  "levels": {
+    "2": 157,
+    "3": 534,
+    "1": 10,
+    "4": 15
+  },
+  "categories": {
+    "Cépages": 147,
+    "Service": 2,
+    "Styles": 2,
+    "Accords": 1,
+    "Dégustation": 1,
+    "Effervescents": 5,
+    "Viticulture": 7,
+    "Vinification": 6,
+    "Élevage": 1,
+    "Régions": 135,
+    "Fortifiés": 4,
+    "D1 Production": 4,
+    "D2 Business": 3,
+    "D3 Monde": 4,
+    "D4 Effervescents": 2,
+    "D5 Fortifiés": 2,
+    "Appellations": 130,
+    "Géographie": 130,
+    "Styles régionaux": 130
+  },
+  "duplicate_question_texts": 0,
+  "invalid_choice_sets": 0,
+  "method": "Questions originales; sources tierces utilisées pour calibrer couverture et format, sans reprise textuelle de banques commerciales."
+}

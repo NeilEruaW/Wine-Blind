@@ -136,3 +136,11 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Les niveaux L1–L3 reprennent la logique de difficulté et les domaines des specifications WSET sans reproduire les questions officielles ou commerciales.
 - Le niveau L4 est explicitement « Diploma-inspired » : le Diploma est évalué par réponses ouvertes, donc ces QCM servent à entraîner le raisonnement et non à simuler le format exact de l'examen.
 - Catégories : cépages, service/accords, viticulture, vinification, élevage, régions, effervescents, fortifiés, D1 Production, D2 Business, D3 Monde, D4 et D5.
+
+## V10.5.1 — banque théorique fortement enrichie
+- Banque portée à 716 QCM uniques.
+- Contrôle automatique : 0 doublon exact de question et 0 jeu de réponses invalide.
+- Distracteurs renforcés : même pays pour les hiérarchies géographiques, même cépage pour les profils régionaux, cépages structurellement proches pour la dégustation.
+- Couverture élargie : viticulture, vinification, service, styles, cépages, régions, appellations, géographie, profils régionaux, effervescents, fortifiés et unités Diploma.
+- Brainscape, Wine With Jimmy et autres ressources publiques servent de benchmark de couverture et de difficulté ; leurs flashcards/questions propriétaires ne sont pas copiées textuellement.
+- Le fichier `question_bank_audit.json` documente la couverture et les contrôles automatiques.
