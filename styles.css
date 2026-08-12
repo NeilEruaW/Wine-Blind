@@ -722,3 +722,18 @@ body.wine-white .aroma-group.selected>.aroma-chip{
 body.wine-white .wine-colour-point[data-wine-colour="brun"]::before{
   background:#79543a!important;
 }
+
+/* V10.7.0 — plages typiques et empreintes aromatiques */
+.metric b{line-height:1.14}
+.aroma-fingerprint>small{display:block;margin:3px 0 8px;color:var(--muted);font-size:8.5px}
+.fingerprint-row{display:grid;grid-template-columns:78px 1fr;gap:7px;align-items:start;margin:7px 0}
+.fingerprint-row>b{font-size:9.5px;color:var(--muted);padding-top:5px}
+.fingerprint-row>div{display:flex;flex-wrap:wrap;gap:5px}
+.fingerprint-chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;background:rgba(120,105,95,.07);font-size:9px;font-weight:760}
+.fingerprint-chip i{display:grid;place-items:center;width:15px;height:15px;border-radius:50%;font-style:normal;font-size:8px;background:rgba(120,105,95,.10);color:var(--muted)}
+.fingerprint-chip.fp-w3{background:var(--soft-wine);color:var(--wine);font-weight:900}
+.fingerprint-chip.fp-w3 i{background:var(--wine);color:#fff}
+.fingerprint-chip.fp-w2{border:1px solid rgba(124,45,63,.13)}
+.origin-range-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:7px}
+.origin-range-grid span{display:flex;justify-content:space-between;gap:8px;padding:6px 7px;border-radius:8px;background:rgba(120,105,95,.05);font-size:9px}
+.origin-range-grid span>b{font-size:9px;color:var(--muted)}

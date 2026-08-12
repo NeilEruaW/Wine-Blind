@@ -237,3 +237,13 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Palette blancs : jaune-vert, jaune citron, or, ambré, brun.
 - Palette rouges : violacé, rubis, grenat, tuilé, brun.
 - La valeur active conserve sa teinte propre et est simplement accentuée par la taille et le halo.
+
+## V10.7.0 — base auditée, plages typiques et empreintes aromatiques
+- Intégration de l'audit de fond des 98 cépages et 203 profils régionaux.
+- Passage des valeurs centrales simples à `typical + min/max + confidence`.
+- Nouveau scoring structurel progressif par plage typique.
+- Confiance documentaire utilisée uniquement pour adoucir les incompatibilités incertaines, jamais pour diminuer un bon match.
+- Intégration des empreintes aromatiques primaires / secondaires / tertiaires pondérées.
+- Les fiches cépages affichent les plages et l'empreinte aromatique.
+- Les profils régionaux multiples sont conservés comme variantes de style explicites.
+- Ajout d'un rapport d'intégration et de simulations de cohérence interne.

@@ -140,24 +140,26 @@ function aromaFlat(){
 }
 function aromaScore(g){
  let selections=aromaFlat();if(!selections.length)return{n:0,d:0,reasons:[]};
- let hay=nt([g.fruitCompatible,g.signaturesCompatible,g.textureCompatible,g.keyMarker,g.blindMarker,g.differentiation,g.primaryAromas,g.secondaryTertiary].join(" "));
- const aliases={
-  "Fruits verts":["fruits a pepins","pomme","poire","coing","raisin"],"Agrumes":["agrumes","citron","lime","pamplemousse"],
-  "Fruits à noyau":["fruits a noyau","peche","abricot","nectarine"],"Fruits exotiques":["exotique","litchi","mangue","ananas","banane"],
-  "Fruits rouges":["fruits rouges","cerise","fraise","framboise"],"Fruits noirs":["fruits noirs","cassis","mure","myrtille","prune noire"],
-  "Floral":["floral","violette","rose","fleur"],"Végétal":["vegetal","herbe","poivron","pyrazine","feuille"],
-  "Herbes":["herbe","garrigue","fenouil","menthe","eucalyptus"],"Épices fortes":["poivre","epice","reglisse"],
-  "Levures / lies / autolyse":["brioche","pain","lies","autolyse","biscuit"],"FML":["mlf","beurre","creme","lacte"],
-  "Bois":["bois","vanille","toast","cedre","fumee","chene"],"Oxydation volontaire":["oxydatif","noix","amande","caramel","cafe"],
-  "Vieillissement en bouteille – blanc":["petrole","miel","champignon","noisette"],"Vieillissement en bouteille – rouge":["cuir","sous bois","terre","tabac","viande","animal"],
-  "Évolution du fruit – blanc":["sec","marmelade","miel"],"Évolution du fruit – rouge":["pruneau","figue","goudron","confiture"]
- };
- let n=0,d=0,reasons=[];
+ let fp=g.aromaFingerprint||{},hay=nt([g.keyMarker,g.blindMarker,g.differentiation,g.primaryAromas,g.secondaryTertiary].join(" "));
+ let typeWeight={primary:1,secondary:.62,tertiary:.50},n=0,d=0,reasons=[];
  selections.forEach(s=>{
-   let tokens=[s.group,...(aliases[s.group]||[]),...(s.descs||[])].map(nt).filter(Boolean),hit=tokens.some(t=>hay.includes(t));
-   let base=s.type==="primary"?.32:s.type==="secondary"?.22:.20,descBonus=Math.min(.12,(s.descs||[]).length*.04);
-   d+=base+descBonus;n+=(base*(hit?1:.35))+(descBonus*(hit ? .9 : .4));
-   if(hit)reasons.push({t:s.group+" cohérent",w:0})
+   let tw=typeWeight[s.type]||.5,items=fp[s.type]||[],item=items.find(x=>nt(x.group)===nt(s.group));
+   let familyFit;
+   if(item){
+     familyFit=item.weight>=3?1:item.weight===2?.84:.68;
+     reasons.push({t:s.group+(item.weight>=3?" très caractéristique":" compatible"),w:0})
+   }else{
+     // Absence from the fingerprint is only a weak negative; secondary/tertiary aromas are highly context-dependent.
+     familyFit=s.type==="primary"?.42:.62
+   }
+   let descs=s.descs||[],descFit=0;
+   if(descs.length){
+     let evidence=item?fingerprintMatchText(item):hay;
+     let matches=descs.filter(x=>evidence.includes(nt(x))||hay.includes(nt(x))).length;
+     descFit=matches/descs.length;
+   }
+   let unit=.82*familyFit+.18*(descs.length?(.55+.45*descFit):familyFit);
+   n+=tw*unit;d+=tw
  });
  return{n,d,reasons}
 }
@@ -193,42 +195,108 @@ function forms(){
  f.append(choiceRail("oak","Bois",D.options.oak,"o",""));
  f.append(sel("marker","Marqueur dominant",D.options.originMarker,"o"))
 }
+const confidenceFactor=c=>c==="élevée"?1:c==="moyenne"?.86:.68;
+function rangeFit(obs,profile,fallback){
+ if(!Number.isFinite(obs))return 0;
+ let p=profile||{},typ=Number(p.typical),lo=Number(p.min),hi=Number(p.max);
+ if(!Number.isFinite(typ))typ=Number(fallback);
+ if(!Number.isFinite(typ))return 0;
+ if(!Number.isFinite(lo))lo=typ;if(!Number.isFinite(hi))hi=typ;
+ let fit;
+ if(obs>=lo&&obs<=hi){
+   let edge=Math.max(Math.abs(lo-typ),Math.abs(hi-typ),.5),rel=Math.min(1,Math.abs(obs-typ)/edge);
+   fit=1-.16*rel; // typical = 1; edge of typical range ≈ .84
+ }else{
+   let outside=obs<lo?lo-obs:obs-hi;
+   fit=Math.max(.12,.72-.25*outside);
+ }
+ let cf=confidenceFactor(p.confidence||"moyenne");
+ // Limited documentary confidence must not penalise a good match; it only softens negative evidence.
+ return fit<.72 ? fit*cf+.72*(1-cf) : fit
+}
+function profileFor(obj,key){
+ return obj?.structureProfile?.[key]||null
+}
+function rangeText(p){
+ if(!p)return"";
+ let t=Number(p.typical),lo=Number(p.min),hi=Number(p.max);
+ const fmt=x=>Number.isInteger(x)?String(x):String(x).replace(".",",");
+ if(!Number.isFinite(t))return"";
+ return lo===hi?fmt(t):`${fmt(t)} · plage ${fmt(lo)}–${fmt(hi)}`
+}
+function structureMetric(label,g,key){
+ let p=profileFor(g,key),v=p?.typical??g[key],lvl=metricLevel(v);
+ return `<div class="metric metric-level-${lvl}"><b>${rangeText(p)||(v??"—")}</b><span>${label}</span></div>`
+}
+function fingerprintMatchText(item){return nt([item.group,...(item.evidence||[])].join(" "))}
+function aromaFingerprintHTML(g){
+ let fp=g.aromaFingerprint||{},labels={primary:"Primaires",secondary:"Secondaires",tertiary:"Tertiaires"};
+ let sections=["primary","secondary","tertiary"].map(type=>{
+   let arr=(fp[type]||[]).filter(x=>x.weight>=2).slice(0,7);
+   if(!arr.length)return"";
+   return `<div class="fingerprint-row"><b>${labels[type]}</b><div>${arr.map(x=>`<span class="fingerprint-chip fp-w${x.weight}">${esc(x.group)}<i>${x.weight}</i></span>`).join("")}</div></div>`
+ }).join("");
+ return sections?`<div class="detail-block aroma-fingerprint"><b>Empreinte aromatique</b><small>3 = très caractéristique · 2 = fréquent · 1 = contextuel</small>${sections}</div>`:""
+}
 function geval(g){
  if(g.type!==S.type)return{score:0,reasons:[]};
  let w=D.weights.grape,n=0,d=0,c=0,r=[];
  [["acid","acid",w.acid],["tannin","tannin",w.tannin],["alcohol","alcohol",w.alcohol],["body","body",w.body],["color","color",w.color]].forEach(([sk,gk,wt])=>{
    if(sk==="tannin"&&S.type==="Blanc")return;
-   let o=lev(normalizeScaleValue(sk,S.g[sk]));if(!o)return;let q=Number(g[gk]);if(!Number.isFinite(q))return;
-   let z=Math.abs(q-o);n+=wt*5*cmp(z);d+=wt*5;
-   if(z<=.5)r.push({t:L[sk]+" très cohérent",w:0});
-   else if(z>=2){r.push({t:L[sk]+" en tension",w:1});if(["acid","tannin","alcohol","body"].includes(sk))c++}
+   let o=lev(normalizeScaleValue(sk,S.g[sk]));if(!o)return;
+   let q=Number(g[gk]);if(!Number.isFinite(q))return;
+   let fit=rangeFit(o,profileFor(g,gk),q),p=profileFor(g,gk),inside=p&&o>=Number(p.min)&&o<=Number(p.max);
+   n+=wt*5*fit;d+=wt*5;
+   if(Math.abs(o-Number(p?.typical??q))<=.5)r.push({t:L[sk]+" typique",w:0});
+   else if(inside)r.push({t:L[sk]+" dans la plage",w:0});
+   else if(fit<.48){r.push({t:L[sk]+" hors plage typique",w:1});if(["acid","tannin","alcohol","body"].includes(sk))c++}
  });
- // One grape-reference intensity is used against nose and palate intensity together, avoiding double counting.
  let ints=[S.g.intensity,S.g.flavourIntensity].map(lev).filter(Boolean);
  if(ints.length&&Number.isFinite(Number(g.intensity))){
-   let o=ints.reduce((a,b)=>a+b,0)/ints.length,q=Number(g.intensity),z=Math.abs(q-o);
-   n+=w.intensity*5*cmp(z);d+=w.intensity*5;
-   if(z<=.5)r.push({t:"Intensité aromatique/saveurs cohérente",w:0})
+   let o=ints.reduce((a,b)=>a+b,0)/ints.length,q=Number(g.intensity),fit=rangeFit(o,profileFor(g,"intensity"),q);
+   n+=w.intensity*5*fit;d+=w.intensity*5;
+   if(fit>=.84)r.push({t:"Intensité aromatique/saveurs cohérente",w:0})
  }
- // Hidden legacy values can still be populated by the guided tree.
  [["fruit","fruitCompatible",w.fruit,.3],["texture","textureCompatible",w.texture,.3]].forEach(([sk,gk,wt,res])=>{
    let o=S.g[sk];if(!o)return;let hit=has(g[gk],o);n+=wt*5*(hit?1:res);d+=wt*5;if(hit)r.push({t:(sk==="fruit"?"Fruit":"Texture")+" compatible",w:0})
  });
  if(S.g.signature){
    let hit=has(g.signaturesCompatible,S.g.signature)||has(g.keyMarker,S.g.signature)||has(g.blindMarker,S.g.signature);
-   n+=w.signature*5*(hit?1:.1);d+=w.signature*5;
+   n+=w.signature*5*(hit?1:.18);d+=w.signature*5;
    if(hit)r.push({t:"Indice discriminant compatible",w:0});else r.push({t:"Indice discriminant non typique",w:1})
  }
  let ar=aromaScore(g);
  if(ar.d){
-   const aw=.70;n+=aw*5*(ar.n/ar.d);d+=aw*5;r.push(...ar.reasons.slice(0,2))
+   const aw=.90;n+=aw*5*(ar.n/ar.d);d+=aw*5;r.push(...ar.reasons.slice(0,3))
  }
  if(!d)return{score:0,reasons:[]};
- let s=n/d*100;if(c>=4)s*=.65;else if(c===3)s*=.8;
+ let s=n/d*100;if(c>=4)s*=.70;else if(c===3)s*=.84;
  return{score:s,reasons:r}
 }
-function ofit(o){let w=D.weights.origin,n=0,d=0,c=0;[["acid","acid",w.acid],["tannin","tannin",w.tannin],["alcohol","alcohol",w.alcohol],["body","body",w.body],["color","color",w.color]].forEach(([sk,ok,wt])=>{if(sk==="tannin"&&S.type==="Blanc")return;let a=lev(S.g[sk]);if(!a)return;let q=Number(o[ok]);if(!Number.isFinite(q))return;let z=Math.abs(q-a);n+=wt*5*cmp(z);d+=wt*5;if(["acid","tannin","alcohol","body"].includes(sk)&&z>=2)c++});[["climate","climate",w.climate,{"Frais":1,"Tempéré":2,"Chaud":3}],["maturity","maturity",w.maturity,{"Frais":1,"Mûr":2,"Très mûr / séché":3}]].forEach(([sk,ok,wt,map])=>{let v=S.o[sk];if(!v)return;let a=map[v],q=Number(o[ok]);if(!a||!Number.isFinite(q))return;let z=Math.abs(q-a);n+=wt*5*(z===0?1:z===1?.82:.5);d+=wt*5});
- if(S.o.oak){let q=Number(o.oak);if(Number.isFinite(q)){let oc;if(S.o.oak==="Non détecté")oc=q<=1?.85:q===2?.35:.10;else{let a={"Faible":1,"Modéré":2,"Marqué":3}[S.o.oak],z=Math.abs(q-a);oc=z===0?1:z===1?.82:.5}n+=w.oak*5*oc;d+=w.oak*5}};if(S.o.marker){n+=w.marker*5*(o.marker===S.o.marker?1:.35);d+=w.marker*5}if(!d)return 0;let s=n/d*100;if(c>=4)s*=.65;else if(c===3)s*=.8;return s}
+function ofit(o){
+ let w=D.weights.origin,n=0,d=0,c=0;
+ [["acid","acid",w.acid],["tannin","tannin",w.tannin],["alcohol","alcohol",w.alcohol],["body","body",w.body],["color","color",w.color]].forEach(([sk,ok,wt])=>{
+   if(sk==="tannin"&&S.type==="Blanc")return;
+   let a=lev(normalizeScaleValue(sk,S.g[sk]));if(!a)return;
+   let q=Number(o[ok]);if(!Number.isFinite(q))return;
+   let fit=rangeFit(a,profileFor(o,ok),q);n+=wt*5*fit;d+=wt*5;
+   if(["acid","tannin","alcohol","body"].includes(sk)&&fit<.48)c++
+ });
+ [["climate","climate",w.climate,{"Frais":1,"Tempéré":2,"Chaud":3}],["maturity","maturity",w.maturity,{"Frais":1,"Mûr":2,"Très mûr / séché":3}]].forEach(([sk,ok,wt,map])=>{
+   let v=S.o[sk];if(!v)return;let a=map[v],q=Number(o[ok]);if(!a||!Number.isFinite(q))return;
+   let z=Math.abs(q-a);n+=wt*5*(z===0?1:z===1?.82:.5);d+=wt*5
+ });
+ if(S.o.oak){
+   let q=Number(o.oak);if(Number.isFinite(q)){
+     let oc;if(S.o.oak==="Non détecté")oc=q<=1?.85:q===2?.35:.10;
+     else{let a={"Faible":1,"Modéré":2,"Marqué":3}[S.o.oak],z=Math.abs(q-a);oc=z===0?1:z===1?.82:.5}
+     n+=w.oak*5*oc;d+=w.oak*5
+   }
+ }
+ if(S.o.marker){n+=w.marker*5*(o.marker===S.o.marker?1:.35);d+=w.marker*5}
+ if(!d)return 0;
+ let s=n/d*100;if(c>=4)s*=.70;else if(c===3)s*=.84;return s
+}
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nt=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 function detectBlend(){if(!S.gr.length)return null;let scores=new Map(S.gr.map((g,i)=>[g.name,{s:g.score,r:i+1}])),best=null;(V.blends||[]).filter(b=>b.type===S.type).forEach(b=>{let hits=b.grapes.filter(g=>scores.has(g)),prim=b.primary.filter(g=>scores.has(g));if(hits.length<2||!prim.length)return;let avg=hits.reduce((a,g)=>a+scores.get(g).s,0)/hits.length,coverage=hits.length/Math.min(4,b.grapes.length),primaryBoost=prim.some(g=>scores.get(g).r<=3)?10:0,score=avg*.72+coverage*18+primaryBoost;if(!best||score>best.score)best={...b,score,hits}});return best&&best.score>=62?best:null}
@@ -386,14 +454,30 @@ function grapeOriginLinksHTML(g){
  return `<div class="detail-block"><b>Origines diagnostiques</b><div class="origin-link-list">${us.slice(0,16).map(u=>`<button class="origin-link" data-unit="${u.id}"><span>${esc(u.label)}</span><small>${esc(u.country)}</small></button>`).join("")}</div></div>`
 }
 function wireOriginLinks(){document.querySelectorAll(".origin-link").forEach(b=>b.onclick=()=>{let u=(G8.units||[]).find(x=>x.id===b.dataset.unit);if(u)showOriginReference(u)})}
-function showG(g){let f=favs(),sig=g.keyMarker||g.differentiation||"";$("#detailType").textContent=g.type+" · Cépage";$("#detailTitle").textContent=g.name;$("#detailBody").innerHTML=`<button id="detailFav" class="favorite-detail ${f.has(g.name)?"active":""}">${f.has(g.name)?"♥ À réviser":"♡ Ajouter à réviser"}</button><div class="identity-signature"><span>SIGNATURE AVEUGLE</span><strong>${sig}</strong></div><div class="detail-grid">${met("Acidité",g.acid,true)}${g.type==="Rouge"?met("Tanins",g.tannin,true):""}${met("Alcool",g.alcohol,true)}${met("Corps",g.body,true)}${met("Couleur",g.color,true)}${met("Intensité",g.intensity,true)}</div>${blk("Arômes & marqueurs",g.primaryAromas)}${productionHTML(g)}${grapeAppsHTML(g)}${grapeBlendsHTML(g)}${grapeOriginLinksHTML(g)}${blk("Comment le départager",g.differentiation)}${blk("Contre-indices",g.redFlags)}${blk("Confusions fréquentes",g.confusions)}`;$("#detailFav").onclick=()=>{toggleFav(g.name);showG(g)};$("#detailDialog").showModal();wireOriginLinks()}
-function showO(o){
- let groups=groupedChildren(o),b=blendForOrigin(o);
- const childRows=(title,arr)=>!arr.length?"":`<div class="origin-child-group"><span>${title}</span>${arr.slice(0,10).map(a=>`<div><strong>${esc(a.label)}</strong><small>${esc(a.grapes||a.blend)}</small></div>`).join("")}${arr.length>10?`<details><summary>Voir ${arr.length-10} autres</summary>${arr.slice(10).map(a=>`<div><strong>${esc(a.label)}</strong><small>${esc(a.grapes||a.blend)}</small></div>`).join("")}</details>`:""}</div>`;
- let hierarchy=(groups.subregions.length||groups.appellations.length)?`<div class="detail-block"><b>Du général au précis</b><div class="origin-path"><span>${esc(o.country)}</span><i>›</i><span>${esc(o.mother||o.style)}</span>${o.mother&&o.mother!==o.style?`<i>›</i><strong>${esc(o.style)}</strong>`:""}</div>${childRows("Sous-régions / zones",groups.subregions)}${childRows("Appellations / indications",groups.appellations)}</div>`:"";
- $("#detailType").textContent=o.grape+" · Unité diagnostique";$("#detailTitle").textContent=o.style;
- $("#detailBody").innerHTML=`<div class="origin-score-hero"><span>SCORE GLOBAL</span><strong>${Math.round(o.score)}</strong></div><div class="origin-subscores"><div><span>Cépage</span><b>${Math.round(o.grapeScore)}</b></div><div><span>Style</span><b>${Math.round(o.fit)}</b></div></div><div class="reason-box"><div class="reason-chips"><span class="reason-chip">Rang cépage ${o.grapeRank||"—"} · poids ${Math.round((o.rankWeight||0)*100)}%</span><span class="reason-chip neutral">Spécificité ×${Number(o.specificity||1).toFixed(2)}</span></div></div>${blk("Pays",o.country)}${o.mother&&o.mother!==o.style?blk("Région mère",o.mother):""}${b?blk("Assemblage compatible",`${b.name} — ${b.logic}`):""}${hierarchy}${blk("Profil sensoriel retenu",o.profileStyle||o.grape)}${blk("Pourquoi ça colle",o.diagnostic)}${blk("À vérifier",o.differentiation)}${blk("Confusions",o.confusions)}`;
- $("#detailDialog").showModal()
+function showG(g){
+ let f=favs(),sig=g.keyMarker||g.differentiation||"";
+ $("#detailType").textContent=g.type+" · Cépage";$("#detailTitle").textContent=g.name;
+ $("#detailBody").innerHTML=`<button id="detailFav" class="favorite-detail ${f.has(g.name)?"active":""}">${f.has(g.name)?"♥ À réviser":"♡ Ajouter à réviser"}</button>
+ <div class="identity-signature"><span>SIGNATURE AVEUGLE</span><strong>${sig}</strong></div>
+ <div class="detail-grid">
+   ${structureMetric("Acidité",g,"acid")}
+   ${g.type==="Rouge"?structureMetric("Tanins",g,"tannin"):""}
+   ${structureMetric("Alcool",g,"alcohol")}
+   ${structureMetric("Corps",g,"body")}
+   ${structureMetric("Intensité visuelle",g,"color")}
+   ${structureMetric("Intensité aromatique",g,"intensity")}
+ </div>
+ ${aromaFingerprintHTML(g)}
+ ${blk("Arômes & marqueurs",g.primaryAromas)}
+ ${productionHTML(g)}
+ ${grapeAppsHTML(g)}
+ ${grapeBlendsHTML(g)}
+ ${grapeOriginLinksHTML(g)}
+ ${blk("Comment le départager",g.differentiation)}
+ ${blk("Contre-indices",g.redFlags)}
+ ${blk("Confusions fréquentes",g.confusions)}`;
+ $("#detailFav").onclick=()=>{toggleFav(g.name);showG(g)};
+ $("#detailDialog").showModal();wireOriginLinks()
 }
 let historyReturnTab="grape";
 function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();if(n==="reference")ref($("#searchGrape").value);scrollTo({top:0,behavior:"smooth"})}
@@ -406,6 +490,7 @@ function grapeSearchText(g){
  return nt([
    g.name,g.synonyms,g.keyMarker,g.primaryAromas,g.regions,g.differentiation,g.redFlags,g.confusions,
    g.fruitCompatible,g.signaturesCompatible,g.textureCompatible,JSON.stringify(g.productionWorld||{}),
+   JSON.stringify(g.aromaFingerprint||{}),JSON.stringify(g.structureProfile||{}),
    ...apps.flatMap(a=>[a.name,a.country,a.region,a.role,a.status]),
    ...blends.flatMap(b=>[b.name,b.country,b.region,b.logic,b.signature])
  ].join(" "));
@@ -417,7 +502,7 @@ function searchContext(g,q){
  if(am)return `${am.k} · ${am.name}`;
  let bm=(V.blends||[]).filter(b=>b.grapes.includes(g.name)).find(b=>nt([b.name,b.region,b.logic,b.signature].join(" ")).includes(nq));
  if(bm)return `Association · ${bm.name}`;
- if(nt(g.primaryAromas).includes(nq)||nt(g.keyMarker).includes(nq))return"Arômes / marqueurs";
+ if(nt(g.primaryAromas).includes(nq)||nt(g.keyMarker).includes(nq)||nt(JSON.stringify(g.aromaFingerprint||{})).includes(nq))return"Empreinte aromatique";
  if(nt(g.regions).includes(nq)||nt(JSON.stringify(g.productionWorld||{})).includes(nq))return"Région de production";
  return"";
 }
@@ -548,7 +633,7 @@ function countryRender(){
 function showOriginReference(u){
  let pp=originProfiles(u),cc=originChildren(u),grapes=[...new Set(pp.map(p=>p.grape))],best=pp[0]||{},mother=u.mother||u.label;
  let apps=[...new Map(cc.map(a=>[a.label||a.name,a])).values()];
- let profileRows=pp.slice(0,6).map(p=>`<div class="origin-profile-row"><b>${esc(p.grape)}</b><span>${esc(p.diagnostic||p.style||"")}</span></div>`).join("");
+ let profileRows=pp.slice(0,8).map(p=>`<div class="origin-profile-row"><b>${esc(p.styleVariant||p.grape)}</b><span>${esc(p.diagnostic||p.style||"")}</span></div>`).join("");
  let appRows=apps.length?`<div class="detail-block"><b>Appellations & zones</b><div class="app-pill-list">${apps.slice(0,18).map(a=>`<span class="app-pill">${esc(a.label||a.name)}</span>`).join("")}</div>${apps.length>18?`<small>+ ${apps.length-18} autres zones dans la base</small>`:""}</div>`:"";
  $("#detailType").textContent=`${u.country} · Origine`;$("#detailTitle").textContent=u.label;
  $("#detailBody").innerHTML=`<div class="origin-path"><span>${esc(u.country)}</span>${mother!==u.label?`<i>›</i><span>${esc(mother)}</span>`:""}<i>›</i><strong>${esc(u.label)}</strong></div>
