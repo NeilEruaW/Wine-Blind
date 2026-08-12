@@ -177,3 +177,11 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Niveau L1-L4 et Examen blanc uniquement dans Théorie WSET.
 - Thèmes & défis regroupe Duels, Intrus et Points faibles.
 - Suppression des mentions techniques de banque auditée et de la note L4 sur l’écran principal.
+
+## V10.5.7 — ajustements Quiz & Défis
+- Théorie WSET remontée en première position.
+- Sous-texte Origines & appellations simplifié en « Géographie ».
+- Duels et Quel est l’intrus ? deviennent deux entrées directes distinctes.
+- Mes points faibles déplacé en dernière position et lancé directement, sans sélecteur de difficulté.
+- Le niveau affiché sur chaque question reste celui de la question effectivement tirée.
+- Sélecteur Fondamentaux / Avancé / Expert corrigé : seules les valeurs actives sont en noir et renforcées visuellement.

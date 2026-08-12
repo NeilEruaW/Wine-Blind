@@ -567,3 +567,7 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 .topic-card-grid b{font-size:11px;line-height:1.25}
 .theme-challenge-grid button{display:flex;flex-direction:column;gap:3px}.theme-challenge-grid small{font-size:9px;color:var(--muted)}
 @media(max-width:380px){.topic-card-grid{grid-template-columns:1fr}}
+
+/* V10.5.7 — Quiz UX */
+.difficulty-picker .cfg-diff{color:var(--muted)!important;font-weight:700}
+.difficulty-picker .cfg-diff.active{color:#111!important;font-weight:900;background:rgba(255,255,255,.92)!important;border-color:rgba(20,20,20,.32)!important;box-shadow:0 1px 4px rgba(0,0,0,.10)}
