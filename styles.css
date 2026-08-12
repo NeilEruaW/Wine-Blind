@@ -578,3 +578,59 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 
 /* V10.5.9 — filtre pays partagé Cépages / Origines */
 #originCountryFilters{margin-top:2px}
+
+/* V10.6.0 — diagnostic SAT enrichi */
+.sat-continuum{
+  grid-template-columns:repeat(var(--sat-count,5),minmax(0,1fr))!important;
+}
+.sat-continuum::before{
+  left:calc(50% / var(--sat-count,5))!important;
+  right:calc(50% / var(--sat-count,5))!important;
+}
+.sat-field .sat-value{
+  max-width:52%;
+  text-align:right;
+  line-height:1.15;
+}
+.aroma-section,.signature-details{
+  border-top:1px solid rgba(105,90,82,.10);
+  padding:3px 0 0;
+}
+.aroma-section:first-child{border-top:0}
+.aroma-section summary,.signature-details summary{
+  list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  min-height:44px;cursor:pointer;padding:4px 1px;color:var(--text)
+}
+.aroma-section summary::-webkit-details-marker,.signature-details summary::-webkit-details-marker{display:none}
+.aroma-section summary>span,.signature-details summary>span{font-size:12px;font-weight:850}
+.aroma-section summary>small,.signature-details summary>small{font-size:9px;color:var(--muted);text-align:right;max-width:48%;line-height:1.25}
+.aroma-section summary::after,.signature-details summary::after{
+  content:"›";font-size:17px;color:var(--muted);transition:transform .15s ease;margin-left:2px
+}
+.aroma-section[open] summary::after,.signature-details[open] summary::after{transform:rotate(90deg)}
+.aroma-groups{display:flex;flex-wrap:wrap;gap:6px;padding:3px 0 10px}
+.aroma-group{display:contents}
+.aroma-chip,.descriptor-chip{
+  border:1px solid rgba(110,95,85,.12);background:rgba(255,255,255,.58);color:var(--text);
+  border-radius:999px;padding:7px 10px;font-size:10px;font-weight:760;line-height:1.1
+}
+.aroma-chip{min-height:32px}
+.aroma-group.selected>.aroma-chip{
+  background:var(--soft-wine);border-color:rgba(124,45,63,.30);color:var(--wine);font-weight:900
+}
+.descriptor-row{
+  flex-basis:100%;display:flex;flex-wrap:wrap;gap:5px;padding:3px 4px 7px 10px;
+  animation:descriptorReveal .16s ease-out
+}
+.descriptor-chip{padding:6px 9px;font-size:9.5px;color:var(--muted)}
+.descriptor-chip.active{background:var(--wine);color:#fff;border-color:var(--wine)}
+.signature-grid{display:flex;flex-wrap:wrap;gap:5px;padding:3px 0 10px}
+@keyframes descriptorReveal{from{opacity:.2;transform:translateY(-3px)}to{opacity:1;transform:none}}
+body.wine-white .aroma-group.selected>.aroma-chip{
+  border-color:rgba(154,107,22,.32)
+}
+@media(max-width:420px){
+  .aroma-chip{font-size:9.5px;padding:7px 9px}
+  .descriptor-chip{font-size:9px}
+  .aroma-section summary>small,.signature-details summary>small{max-width:44%}
+}

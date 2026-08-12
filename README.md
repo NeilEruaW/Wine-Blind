@@ -191,3 +191,33 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Pour les cépages, le pays est déduit des clés de la rubrique « Régions de production » (`productionWorld`).
 - Le filtre pays se combine avec Rouge / Blanc / À réviser et avec la recherche universelle.
 - Le filtre revient sur « Tous » lorsqu'on bascule entre Cépages et Origines, afin d'éviter un filtre invisible ou non pertinent.
+
+## V10.6.0 — Diagnostic Cépage aligné sur le SAT WSET L3
+Évolution structurante du diagnostic.
+
+### Œil
+- Séparation de l'intensité visuelle et de la couleur.
+- Intensité : Pâle / Moyenne / Intense.
+- Blanc : Jaune-vert / Jaune citron / Or / Ambré / Brun.
+- Rouge : Violacé / Rubis / Grenat / Tuilé / Brun.
+
+### Nez et bouche
+- Les valeurs sont affichées en toutes lettres en haut à droite des continuums.
+- Acidité et tanins : échelle 5 niveaux.
+- Alcool : échelle SAT 3 niveaux.
+- Ajout de la douceur : Sec / Pas tout à fait sec / Demi-sec / Moelleux / Doux / Très doux.
+- Ajout de l'intensité des saveurs.
+- Intensité aromatique et intensité des saveurs sont rapprochées de la même référence d'intensité du cépage sans double pondération.
+
+### Arômes & saveurs
+- Remplacement de « Marqueurs complémentaires » par le Wine-Lexicon à trois niveaux : primaires, secondaires, tertiaires.
+- Sélection multiple des familles.
+- Toucher une famille révèle ses descripteurs détaillés sans menu déroulant.
+- Les descripteurs sont facultatifs.
+- Un poids aromatique modéré est introduit dans le Top 10 : famille sélectionnée d'abord, descripteurs en bonus.
+- « Marqueur signature » devient « + Indice discriminant », optionnel et replié par défaut.
+
+### Compatibilité moteur
+- Le champ historique `color` conserve en interne le sens d'intensité/profondeur visuelle afin de rester compatible avec la base cépages actuelle.
+- La teinte exacte (`colorShade`) et la douceur sont enregistrées mais ne reçoivent pas encore de poids propre, la V10.5.9 ne contenant pas de référence cépage suffisamment structurée pour les scorer sans inventer de données.
+- L'Arbre guidé conserve la compatibilité avec ses pré-renseignements existants ; les anciennes valeurs intermédiaires d'alcool/intensité visuelle sont rabattues sur l'échelle SAT 3 niveaux.
