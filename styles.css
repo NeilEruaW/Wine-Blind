@@ -467,3 +467,15 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 .adaptive-candidate div{display:grid;gap:2px}.adaptive-candidate b{font-size:13px}.adaptive-candidate small{font-size:10px;color:var(--muted);line-height:1.25}.adaptive-candidate>strong{font-size:14px;color:var(--wine)}
 .adaptive-discriminants{margin:13px 0;padding:11px;border-radius:12px;background:rgba(120,105,95,.05)}.adaptive-discriminants>b{font-size:11px;text-transform:uppercase;letter-spacing:.05em}.adaptive-discriminants p{margin:7px 0 0;font-size:11px;line-height:1.4;color:var(--muted)}
 .adaptive-final-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
+
+/* V10.2 — arbre ↔ diagnostic synchronisés */
+#adaptiveCard + .adaptive-history{margin-top:10px}
+.adaptive-history:empty{display:none}
+.adaptive-history::before{
+ content:"Questions déjà répondues";display:block;margin:2px 2px 6px;
+ font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)
+}
+.adaptive-sync-note{
+ margin:10px 0 2px;padding:8px 10px;border-radius:10px;background:var(--soft-wine);
+ color:var(--muted);font-size:10px;line-height:1.4
+}

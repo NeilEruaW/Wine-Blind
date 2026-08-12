@@ -93,3 +93,10 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Jauge de convergence plutôt qu'un nombre fixe d'étapes.
 - Sortie sur 3–5 cépages probables avec critères discriminants pour les départager.
 - Bouton « Continuer à départager » et transfert vers le Diagnostic Cépage complet.
+
+## V10.2 — synchronisation arbre / Diagnostic Cépage
+- L'historique des questions/réponses est désormais affiché sous la question active.
+- Chaque réponse exploitable pré-renseigne immédiatement le Diagnostic Cépage et déclenche son recalcul.
+- Une modification ou suppression d'une ancienne réponse recalcule aussi le pré-renseignement.
+- Les candidats finaux de l'arbre utilisent exactement `geval()`, donc le même scoring et le même classement que le Top 10 Cépages.
+- Les réponses aromatiques discriminantes alimentent également Famille de fruit, Marqueur signature ou Texture/élevage lorsqu'une correspondance existe.
