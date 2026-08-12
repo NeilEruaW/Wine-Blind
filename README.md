@@ -116,3 +116,15 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Un toucher simple n'active plus la logique de glissement au `pointerdown`.
 - Le clic natif déclenche un seul saut direct vers la lettre choisie, que celle-ci soit au-dessus ou au-dessous de la position actuelle.
 - Le mode glissement ne s'active qu'après un déplacement vertical volontaire d'au moins 7 px.
+
+## V10.4 — S'entraîner
+- « Cas pratique » devient « Quiz & Défis » au sein de l'onglet Entraînement.
+- Trois difficultés : Fondamentaux, Avancé, Expert.
+- Six sessions : Session rapide, Aveugle, Origines & appellations, Duels, Intrus, Mes points faibles.
+- Génération dynamique depuis les référentiels Cépages et V10.8 Origines/Appellations.
+- Les questions d'identification de cépage ne donnent plus les régions typiques avant la réponse.
+- QCM multi-formats : cépage, origine, appellation→cépage, appellation→origine, duel structurel, intrus géographique, marqueur aromatique.
+- Feedback pédagogique après chaque réponse avec « À retenir ».
+- Sessions de 10 questions, score et progression.
+- Statistiques locales simples et mémorisation des erreurs pour le mode « Mes points faibles ».
+- La future banque théorique WSET peut être ajoutée en V10.5 sans modifier l'architecture.

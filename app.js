@@ -1,5 +1,5 @@
 (()=>{const D=WSET_DATA,T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},G=window.WSET_V107||{regions:[],profiles:[],children:[]},G8=window.WSET_V108||{units:[],profiles:[],children:[],specificity:{},rankWeights:[1,.75,.55,.35,.2,.12,.08,.05,.03,.02]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",intensity:"",fruit:"",signature:"",texture:""},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{answers:[],current:null,done:false,extended:false,prefillKeys:[]},compare:new Set(),refFilter:"all",refMode:"grapes",refCountry:"all"};
+const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",intensity:"",fruit:"",signature:"",texture:""},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{answers:[],current:null,done:false,extended:false,prefillKeys:[]},compare:new Set(),refFilter:"all",refMode:"grapes",refCountry:"all",training:{difficulty:"Fondamentaux",mode:"quick",questions:[],index:0,score:0,current:null,answered:false}};
 const L={acid:"Acidité",tannin:"Tanins",alcohol:"Alcool",body:"Corps",color:"Couleur",intensity:"Intensité",fruit:"Fruit",signature:"Signature",texture:"Texture"},sat=["F","M-","M","M+","E"],lev=v=>({"F":1,"M-":2,"M":3,"M+":4,"E":5}[v]||0),cmp=d=>d<=.01?1:d<=.5?.92:d<=1?.82:d<=1.5?.65:d<=2?.42:d<=2.5?.2:.05,has=(a,b)=>(a||"").toLowerCase().includes((b||"").toLowerCase());
 function wineTheme(){document.body.classList.toggle("wine-white",S.type==="Blanc");document.body.classList.toggle("wine-red",S.type==="Rouge");let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=S.type==="Blanc"?"#9a6b16":"#7c2d3f"}
 function satField(k,l){
@@ -372,14 +372,157 @@ function ref(q=""){
  countryRender();
  if(S.refMode==="origins")refOrigins(q);else refGrapes(q)
 }
-function quizNew(){
- let pool=D.grapes.filter(g=>g.type===S.type),answer=pool[Math.floor(Math.random()*pool.length)];
- let others=pool.filter(g=>g.name!==answer.name).sort(()=>Math.random()-.5).slice(0,3),choices=[answer,...others].sort(()=>Math.random()-.5);
- let clues=[`Couleur ${answer.color} · Acidité ${answer.acid}${answer.type==="Rouge"?` · Tanins ${answer.tannin}`:""}`,answer.primaryAromas||answer.keyMarker,answer.regions?`Régions typiques : ${answer.regions.split(";").slice(0,2).join(", ")}`:""].filter(Boolean);
- $("#quizClues").innerHTML=clues.map((x,i)=>`<div class="quiz-clue"><b>${i+1}</b><span>${x}</span></div>`).join("");
- $("#quizChoices").innerHTML="";$("#quizFeedback").classList.add("hidden");$("#quizFeedback").innerHTML="";
- choices.forEach(g=>{let b=document.createElement("button");b.className="quiz-choice";b.textContent=g.name;b.onclick=()=>{let ok=g.name===answer.name;$("#quizFeedback").classList.remove("hidden");$("#quizFeedback").innerHTML=`<b>${ok?"✓ Bonne réponse":"✗ "+answer.name}</b><p>${answer.keyMarker||answer.differentiation||""}</p>`;$$(".quiz-choice").forEach(x=>x.disabled=true)};$("#quizChoices").append(b)})
+const TRAIN_KEY="wineBlindTrainingV104";
+function trainingStats(){
+ try{return JSON.parse(localStorage.getItem(TRAIN_KEY)||'{"total":0,"correct":0,"errors":{}}')}catch{return{total:0,correct:0,errors:{}}}
 }
+function saveTrainingStat(q,ok){
+ let s=trainingStats();s.total++;if(ok)s.correct++;
+ if(!ok){let k=q.answer||q.topic||"Divers";s.errors[k]=(s.errors[k]||0)+1}
+ localStorage.setItem(TRAIN_KEY,JSON.stringify(s));trainingHubStats()
+}
+function trainingHubStats(){
+ let e=$("#trainingMiniStats");if(!e)return;let s=trainingStats(),rate=s.total?Math.round(s.correct/s.total*100):0;
+ e.innerHTML=s.total?`<b>${rate}%</b><small>${s.total} réponses</small>`:`<b>—</b><small>Commence une session</small>`
+}
+const shuffle=a=>[...a].sort(()=>Math.random()-.5),pick=a=>a[Math.floor(Math.random()*a.length)];
+function numDist(a,b){
+ let ks=["acid","tannin","alcohol","body","color","intensity"],sum=0,n=0;
+ ks.forEach(k=>{let x=Number(a[k]),y=Number(b[k]);if(Number.isFinite(x)&&Number.isFinite(y)){sum+=Math.abs(x-y);n++}});
+ return n?sum/n:9
+}
+function grapeDistractors(answer,difficulty,count=3){
+ let pool=D.grapes.filter(g=>g.type===answer.type&&g.name!==answer.name);
+ if(difficulty==="Fondamentaux")return shuffle(pool).slice(0,count);
+ return pool.sort((a,b)=>numDist(a,answer)-numDist(b,answer)).slice(0,difficulty==="Expert"?12:20).sort(()=>Math.random()-.5).slice(0,count)
+}
+function qGrape(difficulty){
+ let answer=pick(D.grapes.filter(g=>g.type===S.type)),choices=shuffle([answer,...grapeDistractors(answer,difficulty)]);
+ let structural=[`Acidité ${answer.acid}`,answer.type==="Rouge"?`Tanins ${answer.tannin}`:null,`Alcool ${answer.alcohol}`,`Corps ${answer.body}`,`Couleur ${answer.color}`].filter(Boolean).join(" · ");
+ let aroma=answer.primaryAromas||answer.keyMarker||"";
+ let clues=[structural];
+ if(difficulty!=="Expert"&&aroma)clues.push(aroma);
+ if(difficulty==="Fondamentaux"&&answer.keyMarker&&answer.keyMarker!==aroma)clues.push(answer.keyMarker);
+ return{id:"grape_"+answer.name+"_"+Math.random(),type:"🍇 Cépage",topic:answer.name,answer:answer.name,
+   question:"Quel cépage correspond le mieux à ce profil ?",clues,
+   choices:choices.map(x=>x.name),
+   explain:`${answer.name} : ${answer.keyMarker||answer.blindMarker||answer.differentiation||"profil structurel compatible"}`,
+   takeaway:answer.differentiation||answer.redFlags||"Croise toujours structure, fruit et marqueurs plutôt qu’un seul arôme."}
+}
+function qOrigin(difficulty){
+ let pool=(G8.profiles||[]).filter(p=>p.grape&&p.unitLabel),p=pick(pool),u=(G8.units||[]).find(x=>x.id===p.unitId);
+ if(!u)return qGrape(difficulty);
+ let same=(G8.units||[]).filter(x=>x.id!==u.id&&((x.grapes||[]).includes(p.grape)||difficulty==="Fondamentaux"));
+ let distract=shuffle(difficulty==="Expert"?same.filter(x=>x.country===u.country||x.mother===u.mother).concat(same):same).slice(0,3);
+ if(distract.length<3)distract=shuffle((G8.units||[]).filter(x=>x.id!==u.id)).slice(0,3);
+ let clues=[`${p.grape} · Acidité ${p.acid||"—"}${p.tannin?` · Tanins ${p.tannin}`:""} · Alcool ${p.alcohol||"—"} · Corps ${p.body||"—"}`];
+ if(p.diagnostic)clues.push(p.diagnostic);
+ return{id:"origin_"+p.id+"_"+Math.random(),type:"🌍 Origine",topic:u.label,answer:u.label,
+  question:`Quelle origine est la plus cohérente avec ce ${p.grape} ?`,clues,
+  choices:shuffle([u,...distract]).map(x=>x.label),
+  explain:`${u.label} · ${u.country}${u.mother&&u.mother!==u.label?` · ${u.mother}`:""}`,
+  takeaway:p.differentiation||p.confusions||"Compare la maturité, la structure et les marqueurs avant de privilégier la géographie."}
+}
+function childGrapes(ch){
+ let text=nt(ch.grapes||""),hits=D.grapes.filter(g=>text.includes(nt(g.name))||nt(g.name).includes(text)).map(g=>g.name);
+ return [...new Set(hits)]
+}
+function qAppellation(difficulty){
+ let kids=(G8.children||[]).filter(c=>c.label&&childGrapes(c).length),ch=pick(kids),gs=childGrapes(ch),answer=gs[0];
+ if(!answer)return qOrigin(difficulty);
+ let ag=D.grapes.find(g=>g.name===answer),distr=grapeDistractors(ag||{type:S.type,name:answer},difficulty);
+ let unit=(G8.units||[]).find(u=>u.id===ch.unitId);
+ return{id:"app_"+ch.label+"_"+Math.random(),type:"🏷️ Appellation",topic:ch.label,answer,
+  question:`Quel cépage est le plus directement associé à ${ch.label} ?`,
+  clues:difficulty==="Fondamentaux"&&unit?[`${unit.country} · ${unit.mother||unit.label}`]:[],
+  choices:shuffle([answer,...distr.map(g=>g.name)]).slice(0,4),
+  explain:`${ch.label} → ${answer}${unit?` · ${unit.label}, ${unit.country}`:""}`,
+  takeaway:ch.blend||ch.grapes||`Retenir le lien ${ch.label} ↔ ${answer}.`}
+}
+function qParent(difficulty){
+ let kids=(G8.children||[]).filter(c=>c.label&&c.unitId),ch=pick(kids),u=(G8.units||[]).find(x=>x.id===ch.unitId);
+ if(!u)return qAppellation(difficulty);
+ let pool=(G8.units||[]).filter(x=>x.id!==u.id&&(difficulty==="Expert"?x.country===u.country:true));
+ let ds=shuffle(pool).slice(0,3);
+ return{id:"parent_"+ch.label+"_"+Math.random(),type:"⌖ Géographie",topic:u.label,answer:u.label,
+  question:`À quelle origine diagnostique rattacher ${ch.label} ?`,clues:difficulty==="Fondamentaux"?[u.country]:[],
+  choices:shuffle([u,...ds]).map(x=>x.label),explain:`${ch.label} → ${u.label} → ${u.country}`,
+  takeaway:`La hiérarchie géographique est aussi importante que la mémorisation isolée des appellations.`}
+}
+function qDuel(difficulty){
+ let candidates=D.grapes.filter(g=>g.type===S.type),a=pick(candidates),near=candidates.filter(g=>g.name!==a.name).sort((x,y)=>numDist(a,x)-numDist(a,y));
+ let b=pick(near.slice(0,difficulty==="Fondamentaux"?20:8)),fields=[["acid","acidité"],["alcohol","alcool"],["body","corps"],["intensity","intensité aromatique"]];
+ if(S.type==="Rouge")fields.push(["tannin","tanins"],["color","profondeur de couleur"]);
+ let viable=fields.filter(([k])=>Math.abs(Number(a[k])-Number(b[k]))>=.7),f=pick(viable.length?viable:fields),av=Number(a[f[0]]),bv=Number(b[f[0]]);
+ let answer=av>=bv?a.name:b.name;
+ return{id:"duel_"+a.name+"_"+b.name+"_"+f[0],type:"⚔️ Duel",topic:`${a.name} / ${b.name}`,answer,
+  question:`Lequel présente généralement le niveau le plus élevé de ${f[1]} ?`,clues:[`${a.name} ⇄ ${b.name}`],
+  choices:[a.name,b.name],explain:`${a.name} ${a[f[0]]} · ${b.name} ${b[f[0]]}`,
+  takeaway:`Dans un duel, privilégie les écarts structurels reproductibles avant les arômes les plus variables.`}
+}
+function qIntruder(difficulty){
+ let units=(G8.units||[]).filter(u=>(G8.children||[]).filter(c=>c.unitId===u.id).length>=3),u=pick(units),same=shuffle((G8.children||[]).filter(c=>c.unitId===u.id)).slice(0,3);
+ let otherUnit=pick((G8.units||[]).filter(x=>x.id!==u.id&&(difficulty==="Expert"?x.country===u.country:true))),odd=pick((G8.children||[]).filter(c=>c.unitId===otherUnit?.id));
+ if(!odd||same.length<3)return qParent(difficulty);
+ return{id:"intr_"+u.id+"_"+Math.random(),type:"◇ Intrus",topic:u.label,answer:odd.label,
+  question:"Quelle proposition est l’intrus géographique ?",clues:difficulty==="Fondamentaux"?[`Trois réponses appartiennent à la même unité : ${u.country}`]:[],
+  choices:shuffle([...same.map(x=>x.label),odd.label]),explain:`${same.map(x=>x.label).join(", ")} → ${u.label}. ${odd.label} → ${otherUnit.label}.`,
+  takeaway:`Cherche d’abord le dénominateur commun des trois propositions avant d’identifier l’intrus.`}
+}
+function qMarker(difficulty){
+ let pool=D.grapes.filter(g=>g.type===S.type&&(g.keyMarker||g.blindMarker)),answer=pick(pool),marker=answer.keyMarker||answer.blindMarker;
+ let choices=shuffle([answer,...grapeDistractors(answer,difficulty)]).map(x=>x.name);
+ return{id:"mark_"+answer.name+"_"+Math.random(),type:"👃 Marqueur",topic:answer.name,answer:answer.name,
+  question:"Quel cépage est le plus cohérent avec ces marqueurs ?",clues:[marker],
+  choices,explain:`${answer.name} · ${marker}`,takeaway:answer.differentiation||"Un marqueur devient réellement utile lorsqu’il confirme une structure cohérente."}
+}
+function makeQuestion(mode,difficulty){
+ let makers=mode==="blind"?[qGrape,qOrigin,qMarker]:mode==="geo"?[qOrigin,qAppellation,qParent]:
+   mode==="duel"?[qDuel]:mode==="intruder"?[qIntruder]:
+   mode==="weak"?[qGrape,qMarker,qOrigin]:[qGrape,qOrigin,qAppellation,qParent,qDuel,qIntruder,qMarker];
+ return pick(makers)(difficulty)
+}
+function buildSession(mode,difficulty,n=10){
+ let out=[],tries=0,seen=new Set(),stats=trainingStats();
+ while(out.length<n&&tries++<100){let q=makeQuestion(mode,difficulty);if(!q||seen.has(q.id.split("_"+Math.random())[0])){continue}seen.add(q.id);out.push(q)}
+ if(mode==="weak"&&Object.keys(stats.errors||{}).length){
+   let weak=Object.entries(stats.errors).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+   out.sort((a,b)=>Number(weak.includes(b.answer))-Number(weak.includes(a.answer)))
+ }
+ return out.slice(0,n)
+}
+function trainingModeName(m){return{quick:"Session rapide",blind:"Dégustation à l’aveugle",geo:"Origines & appellations",duel:"Duels",intruder:"Quel est l’intrus ?",weak:"Mes points faibles"}[m]||"Entraînement"}
+function startTraining(mode){
+ S.training.mode=mode;S.training.questions=buildSession(mode,S.training.difficulty,10);S.training.index=0;S.training.score=0;S.training.answered=false;
+ $("#trainingHub").classList.add("hidden");$("#trainingSession").classList.remove("hidden");$("#sessionEnd").classList.add("hidden");$("#quizCard").classList.remove("hidden");
+ trainingQuestion()
+}
+function trainingQuestion(){
+ let t=S.training,q=t.questions[t.index];t.current=q;t.answered=false;
+ if(!q){endTraining();return}
+ $("#sessionLabel").textContent=trainingModeName(t.mode);$("#sessionProgress").textContent=`${t.index+1} / ${t.questions.length}`;
+ $("#sessionScore").textContent=`${t.score} ✓`;$("#sessionProgressBar").style.width=`${Math.round(t.index/t.questions.length*100)}%`;
+ $("#quizType").textContent=q.type;$("#quizDifficulty").textContent=t.difficulty;$("#quizQuestion").textContent=q.question;
+ $("#quizClues").innerHTML=(q.clues||[]).map((x,i)=>`<div class="quiz-clue"><b>${i+1}</b><span>${esc(x)}</span></div>`).join("");
+ $("#quizChoices").innerHTML="";$("#quizFeedback").classList.add("hidden");$("#quizFeedback").innerHTML="";$("#newQuiz").classList.add("hidden");
+ (q.choices||[]).forEach(choice=>{let b=document.createElement("button");b.className="quiz-choice";b.textContent=choice;b.onclick=()=>answerTraining(choice,b);$("#quizChoices").append(b)})
+}
+function answerTraining(choice,button){
+ if(S.training.answered)return;S.training.answered=true;let q=S.training.current,ok=choice===q.answer;if(ok)S.training.score++;
+ saveTrainingStat(q,ok);
+ $$(".quiz-choice").forEach(b=>{b.disabled=true;b.classList.toggle("correct",b.textContent===q.answer);if(b===button&&!ok)b.classList.add("wrong")});
+ let f=$("#quizFeedback");f.classList.remove("hidden");f.innerHTML=`<div class="feedback-title">${ok?"✓ Bonne réponse":`✗ Bonne réponse : ${esc(q.answer)}`}</div><p>${esc(q.explain||"")}</p><div class="takeaway"><b>À retenir</b><span>${esc(q.takeaway||"")}</span></div>`;
+ $("#sessionScore").textContent=`${S.training.score} ✓`;$("#newQuiz").classList.remove("hidden")
+}
+function nextTraining(){if(!S.training.answered)return;S.training.index++;if(S.training.index>=S.training.questions.length)endTraining();else trainingQuestion()}
+function endTraining(){
+ let t=S.training;$("#quizCard").classList.add("hidden");$("#sessionEnd").classList.remove("hidden");$("#sessionProgressBar").style.width="100%";
+ let pct=t.questions.length?Math.round(t.score/t.questions.length*100):0;
+ $("#sessionEnd").innerHTML=`<span class="training-kicker">SESSION TERMINÉE</span><h2>${t.score} / ${t.questions.length}</h2><div class="session-ring">${pct}%</div><p>${pct>=80?"Très bonne maîtrise. Passe au niveau supérieur ou travaille tes erreurs.":pct>=60?"Base solide. Les explications des erreurs sont les meilleurs points à revoir.":"Une session ciblée sur tes points faibles sera particulièrement utile."}</p><div class="adaptive-final-actions"><button id="replayTraining" class="secondary-btn">Rejouer</button><button id="backTrainingHub" class="primary-btn">Choisir un autre mode</button></div>`;
+ $("#replayTraining").onclick=()=>startTraining(t.mode);$("#backTrainingHub").onclick=quitTraining
+}
+function quitTraining(){$("#trainingSession").classList.add("hidden");$("#trainingHub").classList.remove("hidden");$("#quizCard").classList.remove("hidden");trainingHubStats()}
+function quizNew(){nextTraining()}
 
 const AQ=[
  {id:"colorPale",q:"La couleur est-elle plutôt pâle ?",why:"La profondeur de couleur sépare rapidement les cépages naturellement peu pigmentés des profils plus extraits.",test:g=>g.color<=2.7,yes:{color:"M-"},no:null},
@@ -568,4 +711,4 @@ function histRender(){
  h.forEach(r=>{let d=document.createElement("div");d.className="history-card";let hit=r.actualGrape&&r.topGrape?r.actualGrape.toLowerCase()===r.topGrape.toLowerCase():null;d.innerHTML=`<div class="history-head"><div><h3>${r.name||"Dégustation sans nom"}${r.vintage?" · "+r.vintage:""}</h3><div class="history-meta">${r.date||""} · ${r.type}${hit===true?" · ✓ Top 1":hit===false?" · à revoir":""}</div></div><button class="delete-btn" data-id="${r.id}">Supprimer</button></div><div class="history-result"><b>Diagnostic :</b> ${r.topGrape||"—"}${r.topGrapeScore?` (${r.topGrapeScore})`:""}${r.topOrigin?" · "+r.topOrigin:""}<br><b>Révélation :</b> ${r.actualGrape||"non renseignée"}${r.actualOrigin?" · "+r.actualOrigin:""}${r.notes?`<br><span class="muted">${r.notes}</span>`:""}</div>`;l.append(d)});
  $$(".delete-btn").forEach(b=>b.onclick=()=>{localStorage.setItem(HK,JSON.stringify(hist().filter(x=>String(x.id)!==b.dataset.id)));histRender()})
 }
-$("#typeRed").onclick=()=>{S.type="Rouge";S.tree={answers:[],current:null,done:false,extended:false,prefillKeys:[]};$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc()};$("#typeWhite").onclick=()=>{S.type="Blanc";S.g.tannin="";$("#typeWhite").classList.add("active");$("#typeRed").classList.remove("active");wineTheme();forms();calc()};$$(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));$("#goOrigin").onclick=()=>tab("origin");$("#closeDialog").onclick=()=>$("#detailDialog").close();$("#searchGrape").oninput=e=>ref(e.target.value);$$(".ref-mode-btn").forEach(b=>b.onclick=()=>{S.refMode=b.dataset.refmode;S.refCountry="all";$$(".ref-mode-btn").forEach(x=>x.classList.toggle("active",x===b));ref($("#searchGrape").value)});$$(".filter-chip").forEach(b=>b.onclick=()=>{$$(".filter-chip").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.refFilter=b.dataset.ref;ref($("#searchGrape").value)});$("#modeTree").onclick=()=>{$("#modeTree").classList.add("active");$("#modeQuiz").classList.remove("active");$("#treeMode").classList.remove("hidden");$("#quizMode").classList.add("hidden")};$("#modeQuiz").onclick=()=>{$("#modeQuiz").classList.add("active");$("#modeTree").classList.remove("active");$("#quizMode").classList.remove("hidden");$("#treeMode").classList.add("hidden");quizNew()};$("#newQuiz").onclick=quizNew;$("#treeYes").onclick=()=>treeAns("Oui");$("#treeNo").onclick=()=>treeAns("Non");$("#treeUnsure").onclick=()=>treeAns("Incertain");$("#treeBack").onclick=back;$("#treeRestart").onclick=treeRestart;$("#treeWhy").onclick=()=>{let q=S.tree.current,e=$("#treeWhyText");if(!q)return;e.textContent=q.why||"";e.classList.toggle("hidden")};$("#saveTasting").onclick=openSave;$("#saveTastingOrigin").onclick=openSave;$("#closeSave").onclick=()=>$("#saveDialog").close();$("#saveForm").onsubmit=save;$("#resetAll").onclick=()=>{Object.keys(S.g).forEach(k=>S.g[k]="");Object.keys(S.o).forEach(k=>S.o[k]="");S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc();tab("grape")};D.grapes.forEach(g=>{let o=document.createElement("option");o.value=g.name;$("#grapeNames").append(o)});wineTheme();forms();ref();treeRender();histRender();calc();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{})})();
+$("#typeRed").onclick=()=>{S.type="Rouge";S.tree={answers:[],current:null,done:false,extended:false,prefillKeys:[]};$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc()};$("#typeWhite").onclick=()=>{S.type="Blanc";S.g.tannin="";$("#typeWhite").classList.add("active");$("#typeRed").classList.remove("active");wineTheme();forms();calc()};$$(".tab").forEach(b=>b.onclick=()=>tab(b.dataset.tab));$("#goOrigin").onclick=()=>tab("origin");$("#closeDialog").onclick=()=>$("#detailDialog").close();$("#searchGrape").oninput=e=>ref(e.target.value);$$(".ref-mode-btn").forEach(b=>b.onclick=()=>{S.refMode=b.dataset.refmode;S.refCountry="all";$$(".ref-mode-btn").forEach(x=>x.classList.toggle("active",x===b));ref($("#searchGrape").value)});$$(".filter-chip").forEach(b=>b.onclick=()=>{$$(".filter-chip").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.refFilter=b.dataset.ref;ref($("#searchGrape").value)});$("#modeTree").onclick=()=>{$("#modeTree").classList.add("active");$("#modeQuiz").classList.remove("active");$("#treeMode").classList.remove("hidden");$("#quizMode").classList.add("hidden")};$("#modeQuiz").onclick=()=>{$("#modeQuiz").classList.add("active");$("#modeTree").classList.remove("active");$("#quizMode").classList.remove("hidden");$("#treeMode").classList.add("hidden");quitTraining()};$$(".difficulty-btn").forEach(b=>b.onclick=()=>{$$(".difficulty-btn").forEach(x=>x.classList.toggle("active",x===b));S.training.difficulty=b.dataset.difficulty});$$(".training-mode-card").forEach(b=>b.onclick=()=>startTraining(b.dataset.session));$("#quitTraining").onclick=quitTraining;$("#newQuiz").onclick=nextTraining;$("#treeYes").onclick=()=>treeAns("Oui");$("#treeNo").onclick=()=>treeAns("Non");$("#treeUnsure").onclick=()=>treeAns("Incertain");$("#treeBack").onclick=back;$("#treeRestart").onclick=treeRestart;$("#treeWhy").onclick=()=>{let q=S.tree.current,e=$("#treeWhyText");if(!q)return;e.textContent=q.why||"";e.classList.toggle("hidden")};$("#saveTasting").onclick=openSave;$("#saveTastingOrigin").onclick=openSave;$("#closeSave").onclick=()=>$("#saveDialog").close();$("#saveForm").onsubmit=save;$("#resetAll").onclick=()=>{Object.keys(S.g).forEach(k=>S.g[k]="");Object.keys(S.o).forEach(k=>S.o[k]="");S.type="Rouge";$("#typeRed").classList.add("active");$("#typeWhite").classList.remove("active");wineTheme();forms();calc();tab("grape")};D.grapes.forEach(g=>{let o=document.createElement("option");o.value=g.name;$("#grapeNames").append(o)});wineTheme();forms();ref();treeRender();histRender();trainingHubStats();calc();if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{})})();
