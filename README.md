@@ -100,3 +100,12 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - Une modification ou suppression d'une ancienne réponse recalcule aussi le pré-renseignement.
 - Les candidats finaux de l'arbre utilisent exactement `geval()`, donc le même scoring et le même classement que le Top 10 Cépages.
 - Les réponses aromatiques discriminantes alimentent également Famille de fruit, Marqueur signature ou Texture/élevage lorsqu'une correspondance existe.
+
+## V10.3 — Référentiel visuel
+- Cépages légèrement teintés selon leur couleur : bordeaux pour rouges, doré pour blancs.
+- Origines : rouge, blanc ou bicolore lorsque les profils de l’unité couvrent les deux couleurs.
+- Index A–Z désormais ancré au début réel de la liste, puis sticky pendant le défilement.
+- Ajout d’une flèche ↑ en tête d’index pour revenir immédiatement au début de la liste.
+- Le glissement sur l’index fonctionne dans les deux sens avec saut direct, sans animation qui bloque les remontées.
+- Les Origines sont triées alphabétiquement par libellé ; le pays reste visible et filtrable.
+- Petit compteur de résultats et légende couleur intégrés au-dessus de la liste.

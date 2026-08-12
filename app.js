@@ -232,14 +232,20 @@ function alphaMagnify(active){
    b.classList.toggle("active",d===0);b.classList.toggle("near",d===1);b.classList.toggle("near2",d===2)
  })
 }
+function refScrollTarget(el,behavior="auto"){
+ if(!el)return;
+ let top=window.scrollY+el.getBoundingClientRect().top-82;
+ window.scrollTo({top:Math.max(0,top),behavior})
+}
 function alphaJump(letter){
- let target=document.querySelector(`[data-ref-letter="${letter}"]`);
+ let target=[...document.querySelectorAll(`[data-ref-letter="${letter}"]`)][0];
  if(!target)return;
- alphaMagnify(letter);
- target.scrollIntoView({behavior:"smooth",block:"start"});
+ alphaMagnify(letter);refScrollTarget(target,"auto")
 }
 function alphaRender(letters){
  let rail=$("#alphaIndex");if(!rail)return;rail.innerHTML="";
+ let top=document.createElement("button");top.type="button";top.className="alpha-letter alpha-top";top.textContent="↑";top.setAttribute("aria-label","Revenir au début de la liste");
+ top.onclick=e=>{e.stopPropagation();refScrollTarget($("#referenceList"),"auto")};rail.append(top);
  ALPHA.forEach(letter=>{
    let b=document.createElement("button");b.type="button";b.className="alpha-letter"+(letters.has(letter)?"":" disabled");
    b.dataset.letter=letter;b.textContent=letter;b.setAttribute("aria-label","Aller à "+letter);
@@ -247,14 +253,28 @@ function alphaRender(letters){
    rail.append(b)
  });
  let dragging=false;
+ const buttons=[...rail.querySelectorAll(".alpha-letter[data-letter]")];
  const fromY=y=>{
-   let r=rail.getBoundingClientRect(),p=Math.max(0,Math.min(.999,(y-r.top)/r.height)),i=Math.min(ALPHA.length-1,Math.floor(p*ALPHA.length));
+   let r=rail.getBoundingClientRect(),topBtn=rail.querySelector(".alpha-top")?.getBoundingClientRect(),usableTop=topBtn?topBtn.bottom:r.top;
+   let p=Math.max(0,Math.min(.999,(y-usableTop)/(r.bottom-usableTop))),i=Math.min(ALPHA.length-1,Math.floor(p*ALPHA.length));
    return ALPHA[i]
  };
  rail.onpointerdown=e=>{dragging=true;rail.setPointerCapture(e.pointerId);let l=fromY(e.clientY);alphaMagnify(l);if(letters.has(l))alphaJump(l);e.preventDefault()};
- rail.onpointermove=e=>{if(!dragging)return;let l=fromY(e.clientY);alphaMagnify(l);if(letters.has(l)){let t=document.querySelector(`[data-ref-letter="${l}"]`);t?.scrollIntoView({behavior:"auto",block:"start"})}e.preventDefault()};
- rail.onpointerup=e=>{dragging=false;rail.releasePointerCapture?.(e.pointerId);setTimeout(()=>alphaMagnify(""),180);e.preventDefault()};
+ rail.onpointermove=e=>{if(!dragging)return;let l=fromY(e.clientY);alphaMagnify(l);if(letters.has(l)){let t=[...document.querySelectorAll(`[data-ref-letter="${l}"]`)][0];refScrollTarget(t,"auto")}e.preventDefault()};
+ rail.onpointerup=e=>{dragging=false;rail.releasePointerCapture?.(e.pointerId);setTimeout(()=>alphaMagnify(""),150);e.preventDefault()};
  rail.onpointercancel=()=>{dragging=false;alphaMagnify("")}
+}
+function refMetaRender(count,label,mode){
+ let e=$("#refMeta");if(!e)return;
+ e.innerHTML=`<span>${count} ${label}${count>1?"s":""}</span><div class="ref-legend"><i class="legend-red"></i>Rouge <i class="legend-white"></i>Blanc${mode==="origins"?` <i class="legend-mixed"></i>Mixte`:""}</div>`
+}
+function grapeTypeByName(name){return D.grapes.find(g=>g.name===name)?.type||""}
+function originColourClass(u){
+ let types=new Set((originProfiles(u)||[]).map(p=>grapeTypeByName(p.grape)).filter(Boolean));
+ if(types.size>1)return"ref-mixed";
+ if(types.has("Rouge"))return"ref-red";
+ if(types.has("Blanc"))return"ref-white";
+ return""
 }
 function refGrapes(q=""){
  let l=$("#referenceList");l.innerHTML="";let nq=nt(q),f=favs();
@@ -268,11 +288,11 @@ function refGrapes(q=""){
    if(letter!==last){
      let h=document.createElement("div");h.className="ref-letter-heading";h.dataset.refLetter=letter;h.textContent=letter;l.append(h);last=letter
    }
-   let r=document.createElement("div");r.className="ref-row";let ctx=searchContext(g,q),zones=Object.keys(g.productionWorld||{}).slice(0,3).join(" · ");
+   let r=document.createElement("div");r.className=`ref-row ${g.type==="Rouge"?"ref-red":"ref-white"}`;let ctx=searchContext(g,q),zones=Object.keys(g.productionWorld||{}).slice(0,3).join(" · ");
    r.innerHTML=`<div><strong>${g.name}</strong><br><small>${ctx||g.type+(zones?" · "+zones:"")}</small></div><div class="ref-actions"><button class="fav-btn ${f.has(g.name)?"active":""}" aria-label="À réviser">${f.has(g.name)?"♥":"♡"}</button><span>›</span></div>`;
    r.onclick=()=>showG(g);r.querySelector(".fav-btn").onclick=e=>{e.stopPropagation();toggleFav(g.name)};l.append(r)
  });
- alphaRender(letters);
+ refMetaRender(arr.length,"cépage","grapes");alphaRender(letters);
 }
 function originProfiles(u){return (G8.profiles||[]).filter(p=>p.unitId===u.id)}
 function originChildren(u){return (G8.children||[]).filter(a=>a.unitId===u.id)}
@@ -308,21 +328,18 @@ function showOriginReference(u){
 function refOrigins(q=""){
  let l=$("#referenceList");l.innerHTML="";let nq=nt(q);
  let arr=(G8.units||[]).filter(u=>(S.refCountry==="all"||u.country===S.refCountry)&&(!nq||originSearchText(u).includes(nq)))
-   .sort((a,b)=>a.country.localeCompare(b.country,"fr")||a.label.localeCompare(b.label,"fr",{sensitivity:"base"}));
- let lastCountry="",lastLetter="",letters=new Set();
+   .sort((a,b)=>a.label.localeCompare(b.label,"fr",{sensitivity:"base"})||a.country.localeCompare(b.country,"fr"));
+ let lastLetter="",letters=new Set();
  arr.forEach(u=>{
-   if(u.country!==lastCountry){
-     let h=document.createElement("div");h.className="ref-country-heading";h.textContent=u.country;l.append(h);lastCountry=u.country;lastLetter=""
-   }
    let letter=refLetter(u.label);letters.add(letter);
    if(letter!==lastLetter){let h=document.createElement("div");h.className="ref-letter-heading";h.dataset.refLetter=letter;h.textContent=letter;l.append(h);lastLetter=letter}
-   let r=document.createElement("div");r.className="ref-row origin-ref-row";
+   let r=document.createElement("div");r.className=`ref-row origin-ref-row ${originColourClass(u)}`;
    let pp=originProfiles(u),cc=originChildren(u),gs=(u.grapes||[]).join(" · ");
    let matched=nq?cc.find(a=>nt([a.label,a.name,a.region,a.grapes].join(" ")).includes(nq)):null;
-   r.innerHTML=`<div><strong>${esc(u.label)}</strong><br><small>${matched?`Appellation · ${esc(matched.label||matched.name)} · `:""}${esc(gs||u.mother||"")}${cc.length?` · ${cc.length} zone${cc.length>1?"s":""}`:""}</small></div><div class="ref-actions"><span>›</span></div>`;
+   r.innerHTML=`<div><strong>${esc(u.label)}</strong><br><small>${esc(u.country)}${matched?` · Appellation : ${esc(matched.label||matched.name)}`:""}${gs?` · ${esc(gs)}`:""}${cc.length?` · ${cc.length} zone${cc.length>1?"s":""}`:""}</small></div><div class="ref-actions"><span>›</span></div>`;
    r.onclick=()=>showOriginReference(u);l.append(r)
  });
- alphaRender(letters)
+ refMetaRender(arr.length,"origine","origins");alphaRender(letters)
 }
 function ref(q=""){
  countryRender();
