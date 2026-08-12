@@ -552,3 +552,11 @@ body.wine-white .alpha-index{background:rgba(255,252,242,.34)}
 /* V10.5.4 — audit de couverture */
 .theory-audit-badge{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 1px 9px;padding:7px 9px;border-radius:10px;background:rgba(95,130,85,.07);color:var(--muted)}
 .theory-audit-badge span{font-size:9px;font-weight:900;color:#557650}.theory-audit-badge small{font-size:8px;text-align:right;line-height:1.25}
+
+/* V10.5.5 — navigation & Quiz UX */
+.history-inline-btn{width:100%;border:0;background:transparent;color:var(--muted);font-weight:800;font-size:11px;padding:10px 4px;margin:5px 0 1px}
+.quiz-home-grid{margin-top:8px}.quick-featured{border-color:rgba(124,45,63,.22);background:rgba(124,45,63,.045)}
+.quiz-config{margin-top:8px}.quiz-config>button{margin-bottom:12px}.quiz-config h2{margin:5px 0 14px}.config-section{margin:12px 0 16px}.config-label{display:block;font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.inline-config{margin:0}.cfg-diff,.cfg-level{border:0;background:var(--surface2);color:var(--text);border-radius:10px;padding:9px 10px;font-weight:800}.cfg-diff.active,.cfg-level.active{background:var(--accent);color:white}.config-level{margin:0 0 15px}.config-level>div{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#cfgTheoryTopic{width:100%;padding:11px;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--text)}.config-actions{display:grid;gap:8px}.config-action{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--text)}.config-action b{font-size:13px}.config-action small{color:var(--muted)}
+.theme-challenge-grid{display:grid;gap:8px}.theme-challenge-grid button{padding:14px;border-radius:13px;border:1px solid var(--line);background:var(--surface);color:var(--text);text-align:left}.config-start{width:100%;margin-top:8px}

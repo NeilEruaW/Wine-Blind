@@ -5,79 +5,32 @@
 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="15" cy="8" r="3"/><circle cx="12" cy="13" r="3"/><circle cx="8" cy="14" r="3"/><circle cx="16" cy="14" r="3"/><circle cx="12" cy="19" r="3"/><path d="M12 5c1-3 3-3 5-3"/></svg><span class="nav-label">Cépage</span></button>
 <button class="tab" data-tab="origin" aria-label="Diagnostic origine" title="Origine">
 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-13A7 7 0 1 0 5 9c0 6.8 7 13 7 13Z"/><circle cx="12" cy="9" r="2.5"/></svg><span class="nav-label">Origine</span></button>
-<button class="tab" data-tab="training" aria-label="Mode entraînement" title="Entraînement">
-<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4v5a3 3 0 0 0 3 3h8"/><path d="m13 8 4 4-4 4"/><circle cx="5" cy="4" r="2"/><path d="M5 20v-3a3 3 0 0 1 3-3"/></svg><span class="nav-label">Entraînement</span></button>
-<button class="tab" data-tab="history" aria-label="Historique" title="Historique">
-<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.7L4 8.6"/><path d="M4 4v4.6h4.6"/><path d="M12 7v5l3 2"/></svg><span class="nav-label">Historique</span></button>
+<button class="tab" data-tab="tree" aria-label="Arbre guidé" title="Arbre">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v5M12 8 7 13M12 8l5 5M7 13v5M17 13v5"/><circle cx="12" cy="3" r="2"/><circle cx="7" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg><span class="nav-label">Arbre</span></button>
+<button class="tab" data-tab="quiz" aria-label="Quiz et défis" title="Quiz">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h3M9 16h5"/><path d="m15 12 1 1 2-2"/></svg><span class="nav-label">Quiz</span></button>
 <button class="tab" data-tab="reference" aria-label="Référentiel" title="Référentiel">
 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A3.5 3.5 0 0 1 8.5 1H19v18H8.5A3.5 3.5 0 0 0 5 22.5Z"/><path d="M5 4.5V20"/><path d="M9 6h6M9 10h6"/></svg><span class="nav-label">Référentiel</span></button>
 </nav>
 <main>
-<section id="tab-grape" class="screen active"><div class="segmented"><button id="typeRed" class="seg active">Rouge</button><button id="typeWhite" class="seg">Blanc</button></div><div class="form-card"><div class="card-title-row"><h2><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17h16M6 13h12M8 9h8M10 5h4"/></svg></span>Structure</h2><span id="diagnosticConfidence" class="confidence-badge">Confiance faible</span></div><div id="completionBar" class="completion"><span></span></div><div id="structureFields" class="fields"></div></div><div class="form-card"><div class="card-title-row"><h2><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3c2.7 4.3 6 6.3 6 10a6 6 0 0 1-12 0c0-3.7 3.3-5.7 6-10Z"/><path d="M9 14c1.3 1.2 4.7 1.2 6 0"/></svg></span>Marqueurs complémentaires</h2></div><div id="markerFields" class="fields"></div></div><section class="results-section"><div class="section-heading"><div><span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 14.2 8.1 20 9l-4.2 4.1 1 5.8L12 16.2 7.2 19l1-5.8L4 9l5.8-.9L12 3Z"/></svg></span><h2>Top 10 cépages</h2></div><span id="grapeCount" class="muted"></span></div><div id="grapeResults" class="results compact-results"></div><div id="contextTools" class="context-tools hidden"><button id="nextCheck" class="context-pill next-check hidden" type="button"></button><button id="blendInsight" class="context-pill blend-insight hidden" type="button"></button></div><div id="comparePanel" class="compare-panel hidden"></div></section><div class="action-row"><button id="saveTasting" class="secondary-btn">Enregistrer</button><button id="goOrigin" class="primary-btn">Affiner l’origine →</button></div></section>
-<section id="tab-origin" class="screen"><div id="inheritedSummary" class="inherited"></div><div class="form-card"><h2>Affiner le style</h2><div id="originFields" class="fields"></div></div><section class="results-section"><div class="section-heading"><div><span class="step">4</span><h2>Top 10 origines</h2></div></div><div id="originResults" class="results"></div></section><button id="saveTastingOrigin" class="primary-btn">Enregistrer cette dégustation</button></section>
-<section id="tab-training" class="screen"><div class="segmented training-modes"><button id="modeTree" class="seg active">Arbre guidé</button><button id="modeQuiz" class="seg">Quiz & Défis</button></div><div id="treeMode">
-  <div id="adaptiveCard" class="training-card adaptive-card">
-    <div class="training-progress">
-      <span id="treeStep"></span>
-      <div class="tree-actions-top">
-        <button id="treeWhy" class="ghost-btn small">ⓘ Pourquoi ?</button>
-        <button id="treeRestart" class="ghost-btn small">Recommencer</button>
-      </div>
-    </div>
-    <div id="treeConvergence" class="convergence"><span></span><i></i><small></small></div>
-    <h2 id="treeQuestion"></h2>
-    <div id="treeWhyText" class="tree-why hidden"></div>
-    <div class="adaptive-answers">
-      <button id="treeYes" class="answer-btn yes-btn">Oui</button>
-      <button id="treeNo" class="answer-btn no-btn">Non</button>
-      <button id="treeUnsure" class="answer-btn unsure-btn">Incertain</button>
-    </div>
-    <button id="treeBack" class="link-btn">← Modifier la réponse précédente</button>
+<section id="tab-grape" class="screen active"><div class="segmented"><button id="typeRed" class="seg active">Rouge</button><button id="typeWhite" class="seg">Blanc</button></div><div class="form-card"><div class="card-title-row"><h2><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17h16M6 13h12M8 9h8M10 5h4"/></svg></span>Structure</h2><span id="diagnosticConfidence" class="confidence-badge">Confiance faible</span></div><div id="completionBar" class="completion"><span></span></div><div id="structureFields" class="fields"></div></div><div class="form-card"><div class="card-title-row"><h2><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3c2.7 4.3 6 6.3 6 10a6 6 0 0 1-12 0c0-3.7 3.3-5.7 6-10Z"/><path d="M9 14c1.3 1.2 4.7 1.2 6 0"/></svg></span>Marqueurs complémentaires</h2></div><div id="markerFields" class="fields"></div></div><section class="results-section"><div class="section-heading"><div><span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 14.2 8.1 20 9l-4.2 4.1 1 5.8L12 16.2 7.2 19l1-5.8L4 9l5.8-.9L12 3Z"/></svg></span><h2>Top 10 cépages</h2></div><span id="grapeCount" class="muted"></span></div><div id="grapeResults" class="results compact-results"></div><div id="contextTools" class="context-tools hidden"><button id="nextCheck" class="context-pill next-check hidden" type="button"></button><button id="blendInsight" class="context-pill blend-insight hidden" type="button"></button></div><div id="comparePanel" class="compare-panel hidden"></div></section><button class="history-inline-btn" id="openHistoryGrape">↻ Historique des dégustations</button><div class="action-row"><button id="saveTasting" class="secondary-btn">Enregistrer</button><button id="goOrigin" class="primary-btn">Affiner l’origine →</button></div></section>
+<section id="tab-origin" class="screen"><div id="inheritedSummary" class="inherited"></div><div class="form-card"><h2>Affiner le style</h2><div id="originFields" class="fields"></div></div><section class="results-section"><div class="section-heading"><div><span class="step">4</span><h2>Top 10 origines</h2></div></div><div id="originResults" class="results"></div></section><button class="history-inline-btn" id="openHistoryOrigin">↻ Historique des dégustations</button><button id="saveTastingOrigin" class="primary-btn">Enregistrer cette dégustation</button></section>
+<section id="tab-tree" class="screen"><div id="treeMode">
+  <div id="adaptiveCard" class="training-card adaptive-card"><div class="training-progress"><span id="treeStep"></span><div class="tree-actions-top"><button id="treeWhy" class="ghost-btn small">ⓘ Pourquoi ?</button><button id="treeRestart" class="ghost-btn small">Recommencer</button></div></div><div id="treeConvergence" class="convergence"><span></span><i></i><small></small></div><h2 id="treeQuestion"></h2><div id="treeWhyText" class="tree-why hidden"></div><div class="adaptive-answers"><button id="treeYes" class="answer-btn yes-btn">Oui</button><button id="treeNo" class="answer-btn no-btn">Non</button><button id="treeUnsure" class="answer-btn unsure-btn">Incertain</button></div><button id="treeBack" class="link-btn">← Modifier la réponse précédente</button></div>
+  <div id="adaptiveHistory" class="adaptive-history"></div><div id="adaptiveResult" class="adaptive-result hidden"></div></div></section>
+<section id="tab-quiz" class="screen"><div id="quizMode"><div id="trainingHub">
+  <div class="training-hero"><div><span class="training-kicker">QUIZ & DÉFIS</span><h2>Que veux-tu travailler ?</h2></div><div id="trainingMiniStats" class="training-mini-stats"></div></div>
+  <div class="training-grid quiz-home-grid">
+    <button class="training-mode-card quick-featured" data-direct-session="quick"><span class="training-mode-icon">◎</span><div><b>Session rapide</b><small>10 questions variées · démarrage immédiat</small></div><span>›</span></button>
+    <button class="training-mode-card" data-config-mode="blind"><span class="training-mode-icon">◉</span><div><b>Dégustation à l’aveugle</b><small>Profils sensoriels · cépages & origines</small></div><span>›</span></button>
+    <button class="training-mode-card" data-config-mode="geo"><span class="training-mode-icon">⌖</span><div><b>Origines & appellations</b><small>Géographie · hiérarchies · règles</small></div><span>›</span></button>
+    <button class="training-mode-card" data-config-mode="themes"><span class="training-mode-icon">◇</span><div><b>Thèmes & défis</b><small>Duels · intrus · marqueurs · points faibles</small></div><span>›</span></button>
+    <button class="training-mode-card theory-featured" data-config-mode="wset"><span class="training-mode-icon">🎓</span><div><b>Théorie WSET</b><small>Préparation structurée · L1 à L4</small></div><span>›</span></button>
   </div>
-  <div id="adaptiveHistory" class="adaptive-history"></div>
-  <div id="adaptiveResult" class="adaptive-result hidden"></div>
-</div><div id="quizMode" class="hidden">
-  <div id="trainingHub">
-    <div class="training-hero">
-      <div><span class="training-kicker">S’ENTRAÎNER</span><h2>Que veux-tu travailler ?</h2></div>
-      <div id="trainingMiniStats" class="training-mini-stats"></div>
-    </div>
-    <div class="difficulty-picker" role="group" aria-label="Difficulté">
-      <button class="difficulty-btn active" data-difficulty="Fondamentaux">Fondamentaux</button>
-      <button class="difficulty-btn" data-difficulty="Avancé">Avancé</button>
-      <button class="difficulty-btn" data-difficulty="Expert">Expert</button>
-    </div>
-    <div class="theory-level-picker" role="group" aria-label="Niveau WSET">
-  <span>Niveau théorique</span>
-  <div><button class="theory-level-btn" data-wset="1">L1</button><button class="theory-level-btn" data-wset="2">L2</button><button class="theory-level-btn active" data-wset="3">L3</button><button class="theory-level-btn" data-wset="4">L4*</button></div>
-</div><div class="theory-topic-picker"><label for="theoryTopic">Thème</label><select id="theoryTopic"><option value="all">Tous les thèmes</option><option>Viticulture</option><option>Vinification</option><option value="geo">Régions & appellations</option><option value="grapes">Cépages</option><option value="spark">Effervescents</option><option value="fort">Fortifiés</option><option value="service">Service, accords & dégustation</option><option value="reason">Raisonnement & application</option><option value="quality">Qualité, prix & droit</option></select></div>
-<div class="theory-audit-badge"><span>✓ Banque auditée V10.5.4</span><small>989 questions · couverture croisée WSET / Fine Vintage / SommBench</small></div>
-<div class="training-grid">
-      <button class="training-mode-card theory-featured" data-session="theory"><span class="training-mode-icon">🎓</span><div><b>Théorie WSET</b><small>QCM originaux alignés sur le syllabus · viticulture, vinification, régions, effervescents, fortifiés</small></div><span>›</span></button><button class="training-mode-card theory-featured" data-session="mock"><span class="training-mode-icon">⏱</span><div><b>Examen blanc</b><small>L1 : 30 QCM · L2/L3 : 50 QCM · tirage équilibré par thème</small></div><span>›</span></button>
-      <button class="training-mode-card" data-session="quick"><span class="training-mode-icon">◎</span><div><b>Session rapide</b><small>10 questions variées · cépages, origines, appellations</small></div><span>›</span></button>
-      <button class="training-mode-card" data-session="blind"><span class="training-mode-icon">◉</span><div><b>Aveugle</b><small>Profils sensoriels · cépages & origines, sans indices géographiques faciles</small></div><span>›</span></button>
-      <button class="training-mode-card" data-session="geo"><span class="training-mode-icon">⌖</span><div><b>Origines & appellations</b><small>Hiérarchie, cépages clés et rattachements géographiques</small></div><span>›</span></button>
-      <button class="training-mode-card" data-session="duel"><span class="training-mode-icon">⇄</span><div><b>Duels</b><small>Départager des cépages ou styles proches par leurs critères structuraux</small></div><span>›</span></button>
-      <button class="training-mode-card" data-session="intruder"><span class="training-mode-icon">◇</span><div><b>Quel est l’intrus ?</b><small>Repérer l’appellation ou la région qui ne partage pas la même logique</small></div><span>›</span></button>
-      <button class="training-mode-card" data-session="weak"><span class="training-mode-icon">↻</span><div><b>Mes points faibles</b><small>Questions ciblées à partir de tes erreurs enregistrées sur cet appareil</small></div><span>›</span></button>
-    </div>
-    <div class="training-note"><b>* Niveau 4</b><span>Le Diploma WSET est évalué principalement en réponses ouvertes : les QCM L4 sont donc des exercices originaux « Diploma-inspired » destinés à tester le raisonnement, et non une reproduction du format officiel.</span></div>
-  </div>
-  <div id="trainingSession" class="hidden">
-    <div class="training-session-head"><button id="quitTraining" class="ghost-btn small">← Quitter</button><div><span id="sessionLabel"></span><b id="sessionProgress"></b></div><span id="sessionScore" class="session-score"></span></div>
-    <div class="session-progress-bar"><i id="sessionProgressBar"></i></div>
-    <div id="quizCard" class="training-card quiz-card-v104">
-      <div class="quiz-meta"><span id="quizType"></span><span id="quizDifficulty"></span></div>
-      <h2 id="quizQuestion"></h2>
-      <div id="quizClues" class="quiz-clues"></div>
-      <div id="quizChoices" class="quiz-choices"></div>
-      <div id="quizFeedback" class="quiz-feedback hidden"></div>
-      <button id="newQuiz" class="primary-btn hidden">Question suivante</button>
-    </div>
-    <div id="sessionEnd" class="training-card session-end hidden"></div>
-  </div>
-</div></section>
-<section id="tab-history" class="screen"><div id="historyStats" class="stats-grid"></div><div id="historyInsights" class="history-insights"></div><div id="historyList" class="history-list"></div></section>
+  <div id="quizConfig" class="quiz-config hidden"><button id="closeQuizConfig" class="ghost-btn small">← Retour</button><div id="quizConfigContent"></div></div>
+</div>
+<div id="trainingSession" class="hidden"><div class="training-session-head"><button id="quitTraining" class="ghost-btn small">← Quitter</button><div><span id="sessionLabel"></span><b id="sessionProgress"></b></div><span id="sessionScore" class="session-score"></span></div><div class="session-progress-bar"><i id="sessionProgressBar"></i></div><div id="quizCard" class="training-card quiz-card-v104"><div class="quiz-meta"><span id="quizType"></span><span id="quizDifficulty"></span></div><h2 id="quizQuestion"></h2><div id="quizClues" class="quiz-clues"></div><div id="quizChoices" class="quiz-choices"></div><div id="quizFeedback" class="quiz-feedback hidden"></div><button id="newQuiz" class="primary-btn hidden">Question suivante</button></div><div id="sessionEnd" class="training-card session-end hidden"></div></div></div></section>
+<section id="tab-history" class="screen"><button id="backFromHistory" class="ghost-btn small">← Retour au diagnostic</button><div id="historyStats" class="stats-grid"></div><div id="historyInsights" class="history-insights"></div><div id="historyList" class="history-list"></div></section>
 <section id="tab-reference" class="screen"><input id="searchGrape" class="search" type="search" placeholder="Cépage, appellation, région, arôme, assemblage…"><div class="ref-mode"><button class="ref-mode-btn active" data-refmode="grapes">Cépages</button><button class="ref-mode-btn" data-refmode="origins">Origines</button></div><div id="originCountryFilters" class="origin-country-filters hidden"></div><div class="ref-filters"><button class="filter-chip active" data-ref="all">Tous</button><button class="filter-chip" data-ref="Rouge">Rouges</button><button class="filter-chip" data-ref="Blanc">Blancs</button><button class="filter-chip" data-ref="fav">♡ À réviser</button></div><div id="refMeta" class="ref-meta"></div><div class="reference-directory"><div id="referenceList" class="reference-list"></div><div id="alphaIndex" class="alpha-index" aria-label="Index alphabétique"></div></div></section>
 </main>
 <dialog id="detailDialog"><div class="dialog-head"><div><div id="detailType" class="eyebrow"></div><h2 id="detailTitle"></h2></div><button id="closeDialog" class="close-btn">×</button></div><div id="detailBody"></div></dialog>

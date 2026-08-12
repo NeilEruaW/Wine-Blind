@@ -168,3 +168,12 @@ Le cache du service worker est incrémenté en V9 pour faciliter la mise à jour
 - 58 questions L3 originales ajoutées uniquement dans ces domaines ; aucune augmentation des catégories géographiques déjà très fortement couvertes.
 - Examen blanc désormais stratifié par grands thèmes lorsque « Tous les thèmes » est sélectionné, afin d'éviter qu'une session soit dominée par la géographie.
 - Fichiers d'audit : coverage_audit_v10_5_4.csv et coverage_audit_v10_5_4.json.
+
+## V10.5.5 — refonte UX
+- Arbre guidé et Quiz & Défis deviennent deux onglets autonomes de la Tab Bar.
+- Historique retiré de la Tab Bar et accessible depuis les deux diagnostics.
+- Quiz simplifié : choix de l’objectif avant les paramètres.
+- Session rapide sans configuration ; difficulté uniquement pour les modes qui la nécessitent.
+- Niveau L1-L4 et Examen blanc uniquement dans Théorie WSET.
+- Thèmes & défis regroupe Duels, Intrus et Points faibles.
+- Suppression des mentions techniques de banque auditée et de la note L4 sur l’écran principal.
