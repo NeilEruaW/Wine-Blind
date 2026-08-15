@@ -1,41 +1,43 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#7c2d3f"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Wine Blind"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css"><title>Wine Blind — WSET</title></head><body>
-<header class="app-header"><div><h1>Wine Blind</h1></div><button id="resetAll" class="ghost-btn">Réinitialiser</button></header>
-<nav class="tabbar" aria-label="Navigation principale">
-<button class="tab active" data-tab="grape" aria-label="Diagnostic cépage" title="Cépage">
-<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="15" cy="8" r="3"/><circle cx="12" cy="13" r="3"/><circle cx="8" cy="14" r="3"/><circle cx="16" cy="14" r="3"/><circle cx="12" cy="19" r="3"/><path d="M12 5c1-3 3-3 5-3"/></svg><span class="nav-label">Cépage</span></button>
-<button class="tab" data-tab="origin" aria-label="Diagnostic origine" title="Origine">
-<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-13A7 7 0 1 0 5 9c0 6.8 7 13 7 13Z"/><circle cx="12" cy="9" r="2.5"/></svg><span class="nav-label">Origine</span></button>
-<button class="tab" data-tab="tree" aria-label="Arbre guidé" title="Arbre">
-<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v5M12 8 7 13M12 8l5 5M7 13v5M17 13v5"/><circle cx="12" cy="3" r="2"/><circle cx="7" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg><span class="nav-label">Arbre</span></button>
-<button class="tab" data-tab="quiz" aria-label="Quiz et défis" title="Quiz">
-<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h3M9 16h5"/><path d="m15 12 1 1 2-2"/></svg><span class="nav-label">Quiz</span></button>
-<button class="tab" data-tab="reference" aria-label="Référentiel" title="Référentiel">
-<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5A3.5 3.5 0 0 1 8.5 1H19v18H8.5A3.5 3.5 0 0 0 5 22.5Z"/><path d="M5 4.5V20"/><path d="M9 6h6M9 10h6"/></svg><span class="nav-label">Référentiel</span></button>
-</nav>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#4d1026">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Wine Blind">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <title>Wine Blind</title>
+</head>
+<body>
+<header class="topbar"><div><div class="brand">Wine Blind</div><div class="version">V11.0.0 · C2-C2</div></div><button id="installBtn" class="ghost hidden">Installer</button></header>
 <main>
-<section id="tab-grape" class="screen active"><div class="segmented"><button id="typeRed" class="seg active">Rouge</button><button id="typeWhite" class="seg">Blanc</button></div><div class="form-card"><div class="card-title-row"><h2><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 17h16M6 13h12M8 9h8M10 5h4"/></svg></span>Dégustation</h2><span id="diagnosticConfidence" class="confidence-badge">Confiance faible</span></div><div id="completionBar" class="completion"><span></span></div><div id="structureFields" class="fields"></div></div><div class="form-card"><div class="card-title-row"><h2><span class="title-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3c2.7 4.3 6 6.3 6 10a6 6 0 0 1-12 0c0-3.7 3.3-5.7 6-10Z"/><path d="M9 14c1.3 1.2 4.7 1.2 6 0"/></svg></span>Arômes & saveurs</h2></div><div id="markerFields" class="fields"></div></div><section class="results-section"><div class="section-heading"><div><span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 14.2 8.1 20 9l-4.2 4.1 1 5.8L12 16.2 7.2 19l1-5.8L4 9l5.8-.9L12 3Z"/></svg></span><h2>Top 10 cépages</h2></div><span id="grapeCount" class="muted"></span></div><div id="grapeResults" class="results compact-results"></div><div id="contextTools" class="context-tools hidden"><button id="nextCheck" class="context-pill next-check hidden" type="button"></button><button id="blendInsight" class="context-pill blend-insight hidden" type="button"></button></div><div id="comparePanel" class="compare-panel hidden"></div></section><button class="history-inline-btn" id="openHistoryGrape">↻ Historique des dégustations</button><div class="action-row"><button id="saveTasting" class="secondary-btn">Enregistrer</button><button id="goOrigin" class="primary-btn">Affiner l’origine →</button></div></section>
-<section id="tab-origin" class="screen"><div id="inheritedSummary" class="inherited"></div><div class="form-card"><h2>Affiner le style</h2><div id="originFields" class="fields"></div></div><section class="results-section"><div class="section-heading"><div><span class="step">4</span><h2>Top 10 origines</h2></div></div><div id="originResults" class="results"></div></section><button class="history-inline-btn" id="openHistoryOrigin">↻ Historique des dégustations</button><button id="saveTastingOrigin" class="primary-btn">Enregistrer cette dégustation</button></section>
-<section id="tab-tree" class="screen"><div id="treeMode">
-  <div id="adaptiveCard" class="training-card adaptive-card"><div class="training-progress"><span id="treeStep"></span><div class="tree-actions-top"><button id="treeWhy" class="ghost-btn small">ⓘ Pourquoi ?</button><button id="treeRestart" class="ghost-btn small">Recommencer</button></div></div><div id="treeConvergence" class="convergence"><span></span><i></i><small></small></div><h2 id="treeQuestion"></h2><div id="treeWhyText" class="tree-why hidden"></div><div class="adaptive-answers"><button id="treeYes" class="answer-btn yes-btn">Oui</button><button id="treeNo" class="answer-btn no-btn">Non</button><button id="treeUnsure" class="answer-btn unsure-btn">Incertain</button></div><button id="treeBack" class="link-btn">← Modifier la réponse précédente</button></div>
-  <div id="adaptiveHistory" class="adaptive-history"></div><div id="adaptiveResult" class="adaptive-result hidden"></div></div></section>
-<section id="tab-quiz" class="screen"><div id="quizMode"><div id="trainingHub">
-  <div class="training-hero"><div><span class="training-kicker">QUIZ & DÉFIS</span><h2>Que veux-tu travailler ?</h2></div><div id="trainingMiniStats" class="training-mini-stats"></div></div>
-  <div class="training-grid quiz-home-grid">
-    <button class="training-mode-card theory-featured" data-config-mode="wset"><span class="training-mode-icon">🎓</span><div><b>Théorie WSET</b><small>Préparation structurée · L1 à L4</small></div><span>›</span></button>
-    <button class="training-mode-card quick-featured" data-direct-session="quick"><span class="training-mode-icon">◎</span><div><b>Session rapide</b><small>10 questions variées</small></div><span>›</span></button>
-    <button class="training-mode-card" data-config-mode="blind"><span class="training-mode-icon">◉</span><div><b>Dégustation à l’aveugle</b><small>Profils sensoriels des cépages</small></div><span>›</span></button>
-    <button class="training-mode-card" data-config-mode="geo"><span class="training-mode-icon">⌖</span><div><b>Origines & appellations</b><small>Géographie</small></div><span>›</span></button>
-    <button class="training-mode-card" data-config-mode="topics"><span class="training-mode-icon">◇</span><div><b>Thèmes</b><small>Viticulture · vinification · régions · styles</small></div><span>›</span></button>
-    <button class="training-mode-card" data-config-mode="duel"><span class="training-mode-icon">⇄</span><div><b>Duels</b><small>Départager deux profils proches</small></div><span>›</span></button>
-    <button class="training-mode-card" data-config-mode="intruder"><span class="training-mode-icon">◇</span><div><b>Quel est l’intrus ?</b><small>Repérer l’élément qui ne correspond pas</small></div><span>›</span></button>
-    <button class="training-mode-card" data-direct-session="weak"><span class="training-mode-icon">↻</span><div><b>Mes points faibles</b><small>Retravailler les erreurs récurrentes</small></div><span>›</span></button>
-  </div>
-  <div id="quizConfig" class="quiz-config hidden"><button id="closeQuizConfig" class="ghost-btn small">← Retour</button><div id="quizConfigContent"></div></div>
-</div>
-<div id="trainingSession" class="hidden"><div class="training-session-head"><button id="quitTraining" class="ghost-btn small">← Quitter</button><div><span id="sessionLabel"></span><b id="sessionProgress"></b></div><span id="sessionScore" class="session-score"></span></div><div class="session-progress-bar"><i id="sessionProgressBar"></i></div><div id="quizCard" class="training-card quiz-card-v104"><div class="quiz-meta"><span id="quizType"></span><span id="quizDifficulty"></span></div><h2 id="quizQuestion"></h2><div id="quizClues" class="quiz-clues"></div><div id="quizChoices" class="quiz-choices"></div><div id="quizFeedback" class="quiz-feedback hidden"></div><button id="newQuiz" class="primary-btn hidden">Question suivante</button></div><div id="sessionEnd" class="training-card session-end hidden"></div></div></div></section>
-<section id="tab-history" class="screen"><button id="backFromHistory" class="ghost-btn small">← Retour au diagnostic</button><div id="historyStats" class="stats-grid"></div><div id="historyInsights" class="history-insights"></div><div id="historyList" class="history-list"></div></section>
-<section id="tab-reference" class="screen"><input id="searchGrape" class="search" type="search" placeholder="Cépage, appellation, région, arôme, assemblage…"><div class="ref-mode"><button class="ref-mode-btn active" data-refmode="grapes">Cépages</button><button class="ref-mode-btn" data-refmode="origins">Origines</button></div><div id="originCountryFilters" class="origin-country-filters hidden"></div><div class="ref-filters"><button class="filter-chip active" data-ref="all">Tous</button><button class="filter-chip" data-ref="Rouge">Rouges</button><button class="filter-chip" data-ref="Blanc">Blancs</button><button class="filter-chip" data-ref="fav">♡ À réviser</button></div><div id="refMeta" class="ref-meta"></div><div class="reference-directory"><div id="referenceList" class="reference-list"></div><div id="alphaIndex" class="alpha-index" aria-label="Index alphabétique"></div></div></section>
+  <nav class="tabs" aria-label="Navigation">
+    <button data-tab="diagnostic" class="active">Diagnostic</button><button data-tab="training">Entraînement</button><button data-tab="grapes">Cépages</button><button data-tab="history">Historique</button>
+  </nav>
+
+  <section id="diagnostic" class="tab active">
+    <div class="card"><h2>Saisie SAT</h2><p class="muted">Granularité utilisateur SAT inchangée. Le moteur travaille en interne sur les centres/plages C2-C2 à 0,1.</p><div id="structureFields" class="structure-grid"></div></div>
+    <div class="card"><div class="row between"><h2>Arômes & saveurs</h2><button id="clearAromas" class="ghost small">Effacer</button></div><input id="aromaSearch" class="search" placeholder="Rechercher cassis, violette, fruits noirs…"><div id="aromaSelected" class="chips selected"></div><div id="aromaPicker"></div></div>
+    <div class="actions"><button id="scoreBtn" class="primary">Diagnostiquer</button><button id="resetBtn" class="secondary">Réinitialiser</button></div>
+    <div id="diagnosticResults" class="results hidden"></div>
+  </section>
+
+  <section id="training" class="tab">
+    <div class="card"><h2>Mode entraînement</h2><p class="muted">Tire un profil au hasard. L’identité reste masquée pendant ta saisie.</p><div class="actions"><button id="newTraining" class="primary">Nouveau vin</button><button id="revealTraining" class="secondary" disabled>Révéler</button></div><div id="trainingPrompt" class="training-prompt">Aucun exercice en cours.</div><div id="trainingReveal" class="hidden"></div></div>
+  </section>
+
+  <section id="grapes" class="tab">
+    <div class="card"><h2>Référentiel cépages</h2><input id="grapeSearch" class="search" placeholder="Cépage, région, style…"><div id="grapeList" class="grape-list"></div></div>
+  </section>
+
+  <section id="history" class="tab">
+    <div class="card"><div class="row between"><h2>Historique</h2><button id="clearHistory" class="ghost small">Effacer</button></div><div id="historyList"></div></div>
+  </section>
 </main>
-<dialog id="detailDialog"><div class="dialog-head"><div><div id="detailType" class="eyebrow"></div><h2 id="detailTitle"></h2></div><button id="closeDialog" class="close-btn">×</button></div><div id="detailBody"></div></dialog>
-<dialog id="saveDialog"><div class="dialog-head"><div><div class="eyebrow">Journal</div><h2>Enregistrer</h2></div><button id="closeSave" class="close-btn">×</button></div><form id="saveForm" class="save-form"><label>Vin / cuvée<input id="wineName" placeholder="Optionnel"></label><div class="two-col"><label>Millésime<input id="wineVintage" inputmode="numeric"></label><label>Date<input id="wineDate" type="date"></label></div><label>Cépage réel<input id="actualGrape" list="grapeNames" placeholder="Après révélation"></label><label>Origine réelle<input id="actualOrigin" placeholder="Optionnel"></label><label>Notes<textarea id="wineNotes" rows="3"></textarea></label><datalist id="grapeNames"></datalist><button class="primary-btn" type="submit">Enregistrer</button></form></dialog>
-<script src="data.js"></script><script src="v106.js"></script><script src="v107.js"></script><script src="v108.js"></script><script src="tree.js"></script><script src="app.js"></script></body></html>
+<footer>Wine Blind V11.0.0 · moteur C2-C2 gelé · données conservées localement</footer>
+<script src="engine.js"></script><script src="app.js"></script>
+</body></html>
