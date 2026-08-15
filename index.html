@@ -13,31 +13,32 @@
   <title>Wine Blind</title>
 </head>
 <body>
-<header class="topbar"><div><div class="brand">Wine Blind</div><div class="version">V11.0.0 · C2-C2</div></div><button id="installBtn" class="ghost hidden">Installer</button></header>
+<header class="topbar"><div><div class="brand">Wine Blind</div><div class="version">V11.0.1 · C2-C2</div></div><button id="installBtn" class="ghost hidden">Installer</button></header>
 <main>
   <nav class="tabs" aria-label="Navigation">
     <button data-tab="diagnostic" class="active">Diagnostic</button><button data-tab="training">Entraînement</button><button data-tab="grapes">Cépages</button><button data-tab="history">Historique</button>
   </nav>
 
   <section id="diagnostic" class="tab active">
-    <div class="card"><h2>Saisie SAT</h2><p class="muted">Granularité utilisateur SAT inchangée. Le moteur travaille en interne sur les centres/plages C2-C2 à 0,1.</p><div id="structureFields" class="structure-grid"></div></div>
-    <div class="card"><div class="row between"><h2>Arômes & saveurs</h2><button id="clearAromas" class="ghost small">Effacer</button></div><input id="aromaSearch" class="search" placeholder="Rechercher cassis, violette, fruits noirs…"><div id="aromaSelected" class="chips selected"></div><div id="aromaPicker"></div></div>
-    <div class="actions"><button id="scoreBtn" class="primary">Diagnostiquer</button><button id="resetBtn" class="secondary">Réinitialiser</button></div>
+    <div class="card"><div class="section-head"><div><h2>Saisie SAT</h2><p class="muted">La saisie reste au format SAT. Les fiches d’identité affichent désormais les valeurs internes C2-C2 à 0,1.</p></div></div><div id="structureFields" class="structure-grid"></div></div>
+    <div class="card"><div class="row between"><div><h2>Arômes & saveurs</h2><p class="muted compact">Sélectionne familles et descripteurs précis observés.</p></div><button id="clearAromas" class="ghost small">Effacer</button></div><input id="aromaSearch" class="search" placeholder="Rechercher cassis, violette, fruits noirs…"><div id="aromaSelected" class="chips selected"></div><div id="aromaPicker"></div></div>
+    <div class="actions sticky-actions"><button id="scoreBtn" class="primary">Diagnostiquer</button><button id="resetBtn" class="secondary">Réinitialiser</button></div>
     <div id="diagnosticResults" class="results hidden"></div>
   </section>
 
   <section id="training" class="tab">
-    <div class="card"><h2>Mode entraînement</h2><p class="muted">Tire un profil au hasard. L’identité reste masquée pendant ta saisie.</p><div class="actions"><button id="newTraining" class="primary">Nouveau vin</button><button id="revealTraining" class="secondary" disabled>Révéler</button></div><div id="trainingPrompt" class="training-prompt">Aucun exercice en cours.</div><div id="trainingReveal" class="hidden"></div></div>
+    <div class="card"><h2>Mode entraînement</h2><p class="muted">Tire un profil Wine Blind au hasard, puis révèle son identité et sa fiche après ta dégustation.</p><div class="actions"><button id="newTraining" class="primary">Nouveau vin</button><button id="revealTraining" class="secondary" disabled>Révéler</button></div><div id="trainingPrompt" class="training-prompt">Aucun exercice en cours.</div><div id="trainingReveal" class="hidden"></div></div>
   </section>
 
   <section id="grapes" class="tab">
-    <div class="card"><h2>Référentiel cépages</h2><input id="grapeSearch" class="search" placeholder="Cépage, région, style…"><div id="grapeList" class="grape-list"></div></div>
+    <div class="card"><h2>Référentiel cépages</h2><p class="muted">Les valeurs sont affichées à 0,1 ; les plages regroupent les profils régionaux/style du cépage.</p><input id="grapeSearch" class="search" placeholder="Cépage, région, style…"><div id="grapeList" class="grape-list"></div></div>
   </section>
 
   <section id="history" class="tab">
     <div class="card"><div class="row between"><h2>Historique</h2><button id="clearHistory" class="ghost small">Effacer</button></div><div id="historyList"></div></div>
   </section>
 </main>
-<footer>Wine Blind V11.0.0 · moteur C2-C2 gelé · données conservées localement</footer>
-<script src="engine.js"></script><script src="app.js"></script>
+<footer>Wine Blind V11.0.1 · moteur C2-C2 gelé · UX release · données conservées localement</footer>
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-sheet"><div class="modal-head"><h2 id="modalTitle">Fiche</h2><button id="modalClose" class="icon-btn" aria-label="Fermer">×</button></div><div id="modalBody"></div></div></div>
+<script src="data.js"></script><script src="engine.js"></script><script src="app.js"></script>
 </body></html>

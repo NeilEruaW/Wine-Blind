@@ -1,7 +1,22 @@
-# Wine Blind V11.0.0
+# Release notes — Wine Blind V11.0.1
 
-Nouvelle version majeure fondée sur la candidate **C2-C2** gelée.
+## Type
+Patch UX / correction fonctionnelle. **Aucun recalibrage C2-C2.**
 
-Principales évolutions : profils internes à granularité 0,1 et plages structurelles ; 203 profils / 85 cépages ; pondération exacte > signature > famille avec rendements décroissants des exacts ; régularisation M1 sur la masse générique ; intégration structure + arômes + cohérence ; conservation du SAT utilisateur ; Top 10 enrichi par le meilleur profil géographique/style ; PWA hors-ligne, historique, recherche et entraînement.
+## Correctifs demandés
+1. Top 10 Origines : les lignes sont cliquables et ouvrent la fiche du profil régional/style.
+2. Fiches identité : centres et plages C2-C2 affichés à 0,1.
+3. Structure : nouvelle hiérarchie visuelle, avec texte puis note puis plage.
+4. Suppression du reliquat « 4 » près des origines.
+5. Suppression de « Affiner le style » : les 203 profils sont scorés directement.
 
-La release ne modifie pas C2-C2 après le holdout. Le point Zinfandel jammy/confituré reste un known issue futur.
+## Améliorations UX supplémentaires
+- Résultat principal renforcé visuellement.
+- Indice explicitement présenté comme relatif et non probabiliste.
+- Bloc « Pourquoi ce résultat ? » fondé sur les correspondances structure/arômes.
+- Navigation fiche cépage → origines/styles.
+- Recherche cépage/région/style.
+- Historique local et entraînement conservés.
+
+## Known issue
+`jammy/confituré` pour Zinfandel reste consigné pour une future version et n'est pas ajouté rétroactivement à C2-C2.

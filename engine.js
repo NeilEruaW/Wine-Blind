@@ -1,29 +1,24 @@
-
-(function(global){
-'use strict';
-const AXIS_MAP={acidite:'Acidité',tanins:'Tanins',alcool:'Alcool',corps:'Corps',couleur:'Couleur'};
-const AXIS_W={'Acidité':1.5,'Tanins':1.5,'Alcool':1.2,'Corps':1.1,'Couleur':1.0};
-const FULL_W=6.3, KERNEL=.82, AROMA_MULT=3.2;
-const WOOD=new Set(['vanilla','toast','coffee','chocolate','fumé','cèdre','vanille','café','chocolat']);
-const MLF=new Set(['butter','crème','lactique','yaourt','beurre']);
-const RIPE=new Set(['confituré','fruits séchés','raisin sec','figue','fruit cuit']);
-const FRESH=new Set(['pomme verte','lemon','lime','grapefruit','citron','citron vert','pamplemousse','grass','herbe','feuillu','poivron vert']);
+(()=>{
+const C=window.WINE_BLIND_CANDIDATE;
+const AXES=['Acidité','Tanins','Alcool','Corps','Couleur'];
+const W=C.engine.structure.axis_weights;
+const FULL=6.3;
+const TYPE={family:1,signature:1.25,exact:1.5};
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-function structScore(profile,input){let num=0,den=0,obs=0;for(const [ik,pk] of Object.entries(AXIS_MAP)){const x=input.structure?.[ik];if(x==null)continue;const ref=profile.structure[pk];if(!ref)continue;const w=AXIS_W[pk];const d=Math.max(ref.L-x,0,x-ref.U);const sim=Math.pow(KERNEL,d);num+=w*sim;den+=w;obs+=w;}const S=den?num/den:0;const kappa=obs/FULL_W;return {S,kappa,S_eff:S*kappa};}
-function aromaScore(profile,input,opts={}){const fam=new Set(input.families||[]),sig=new Set(input.signatures||[]),ex=new Set(input.exacts||[]);const generic=[];const exact=[];const markerByItem=new Map(profile.markers.map(m=>[m.kind+':'+m.item,m]));
- const observedParents=new Set(); for(const item of ex){for(const m of profile.markers){if(m.kind==='exact'&&m.item===item&&m.parent_resolved)observedParents.add(m.parent_resolved)}}
- let Dg=0,Graw=0; for(const item of fam){let residual=observedParents.has(item)?.35:1;Dg+=1*residual;const m=markerByItem.get('family:'+item);if(m)Graw+=m.capacity*residual} for(const item of sig){let residual=observedParents.has(item)?.35:1;Dg+=1.25*residual;const m=markerByItem.get('signature:'+item);if(m)Graw+=m.capacity*residual}
- const Rg=opts.forceR1?1:(profile.R_generic??1); const G=Rg*Graw;
- let exactObserved=[...ex]; let E=0,De=0;if(!opts.genericOnly){let matched=[];for(const item of exactObserved){const m=markerByItem.get('exact:'+item);if(m){const cap=opts.oldExact?(m.capacity_C2_C1_audit??m.capacity*4/3):m.capacity;matched.push(cap)}}matched.sort((a,b)=>b-a);matched.forEach((e,i)=>{E+=opts.oldExact?e:e/Math.sqrt(i+1)});if(opts.oldExact){De=exactObserved.length*2}else{De=exactObserved.reduce((s,_,i)=>s+1.5/Math.sqrt(i+1),0)}}
- const D=Dg+De; return {A:D?clamp((G+E)/D,0,1):0,G,E,D,Rg,exactCount:exactObserved.length};}
- function coherence(profile,input,st,ar){let C=0,rules=[];const ex=new Set([...(input.exacts||[]),...(input.coherence||[])]);const sumCap=(set)=>{let s=0;for(const m of profile.markers){if(m.kind==='exact'&&set.has(m.item)&&ex.has(m.item))s+=m.capacity}return s};
-  const woodEv=sumCap(WOOD);if(woodEv>=1&&profile.native_wood>=1){C+=.02*Math.min(1,woodEv);rules.push('C2-C1+')}
-  const mlfEv=sumCap(MLF);if(mlfEv>=1&&profile.explicit_MLF){C+=.02*Math.min(1,mlfEv);rules.push('C2-C2+')}
-  const vals=input.structure||{};const enough=Object.values(vals).filter(v=>v!=null).length>=2 && st.kappa>=.25;
-  if(enough){const ripe=[...RIPE].filter(x=>ex.has(x));if(ripe.length){const ev=Math.min(1,ripe.length*.6);const freshLight=[vals.acidite>=4,vals.alcool<=2.5,vals.corps<=2.5].filter(Boolean).length;const ripeFull=[vals.acidite<=3,vals.alcool>=4,vals.corps>=4].filter(Boolean).length;if(freshLight>=2){C-=.04*ev;rules.push('C2-C3-')}else if(ripeFull>=2){C+=.02*ev;rules.push('C2-C3+')}}
-   const fresh=[...FRESH].filter(x=>ex.has(x));if(fresh.length){const ev=Math.min(1,fresh.length*.6);const ripeFull=[vals.acidite<=2.5,vals.alcool>=4,vals.corps>=4].filter(Boolean).length;const freshLight=[vals.acidite>=4,vals.alcool<=3,vals.corps<=3].filter(Boolean).length;if(ripeFull>=2){C-=.04*ev;rules.push('C2-C4-')}else if(freshLight>=2){C+=.02*ev;rules.push('C2-C4+')}}}
-  return {C:clamp(C,-.08,.04),rules};}
- function scoreProfile(profile,input,opts={}){const st=structScore(profile,input);const ar=aromaScore(profile,input,opts);const co=opts.noCoherence?{C:0,rules:[]}:coherence(profile,input,st,ar);return {...st,...ar,...co,I:AROMA_MULT*ar.A+st.S_eff+co.C};}
- function rank(model,input,opts={}){const best=new Map();for(const p of model.profiles){const s=scoreProfile(p,input,opts);const prev=best.get(p.grape);if(!prev||s.I>prev.score.I||(s.I===prev.score.I&&s.S_eff>prev.score.S_eff))best.set(p.grape,{grape:p.grape,profile:p,score:s})}return [...best.values()].sort((a,b)=>b.score.I-a.score.I||b.score.S_eff-a.score.S_eff||a.grape.localeCompare(b.grape));}
- global.WineBlindEngine={rank,scoreProfile,structScore,aromaScore,coherence};
-})(window);
+const profiles=C.profiles;
+const byGrape={}; profiles.forEach(p=>(byGrape[p.grape]??=[]).push(p));
+const markerMap=p=>Object.fromEntries(p.markers.map(m=>[m.marker_id,m]));
+const pMarker=new Map(profiles.map(p=>[p.profile_id,markerMap(p)]));
+function structural(profile,obs){let num=0,den=0,covered=0,detail=[];for(const a of AXES){const x=obs.structure[a];if(x==null)continue;const w=W[a];const r=profile.structure[a];const d=Math.max(r.L-x,0,x-r.U);const sim=Math.pow(.82,d);num+=w*sim;den+=w;covered+=w;detail.push({axis:a,x,sim,inRange:d===0,center:r.center,L:r.L,U:r.U});}const S=den?num/den:0;const k=covered/FULL;return {S,k,S_eff:k*S,detail};}
+function aroma(profile,obs,disableExacts=false,forceR1=false,oldExact=false){const pm=pMarker.get(profile.profile_id);const obsGeneric=[...obs.families.map(x=>({kind:'family',item:x})),...obs.signatures.map(x=>({kind:'signature',item:x}))];const obsExact=disableExacts?[]:obs.exacts.slice();let Dg=0,Graw=0;const exactParent=new Map();for(const x of obsExact){const m=pm['exact:'+x];if(m&&m.parent_resolved)exactParent.set(m.parent_resolved,true);}for(const o of obsGeneric){let residual=exactParent.has(o.item)?.35:1;Dg+=TYPE[o.kind]*residual;const m=pm[o.kind+':'+o.item];if(m)Graw+=m.capacity*residual;}const R=forceR1?1:(profile.R_generic??1);const G=R*Graw;let exactCaps=[];for(const x of obsExact){const m=pm['exact:'+x];if(m){let cap=oldExact?(m.capacity_C2_C1_audit??m.capacity*4/3):m.capacity;exactCaps.push({item:x,cap});}}exactCaps.sort((a,b)=>b.cap-a.cap);let E=0;exactCaps.forEach((e,i)=>E+=oldExact?e.cap:e.cap/Math.sqrt(i+1));let De=0;if(oldExact){De=obsExact.length*2;}else{for(let i=0;i<obsExact.length;i++)De+=1.5/Math.sqrt(i+1);}const D=Dg+De;return {A:D?clamp((G+E)/D,0,1):0,G,E,Dg,De,R,matchedExacts:exactCaps.map(x=>x.item),matchedGeneric:obsGeneric.filter(o=>pm[o.kind+':'+o.item]).map(o=>o.item)};}
+function coherence(profile,obs,ar,st){let total=0,rules=[];const ex=new Set(obs.exacts);const tok=new Set(obs.coherenceTokens||[]);const has=(arr)=>arr.some(x=>ex.has(x)||tok.has(x));const evidence=(arr)=>{let sum=0;const pm=pMarker.get(profile.profile_id);for(const x of arr){const m=pm['exact:'+x];if((ex.has(x)||tok.has(x))&&m)sum+=m.capacity;}return sum;};const add=(id,v)=>{if(v){total+=v;rules.push({id,value:v});}};
+// Positive wood/MLF only; negative branches deliberately dormant in frozen candidate.
+const wood=['vanilla','toast','cèdre','fumé','coffee','chocolate','vanille','café','chocolat'];let ew=evidence(wood);if(profile.native_wood>=1&&ew>=1)add('C2-C1',.02*Math.min(1,ew));
+const mlf=['butter','crème','lactique','yaourt','beurre'];let em=evidence(mlf);if(profile.explicit_MLF&&em>0)add('C2-C2',.02*Math.min(1,em));
+const enoughStruct=st.detail.length>=2&&st.k>=.25;if(enoughStruct){const vals=Object.fromEntries(st.detail.map(d=>[d.axis,d.x]));const ripe=['confituré','fruits séchés','raisin sec','figue','fruit cuit'];let er=evidence(ripe);if(er>=1){let fresh=[(vals['Acidité']??-99)>=4,(vals['Alcool']??99)<=2.5,(vals['Corps']??99)<=2.5].filter(Boolean).length;let mature=[(vals['Acidité']??99)<=3,(vals['Alcool']??-99)>=4,(vals['Corps']??-99)>=4].filter(Boolean).length;if(fresh>=2)add('C2-C3',-.04*Math.min(1,er));else if(mature>=2)add('C2-C3',.02*Math.min(1,er));}
+const freshset=['pomme verte','lemon','lime','grapefruit','feuillu','poivron vert','grass','citron','citron vert','pamplemousse','herbe'];let ef=evidence(freshset);if(ef>=1){let ripeS=[(vals['Acidité']??99)<=2.5,(vals['Alcool']??-99)>=4,(vals['Corps']??-99)>=4].filter(Boolean).length;let freshS=[(vals['Acidité']??-99)>=4,(vals['Alcool']??99)<=3,(vals['Corps']??99)<=3].filter(Boolean).length;if(ripeS>=2)add('C2-C4',-.04*Math.min(1,ef));else if(freshS>=2)add('C2-C4',.02*Math.min(1,ef));}}
+return {C:clamp(total,-.08,.04),rules};}
+function scoreProfile(profile,obs,opts={}){const st=structural(profile,obs);const ar=aroma(profile,obs,opts.disableExacts,opts.forceR1,opts.oldExact);const co=opts.noCoherence?{C:0,rules:[]}:coherence(profile,obs,ar,st);const I=3.2*ar.A+st.S_eff+co.C;return {profile,I,A:ar.A,S_eff:st.S_eff,C:co.C,ar,st,co};}
+function score(obs,opts={}){const ps=profiles.map(p=>scoreProfile(p,obs,opts)).sort((a,b)=>b.I-a.I||b.S_eff-a.S_eff||a.profile.grape.localeCompare(b.profile.grape));const grape={};for(const r of ps){if(!grape[r.profile.grape]||r.I>grape[r.profile.grape].I)grape[r.profile.grape]=r;}const gs=Object.values(grape).sort((a,b)=>b.I-a.I||b.S_eff-a.S_eff||a.profile.grape.localeCompare(b.profile.grape));return {profiles:ps,grapes:gs};}
+window.WineBlindEngine={candidate:C,profiles,byGrape,axes:AXES,score,scoreProfile};
+})();
