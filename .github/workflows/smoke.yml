@@ -29,5 +29,14 @@ jobs:
           node --check v11-reset-patch.js
           node --check app.js
           node --check sw.js
+          node --check tests/mobile-browser.mjs
       - name: Wine Blind regression smoke
         run: node tests/smoke.mjs
+      - name: Install WebKit test runtime
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps webkit
+      - name: iPhone WebKit navigation regression
+        run: |
+          python3 -m http.server 4173 >/tmp/wineblind-http.log 2>&1 &
+          node tests/mobile-browser.mjs
