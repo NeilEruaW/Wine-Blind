@@ -1,4 +1,4 @@
-# Wine Blind — V11.0.8
+# Wine Blind — V11.0.9
 
 Version de production candidate reconstruite à partir du dernier frontend complet **V10.7.2** et du moteur de release **C2-C2**.
 
