@@ -63,8 +63,16 @@ try{
     descriptors:[...document.querySelectorAll('#markerFields .descriptor-chip.active')].map(x=>x.textContent.trim())
   }));
 
+  await page.locator('.tab[data-tab="reference"]').evaluate(tab=>{
+    window.__referenceTabEvents=[];
+    ['pointerdown','pointerup','touchstart','touchend','mousedown','mouseup','click'].forEach(type=>tab.addEventListener(type,e=>window.__referenceTabEvents.push(`${type}:${e.pointerType||''}`)))
+  });
   await page.locator('.tab[data-tab="reference"]').tap(); await wait();
-  assert.equal(await active('.tab[data-tab="reference"]'),true,'reference tab is not active');
+  const referenceActive=await active('.tab[data-tab="reference"]');
+  if(!referenceActive){
+    const events=await page.evaluate(()=>window.__referenceTabEvents||[]);
+    assert.fail(`reference tab is not active · events: ${events.join(', ')}`)
+  }
   await page.locator('.tab[data-tab="tree"]').tap(); await wait();
   assert.equal(await active('.tab[data-tab="tree"]'),true,'tree tab is not active');
 
