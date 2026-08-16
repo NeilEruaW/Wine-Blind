@@ -39,9 +39,9 @@ try{
   await page.locator('#markerFields .aroma-group.selected').first().locator('.descriptor-chip').nth(1).tap(); await wait();
   assert.ok(await page.locator('#markerFields .descriptor-chip.active').count()>=2,'multiple aroma descriptors were not retained');
 
-  await page.waitForTimeout(500);
-  const c2Cards=await page.locator('#grapeResults .c2-result-card').count();
-  if(!c2Cards){
+  try{
+    await page.locator('#grapeResults .c2-result-card').first().waitFor({state:'visible',timeout:10000});
+  }catch{
     const debug=await page.evaluate(()=>({
       engine:typeof window.WineBlindEngine?.score,
       candidate:window.WINE_BLIND_CANDIDATE?.candidate_id||null,
@@ -50,7 +50,7 @@ try{
       values:[...document.querySelectorAll('#structureFields .sat-value')].map(x=>x.textContent.trim()),
       selected:[...document.querySelectorAll('#markerFields .descriptor-chip.active')].map(x=>x.textContent.trim())
     }));
-    assert.fail(`C2-C2 results missing · ${JSON.stringify(debug)} · page errors: ${pageErrors.join(' | ')}`)
+    assert.fail(`C2-C2 results missing after 10s · ${JSON.stringify(debug)} · page errors: ${pageErrors.join(' | ')}`)
   }
   await page.locator('#grapeResults .c2-result-card').first().tap();
   await page.locator('#detailDialog[open]').waitFor({state:'visible'});
