@@ -33,6 +33,8 @@ assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does no
 assert.ok(app.includes('Convergence · Arbre autonome'),'tree is not presented as standalone');
 assert.ok(app.includes('window.WineBlindTree={restart:treeRestart}'),'tree lifecycle bridge is missing');
 assert.ok(patch.includes('wireTreeLifecycle'),'red/white/reset actions do not rebuild the tree lifecycle');
+assert.ok(patch.includes('wireMobileTabs'),'lost iOS tab taps do not have a scoped fallback');
+assert.ok(patch.includes("if(!tab.classList.contains('active'))tab.click()"),'mobile tab fallback is not conditional');
 assert.ok(!app.includes('syncTreeToDiagnostic'),'legacy Tree → Diagnostic coupling is still active');
 assert.ok(!app.includes('treeDiagnosticCandidates'),'tree still depends on the legacy Diagnostic ranking');
 
