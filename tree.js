@@ -11,4 +11,21 @@ window.addEventListener('DOMContentLoaded',()=>{
     const result=document.querySelector('#adaptiveResult:not(.hidden)');
     if(!history&&!result)restart();
   },0));
+
+  /* On the very first answer after a type/reset transition, guarantee that the
+     private adaptive state has an active question before the app's handler runs.
+     This is deliberately limited to the zero-answer state, so later navigation
+     never discards user progress. */
+  let replaying=false;
+  ['#treeYes','#treeNo','#treeUnsure'].forEach(sel=>document.querySelector(sel)?.addEventListener('click',e=>{
+    if(replaying)return;
+    const history=document.querySelector('#adaptiveHistory .adaptive-history-item');
+    const result=document.querySelector('#adaptiveResult:not(.hidden)');
+    if(history||result)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    restart();
+    const button=e.currentTarget;
+    replaying=true;
+    setTimeout(()=>{button.click();replaying=false},0);
+  },true));
 });
