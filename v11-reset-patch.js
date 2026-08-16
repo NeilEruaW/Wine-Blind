@@ -47,5 +47,5 @@ function interactionAffectsDiagnostic(target){return !!target.closest?.('#typeRe
 function wireTreeLifecycle(){['#typeRed','#typeWhite','#resetAll'].forEach(sel=>$(sel)?.addEventListener('click',()=>window.WineBlindTree?.restart()))}
 function wireReference(){const list=$('#referenceList');if(!list)return;list.addEventListener('click',e=>{const ref=e.target.closest?.('.ref-row:not(.origin-ref-row)');if(!ref)return;const name=ref.querySelector('strong')?.textContent?.trim();if(name&&E()?.byGrape?.[name]){e.preventDefault();e.stopImmediatePropagation();openGrapeAggregate(name)}},true)}
 function wire(){cleanupOrigin();versionNote();$('#saveForm')?.addEventListener('submit',saveC2,true);wireTreeLifecycle();wireReference();document.addEventListener('click',e=>{if(interactionAffectsDiagnostic(e.target))schedule()},false);document.addEventListener('change',e=>{if(e.target.closest?.('#structureFields,#markerFields,#typeRed,#typeWhite'))schedule()},false);document.addEventListener('pointerup',e=>{if(e.target.closest?.('#structureFields .sat-continuum,#markerFields .choice-rail'))schedule()},false);render()}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
+wire();
 })();
