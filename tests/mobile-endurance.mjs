@@ -65,7 +65,7 @@ try{
   assert.ok(!(await page.locator('#diagnosticConfidence').textContent())?.includes('Confiance'),'legacy confidence survived final render');
   assert.match((await page.locator('#diagnosticConfidence').textContent())||'',/^Saisie · \d+ repères?$/,'input counter is stale');
   assert.deepEqual(errors,[],`page errors: ${errors.join(' | ')}`);
-  console.log('Wine Blind V11.0.7 iPhone WebKit endurance: PASS (24 type reversals + aroma/structure bursts)');
+  console.log('Wine Blind V11.0.8 iPhone WebKit endurance: PASS (24 type reversals + aroma/structure bursts)');
 } finally {
   await browser.close();
 }

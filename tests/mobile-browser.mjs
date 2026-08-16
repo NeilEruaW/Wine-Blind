@@ -52,6 +52,17 @@ try{
   assert.ok(await page.locator('#markerFields .descriptor-chip.active').count()>=2,'multiple aroma descriptors were not retained');
   assert.match((await page.locator('#diagnosticConfidence').textContent())||'',/Saisie · [5-9]\d* repères/,'input indicator did not update after structure, families and descriptors');
 
+  const exotic=page.locator('#markerFields .aroma-group').filter({has:page.locator('.aroma-chip',{hasText:'Fruits exotiques'})});
+  if(!(await exotic.evaluate(el=>el.classList.contains('selected')))) await exotic.locator('.aroma-chip').tap();
+  await exotic.getByRole('button',{name:'Banane',exact:true}).tap();
+  const floral=page.locator('#markerFields .aroma-group').filter({has:page.locator('.aroma-chip',{hasText:'Floral'})});
+  if(!(await floral.evaluate(el=>el.classList.contains('selected')))) await floral.locator('.aroma-chip').tap();
+  await floral.getByRole('button',{name:'Chèvrefeuille',exact:true}).tap();
+  await page.waitForTimeout(300);
+  const canonicalExactInputs=await page.evaluate(()=>window.__C2_LAST?.obs?.exacts||[]);
+  assert.ok(canonicalExactInputs.includes('banana'),'Banane was not mapped to canonical banana');
+  assert.ok(canonicalExactInputs.includes('honeysuckle'),'Chèvrefeuille was not mapped to canonical honeysuckle');
+
   try{
     await page.locator('#grapeResults .c2-result-card').first().waitFor({state:'visible',timeout:10000});
   }catch{
@@ -68,6 +79,9 @@ try{
   await page.locator('#grapeResults .c2-result-card').first().tap();
   await page.locator('#detailDialog[open]').waitFor({state:'visible'});
   assert.notEqual((await page.locator('#detailDialog .identity-signature strong').textContent())?.trim(),(await page.locator('#grapeResults .result-meta').first().textContent())?.trim(),'blind signature was replaced by profile origin/style');
+  const preciseLabels=await page.locator('#detailDialog .detail-block').filter({hasText:'Descripteurs précis'}).locator('p').textContent();
+  const frenchLabels=await page.evaluate(()=>Object.values(window.WineBlindAromaLocale.exactFR));
+  assert.ok((preciseLabels||'').split(' · ').every(x=>x==='—'||frenchLabels.includes(x)),'identity sheet exposes a non-French canonical exact label');
   await page.locator('#closeDialog').tap();
   await page.locator('#detailDialog').waitFor({state:'hidden'});
 
@@ -115,7 +129,7 @@ try{
   assert.ok(await page.locator('#detailDialog .metric[class*="metric-level-"]').count()>0,'reference metrics lost progressive colour classes');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.0.7 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.0.8 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }
