@@ -1,9 +1,13 @@
-name: Wine Blind V11.0.3 smoke
+name: Wine Blind smoke
 
 on:
   push:
     branches:
-      - v11.0.3-reset-clean
+      - main
+      - 'agent/**'
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -24,5 +28,6 @@ jobs:
           node --check c2c2-engine.js
           node --check v11-reset-patch.js
           node --check app.js
-      - name: Wine Blind smoke test
+          node --check sw.js
+      - name: Wine Blind regression smoke
         run: node tests/smoke.mjs
