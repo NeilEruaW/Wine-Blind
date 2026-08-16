@@ -31,6 +31,7 @@ assert.ok(patch.includes("Aucun repère saisi"),'misleading confidence badge was
 assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference metrics are not using legacy progressive color classes');
 assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
 assert.ok(!patch.includes('refine.remove()'),'C2-C2 bridge removes historical origin fields required by forms()');
+assert.ok(patch.includes('\\nwire();\\n})()'),'C2-C2 bridge initialization is not immediate and deterministic');
 assert.ok(app.includes('Convergence · Arbre autonome'),'tree is not presented as standalone');
 assert.ok(app.includes('window.WineBlindTree={restart:treeRestart}'),'tree lifecycle bridge is missing');
 assert.ok(app.includes('function tab(n){$$(\".tab\").forEach'),'main navigation does not iterate over all tabs');
