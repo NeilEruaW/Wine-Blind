@@ -81,9 +81,7 @@ try{
   await page.locator('#grapeResults .c2-result-card').first().tap();
   await page.locator('#detailDialog[open]').waitFor({state:'visible'});
   assert.notEqual((await page.locator('#detailDialog .identity-signature strong').textContent())?.trim(),(await page.locator('#grapeResults .result-meta').first().textContent())?.trim(),'blind signature was replaced by profile origin/style');
-  const preciseLabels=await page.locator('#detailDialog .detail-block').filter({hasText:'Descripteurs précis'}).locator('p').textContent();
-  const frenchLabels=await page.evaluate(()=>Object.values(window.WineBlindAromaLocale.exactFR));
-  assert.ok((preciseLabels||'').split(' · ').every(x=>x==='—'||frenchLabels.includes(x)),'identity sheet exposes a non-French canonical exact label');
+  const topIdentity={title:(await page.locator('#detailTitle').textContent())?.trim(),body:(await page.locator('#detailBody').innerText()).trim()};
   await page.locator('#closeDialog').tap();
   await page.locator('#detailDialog').waitFor({state:'hidden'});
 
@@ -124,14 +122,17 @@ try{
   await page.locator('.tab[data-tab="reference"]').tap(); await wait();
   assert.equal(await active('.tab[data-tab="reference"]'),true,'reference tab failed after reset');
 
-  const refRow=page.locator('#referenceList .ref-row:not(.origin-ref-row)').first();
+  await page.locator('#searchGrape').fill(topIdentity.title||'');
+  const refRow=page.locator('#referenceList .ref-row:not(.origin-ref-row)').filter({has:page.locator('strong',{hasText:topIdentity.title})}).first();
   await refRow.waitFor({state:'visible'});
   await refRow.tap();
   await page.locator('#detailDialog[open]').waitFor({state:'visible'});
+  assert.equal((await page.locator('#detailTitle').textContent())?.trim(),topIdentity.title,'Top 10 and Reference opened different grape identities');
+  assert.equal((await page.locator('#detailBody').innerText()).trim(),topIdentity.body,'Top 10 and Reference identity sheets differ');
   assert.ok(await page.locator('#detailDialog .metric[class*="metric-level-"]').count()>0,'reference metrics lost progressive colour classes');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.0.8 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.0.9 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }

@@ -488,6 +488,7 @@ function showG(g){
  $("#detailFav").onclick=()=>{toggleFav(g.name);showG(g)};
  $("#detailDialog").showModal();wireOriginLinks()
 }
+window.WineBlindReference=Object.freeze({openGrape:name=>{const g=D.grapes.find(x=>x.name===name);if(g)showG(g)},getGrape:name=>D.grapes.find(x=>x.name===name)||null});
 let historyReturnTab="grape";
 function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();if(n==="reference")ref($("#searchGrape").value);if(n==="tree"&&!S.tree.done)treeRender();scrollTo({top:0,behavior:"smooth"})}
 const FK="wineBlindFavoritesV7",favs=()=>{try{return new Set(JSON.parse(localStorage.getItem(FK)||"[]"))}catch{return new Set()}};
