@@ -45,15 +45,7 @@ function versionNote(){if($('#c2VersionNote'))return;const m=document.querySelec
 let timer;function schedule(){clearTimeout(timer);timer=setTimeout(render,0)}
 function interactionAffectsDiagnostic(target){return !!target.closest?.('#typeRed,#typeWhite,#resetAll,.aroma-chip,.descriptor-chip,#structureFields .sat-continuum,#markerFields .choice-rail')}
 function wireTreeLifecycle(){['#typeRed','#typeWhite','#resetAll'].forEach(sel=>$(sel)?.addEventListener('click',()=>window.WineBlindTree?.restart()))}
-function wireMobileTabs(){
- $$('.tab').forEach(tab=>{
-   let timer;
-   const ensure=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(!tab.classList.contains('active'))tab.click()},0)};
-   tab.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen')ensure()},false);
-   tab.addEventListener('touchend',ensure,{passive:true})
- })
-}
 function wireReference(){const list=$('#referenceList');if(!list)return;list.addEventListener('click',e=>{const ref=e.target.closest?.('.ref-row:not(.origin-ref-row)');if(!ref)return;const name=ref.querySelector('strong')?.textContent?.trim();if(name&&E()?.byGrape?.[name]){e.preventDefault();e.stopImmediatePropagation();openGrapeAggregate(name)}},true)}
-function wire(){cleanupOrigin();versionNote();$('#saveForm')?.addEventListener('submit',saveC2,true);wireTreeLifecycle();wireMobileTabs();wireReference();document.addEventListener('click',e=>{if(interactionAffectsDiagnostic(e.target))schedule()},false);document.addEventListener('change',e=>{if(e.target.closest?.('#structureFields,#markerFields,#typeRed,#typeWhite'))schedule()},false);document.addEventListener('pointerup',e=>{if(e.target.closest?.('#structureFields .sat-continuum,#markerFields .choice-rail'))schedule()},false);render()}
+function wire(){cleanupOrigin();versionNote();$('#saveForm')?.addEventListener('submit',saveC2,true);wireTreeLifecycle();wireReference();document.addEventListener('click',e=>{if(interactionAffectsDiagnostic(e.target))schedule()},false);document.addEventListener('change',e=>{if(e.target.closest?.('#structureFields,#markerFields,#typeRed,#typeWhite'))schedule()},false);document.addEventListener('pointerup',e=>{if(e.target.closest?.('#structureFields .sat-continuum,#markerFields .choice-rail'))schedule()},false);render()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
 })();
