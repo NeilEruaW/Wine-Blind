@@ -119,7 +119,7 @@ try{
   assert.ok(await page.locator('#detailDialog .metric[class*="metric-level-"]').count()>0,'reference metrics lost progressive colour classes');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.0.6 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.0.7 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }

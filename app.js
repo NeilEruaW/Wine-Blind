@@ -1,8 +1,7 @@
 (()=>{const D=WSET_DATA,T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},G=window.WSET_V107||{regions:[],profiles:[],children:[]},G8=window.WSET_V108||{units:[],profiles:[],children:[],specificity:{},rankWeights:[1,.75,.55,.35,.2,.12,.08,.05,.03,.02]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",colorShade:"",intensity:"",sweetness:"",flavourIntensity:"",fruit:"",texture:"",signature:""},aromas:{primary:{},secondary:{},tertiary:{}},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{answers:[],current:null,done:false,extended:false,prefillKeys:[]},compare:new Set(),refFilter:"all",refMode:"grapes",refCountry:"all",training:{difficulty:"Fondamentaux",wsetLevel:3,theoryTopic:"all",mode:"quick",questions:[],index:0,score:0,current:null,answered:false}};
 const L={acid:"Acidité",tannin:"Tanins",alcohol:"Alcool",body:"Corps",color:"Intensité visuelle",colorShade:"Couleur",intensity:"Intensité aromatique",sweetness:"Douceur",flavourIntensity:"Intensité des saveurs",signature:"Indice discriminant"},sat=["F","M-","M","M+","E"],lev=v=>({"F":1,"M-":2,"M":3,"M+":4,"E":5}[v]||0),cmp=d=>d<=.01?1:d<=.5?.92:d<=1?.82:d<=1.5?.65:d<=2?.42:d<=2.5?.2:.05,has=(a,b)=>(a||"").toLowerCase().includes((b||"").toLowerCase());
-let calcFrame=0,calcTimer=0;
-function deferCalc(){if(calcFrame)cancelAnimationFrame(calcFrame);calcFrame=requestAnimationFrame(()=>{calcFrame=0;clearTimeout(calcTimer);calcTimer=setTimeout(calc,0)})}
+function deferCalc(){document.dispatchEvent(new CustomEvent("wineblind:diagnostic-input"))}
 function wineTheme(){document.body.classList.toggle("wine-white",S.type==="Blanc");document.body.classList.toggle("wine-red",S.type==="Rouge");let m=document.querySelector('meta[name="theme-color"]');if(m)m.content=S.type==="Blanc"?"#9a6b16":"#7c2d3f"}
 const SCALE={
  visual:[["F","Pâle"],["M","Moyenne"],["E","Intense"]],
@@ -136,7 +135,7 @@ function aromaSection(type,title){
 function signatureField(){
  let det=document.createElement("details");det.className="signature-details";let sum=document.createElement("summary");sum.innerHTML=`<span>＋ Indice discriminant</span><small>${S.g.signature||"Optionnel"}</small>`;det.append(sum);
  let grid=document.createElement("div");grid.className="signature-grid";
- D.options.signature.filter(Boolean).forEach(v=>{let b=document.createElement("button");b.type="button";b.className="descriptor-chip"+(S.g.signature===v?" active":"");b.textContent=v;b.onclick=()=>{S.g.signature=S.g.signature===v?"":v;forms();calc()};grid.append(b)});
+ D.options.signature.filter(Boolean).forEach(v=>{let b=document.createElement("button");b.type="button";b.className="descriptor-chip"+(S.g.signature===v?" active":"");b.textContent=v;b.onclick=()=>{S.g.signature=S.g.signature===v?"":v;grid.querySelectorAll(".descriptor-chip").forEach(x=>x.classList.toggle("active",x===b&&!!S.g.signature));sum.querySelector("small").textContent=S.g.signature||"Optionnel";deferCalc()};grid.append(b)});
  det.append(grid);return det
 }
 function aromaFlat(){
