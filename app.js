@@ -486,7 +486,7 @@ function showG(g){
  $("#detailDialog").showModal();wireOriginLinks()
 }
 let historyReturnTab="grape";
-function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();if(n==="reference")ref($("#searchGrape").value);scrollTo({top:0,behavior:"smooth"})}
+function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();if(n==="reference")ref($("#searchGrape").value);if(n==="tree"&&!S.tree.done)treeRender();scrollTo({top:0,behavior:"smooth"})}
 const FK="wineBlindFavoritesV7",favs=()=>{try{return new Set(JSON.parse(localStorage.getItem(FK)||"[]"))}catch{return new Set()}};
 function toggleFav(name){let f=favs();f.has(name)?f.delete(name):f.add(name);localStorage.setItem(FK,JSON.stringify([...f]));ref($("#searchGrape").value)}
 function grapeSearchText(g){
@@ -913,42 +913,6 @@ const AQ=[
  {id:"highAcidHighTanninPale",q:"Le vin combine-t-il couleur relativement pâle, acidité élevée et tanins élevés ?",why:"Cette combinaison structurelle rare concentre fortement le diagnostic.",types:["Rouge"],test:g=>g.color<=3.2&&g.acid>=4&&g.tannin>=4.2},
  {id:"lowTanninHighAcid",q:"Le vin combine-t-il acidité élevée et tanins faibles à modérés ?",why:"Cette structure est très discriminante parmi les rouges légers.",types:["Rouge"],test:g=>g.acid>=4&&g.tannin<=3.1}
 ];
-const TREE_PATCHES={
- redFruit:{fruit:"Fruits rouges"},blackFruit:{fruit:"Fruits noirs"},citrus:{fruit:"Agrumes"},
- stoneFruit:{fruit:"Fruits à noyau"},tropical:{fruit:"Exotique"},
- floral:{signature:"Violette / floral"},pyrazine:{signature:"Pyrazine / poivron / paprika"},
- pepper:{signature:"Poivre noir / olive / viande"},tarRose:{signature:"Rose / goudron"},
- petrol:{signature:"Pétrole"},thiol:{signature:"Thiols / buis / herbe"},
- waxHoney:{signature:"Cire / lanoline"},saline:{signature:"Salin / pierre / silex"},
- muscat:{fruit:"Raisin / muscaté",signature:"Raisin frais / muscaté"},
- viognier:{signature:"Abricot / pêche"},oak:{texture:"Boisé / MLF"},
- silky:{texture:"Fin / soyeux"},firm:{texture:"Ferme / structuré"},
- driedFruit:{signature:"Confiture / raisin sec"},cherryHerb:{signature:"Garrigue / herbes sèches"},
- oliveMeat:{signature:"Poivre noir / olive / viande"},plumSoft:{texture:"Ample / onctueux"},
- aromaticGrape:{intensity:"M+"},highAcidHighTanninPale:{acid:"M+",tannin:"M+",color:"M-"},
- lowTanninHighAcid:{acid:"M+",tannin:"M-"}
-};
-function treePatch(q,answer){
- if(answer!=="Oui"&&answer!=="Non")return null;
- let base=answer==="Oui"?(q.yes||TREE_PATCHES[q.id]):q.no;
- return base||null
-}
-function syncTreeToDiagnostic(){
- let owned=new Set(S.tree.prefillKeys||[]);
- owned.forEach(k=>{if(k in S.g)S.g[k]=""});
- let nextOwned=new Set();
- (S.tree.answers||[]).forEach(a=>{
-   if(a.a==="Incertain")return;
-   let q=AQ.find(x=>x.id===a.qid);if(!q)return;
-   let patch=treePatch(q,a.a);if(!patch)return;
-   Object.entries(patch).forEach(([k,v])=>{if(k in S.g&&v){S.g[k]=normalizeScaleValue(k,v);nextOwned.add(k)}})
- });
- S.tree.prefillKeys=[...nextOwned];
- forms();calc()
-}
-function treeDiagnosticCandidates(){
- return D.grapes.map(g=>({...g,...geval(g)})).filter(g=>g.type===S.type&&g.score>0).sort((a,b)=>b.score-a.score)
-}
 function treeCandidates(){
  let pool=D.grapes.filter(g=>g.type===S.type),answers=S.tree.answers||[];
  return pool.map(g=>{let score=0,used=0;answers.forEach(a=>{if(a.a==="Incertain")return;let q=AQ.find(x=>x.id===a.qid);if(!q)return;let match=!!q.test(g),yes=a.a==="Oui";score+=(match===yes?2:-1.5);used++});return{...g,treeScore:score,used}}).sort((a,b)=>b.treeScore-a.treeScore)
@@ -974,15 +938,15 @@ function convergenceData(){
  return{c,top,gap,n,level}
 }
 function shouldTreeStop(){
- let total=S.tree.answers.length,diag=treeDiagnosticCandidates(),top=diag[0]?.score||0,gap=top-(diag[1]?.score||0);
+ let total=S.tree.answers.length,x=convergenceData();
  if(total>=18)return true;
  if(total<6)return false;
- if(top>=90&&gap>=12)return true;
- if(total>=9&&top>=82&&gap>=8)return true;
- if(total>=13&&top>=75&&gap>=5)return true;
+ if(total>=9&&x.level>=.72&&x.gap>=.08)return true;
+ if(total>=13&&x.level>=.62&&x.gap>=.04)return true;
  return false
 }
 function treeRender(){
+ if(S.tree.type!==S.type)S.tree={answers:[],current:null,done:false,extended:false,prefillKeys:[],type:S.type};
  let x=convergenceData(),q=S.tree.current||nextAdaptiveQuestion();S.tree.current=q;
  $("#treeStep").textContent=`${S.tree.answers.length?S.tree.answers.length+" réponses":"Diagnostic guidé"}`;
  $("#treeQuestion").textContent=q?q.q:"";
@@ -991,21 +955,21 @@ function treeRender(){
  $("#adaptiveCard").classList.toggle("hidden",S.tree.done);
  let bar=$("#treeConvergence");bar.querySelector("i").style.width=Math.round(x.level*100)+"%";
  bar.querySelector("small").textContent=x.level>.72?"Ciblé":x.level>.45?"En convergence":"Large";
- bar.querySelector("span").textContent="Convergence · Diagnostic synchronisé";
+ bar.querySelector("span").textContent="Convergence · Arbre autonome";
  trail()
 }
-function treeApplyObservation(){syncTreeToDiagnostic()}
 function treeAns(answer){
- if(S.tree.done||!S.tree.current)return;
- let q=S.tree.current;S.tree.answers.push({qid:q.id,q:q.q,a:answer});treeApplyObservation();S.tree.current=null;
+ if(S.tree.done)return;
+ let q=S.tree.current||nextAdaptiveQuestion();if(!q)return;
+ S.tree.answers.push({qid:q.id,q:q.q,a:answer});S.tree.current=null;
  if(shouldTreeStop())treeFinish();else treeRender()
 }
 function back(){
- if(!S.tree.answers.length)return;S.tree.answers.pop();S.tree.done=false;S.tree.current=null;$("#adaptiveResult").classList.add("hidden");syncTreeToDiagnostic();treeRender()
+ if(!S.tree.answers.length)return;S.tree.answers.pop();S.tree.done=false;S.tree.current=null;$("#adaptiveResult").classList.add("hidden");treeRender()
 }
 function trail(){
  let e=$("#adaptiveHistory");e.innerHTML="";
- S.tree.answers.forEach((x,i)=>{let d=document.createElement("button");d.type="button";d.className="adaptive-history-item";d.innerHTML=`<span>${i+1}</span><div><b>${esc(x.q)}</b><small>${esc(x.a)}</small></div>`;d.onclick=()=>{S.tree.answers=S.tree.answers.slice(0,i);S.tree.done=false;S.tree.current=null;$("#adaptiveResult").classList.add("hidden");syncTreeToDiagnostic();treeRender()};e.append(d)})
+ S.tree.answers.forEach((x,i)=>{let d=document.createElement("button");d.type="button";d.className="adaptive-history-item";d.innerHTML=`<span>${i+1}</span><div><b>${esc(x.q)}</b><small>${esc(x.a)}</small></div>`;d.onclick=()=>{S.tree.answers=S.tree.answers.slice(0,i);S.tree.done=false;S.tree.current=null;$("#adaptiveResult").classList.add("hidden");treeRender()};e.append(d)})
 }
 function treeDiscriminants(cands){
  let top=cands.slice(0,4),fields=[["acid","Acidité"],["tannin","Tanins"],["alcohol","Alcool"],["body","Corps"],["color","Couleur"],["intensity","Intensité"]];
@@ -1015,21 +979,21 @@ function treeDiscriminants(cands){
  return out.sort((a,b)=>b.score-a.score).slice(0,6)
 }
 function treeFinish(){
- syncTreeToDiagnostic();S.tree.done=true;S.tree.current=null;
- let top=treeDiagnosticCandidates().slice(0,5),disc=treeDiscriminants(top);
+ S.tree.done=true;S.tree.current=null;
+ let top=treeCandidates().slice(0,5),disc=treeDiscriminants(top);
  $("#adaptiveCard").classList.add("hidden");let r=$("#adaptiveResult");r.classList.remove("hidden");
- r.innerHTML=`<div class="training-card adaptive-final"><div class="training-progress"><span>HYPOTHÈSES DU DIAGNOSTIC CÉPAGE</span><button id="treeRestartFinal" class="ghost-btn small">Recommencer</button></div><div class="adaptive-candidates">${top.map((g,i)=>`<button class="adaptive-candidate" data-grape="${esc(g.name)}"><span>${i+1}</span><div><b>${esc(g.name)}</b><small>${esc(g.keyMarker||g.blindMarker||"")}</small></div><strong>${Math.round(g.score)}</strong></button>`).join("")}</div>${disc.length?`<div class="adaptive-discriminants"><b>Pour les départager</b>${disc.map(d=>`<p>${esc(d.text)}</p>`).join("")}</div>`:""}<div class="adaptive-sync-note">Ces candidats sont calculés avec le même scoring que le Top 10 Cépages. Les critères déduits de tes réponses sont déjà pré-renseignés dans le diagnostic.</div><div class="adaptive-final-actions"><button id="treeContinue" class="secondary-btn">Continuer à départager</button><button id="treeToDiagnostic" class="primary-btn">Voir le diagnostic complet</button></div></div>`;
+ r.innerHTML=`<div class="training-card adaptive-final"><div class="training-progress"><span>HYPOTHÈSES DE L’ARBRE</span><button id="treeRestartFinal" class="ghost-btn small">Recommencer</button></div><div class="adaptive-candidates">${top.map((g,i)=>`<button class="adaptive-candidate" data-grape="${esc(g.name)}"><span>${i+1}</span><div><b>${esc(g.name)}</b><small>${esc(g.keyMarker||g.blindMarker||"")}</small></div></button>`).join("")}</div>${disc.length?`<div class="adaptive-discriminants"><b>Pour les départager</b>${disc.map(d=>`<p>${esc(d.text)}</p>`).join("")}</div>`:""}<div class="adaptive-sync-note">L’Arbre utilise uniquement les réponses de ce parcours. Il ne modifie pas les observations saisies dans le Diagnostic.</div><div class="adaptive-final-actions"><button id="treeContinue" class="secondary-btn">Continuer à départager</button><button id="treeToDiagnostic" class="primary-btn">Voir le diagnostic complet</button></div></div>`;
  r.querySelectorAll(".adaptive-candidate").forEach(b=>b.onclick=()=>{let g=D.grapes.find(x=>x.name===b.dataset.grape);if(g)showG(g)});
  $("#treeRestartFinal").onclick=treeRestart;
  $("#treeContinue").onclick=()=>{S.tree.done=false;S.tree.extended=true;S.tree.current=nextAdaptiveQuestion();r.classList.add("hidden");treeRender()};
- $("#treeToDiagnostic").onclick=()=>{syncTreeToDiagnostic();tab("grape")}
+ $("#treeToDiagnostic").onclick=()=>tab("grape")
  trail()
 }
 function treeRestart(){
- let owned=new Set(S.tree.prefillKeys||[]);owned.forEach(k=>{if(k in S.g)S.g[k]=""});
- S.tree={answers:[],current:null,done:false,extended:false,prefillKeys:[]};
- $("#adaptiveResult").classList.add("hidden");forms();calc();treeRender()
+ S.tree={answers:[],current:null,done:false,extended:false,prefillKeys:[],type:S.type};
+ $("#adaptiveResult").classList.add("hidden");treeRender()
 }
+window.WineBlindTree={restart:treeRestart};
 const HK="wineBlindHistoryV2",hist=()=>{try{return JSON.parse(localStorage.getItem(HK)||"[]")}catch{return[]}};
 function openSave(){let d=new Date();$("#wineDate").value=d.toISOString().slice(0,10);$("#saveDialog").showModal()}
 function save(ev){ev.preventDefault();let g=S.gr[0],o=S.or[0],r={id:Date.now(),date:$("#wineDate").value,name:$("#wineName").value.trim(),vintage:$("#wineVintage").value.trim(),actualGrape:$("#actualGrape").value.trim(),actualOrigin:$("#actualOrigin").value.trim(),notes:$("#wineNotes").value.trim(),type:S.type,observations:{...S.g},aromaObservations:JSON.parse(JSON.stringify(S.aromas)),originObservations:{...S.o},topGrape:g?g.name:"",topGrapeScore:g?Math.round(g.score):null,top3:S.gr.slice(0,3).map(x=>x.name),topOrigin:o?o.style:""};let h=hist();h.unshift(r);localStorage.setItem(HK,JSON.stringify(h));$("#saveDialog").close();$("#saveForm").reset();historyReturnTab="grape";tab("history")}

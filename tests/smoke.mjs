@@ -6,6 +6,7 @@ const read=p=>fs.readFileSync(p,'utf8');
 const index=read('index.html');
 const app=read('app.js');
 const css=read('styles.css');
+const overlay=read('v11-reset.css');
 const patch=read('v11-reset-patch.js');
 const sw=read('sw.js');
 
@@ -14,8 +15,30 @@ for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','openGrapeAggregate','saveC2','Top 10 origines','C2-C2']) assert.ok(patch.includes(feature),`V11 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-reset-c2c2-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','openGrapeAggregate','saveC2','Top 10 origines','C2-C2','interactionAffectsDiagnostic']) assert.ok(patch.includes(feature),`V11.0.4 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-0-4-mobile-1'),'wrong service-worker cache namespace');
+
+// Mobile navigation / interaction regression guards.
+assert.ok(overlay.includes('repeat(var(--sat-count),minmax(0,1fr))'),'SAT continuum does not use its real point count');
+assert.ok(overlay.includes('left:calc(50% / var(--sat-count))'),'SAT left edge is not aligned to first point');
+assert.ok(overlay.includes('right:calc(50% / var(--sat-count))'),'SAT right edge is not aligned to last point');
+assert.ok(overlay.includes('touch-action:manipulation'),'touch targets are not hardened for iOS Safari');
+assert.ok(!patch.includes("document.addEventListener('click',e=>{const ref="),'legacy global capture click listener still present');
+assert.ok(!patch.includes("document.addEventListener('pointerup',schedule,true)"),'legacy global capture pointer listener still present');
+assert.ok(patch.includes('event.composedPath?.()'),'diagnostic recompute does not survive DOM replacement on WebKit');
+assert.ok(patch.includes("document.addEventListener('click',e=>{if(interactionAffectsDiagnostic(e))schedule()},false)"),'diagnostic click recompute is not scoped through the event path');
+assert.ok(patch.includes("document.addEventListener('pointerup',e=>{if(interactionAffectsDiagnostic(e))schedule()},false)"),'rail recompute must happen after the target pointer handler');
+assert.ok(patch.includes("Aucun repère saisi"),'misleading confidence badge was not replaced');
+assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference metrics are not using legacy progressive color classes');
+assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
+assert.ok(!patch.includes('refine.remove()'),'C2-C2 bridge removes historical origin fields required by forms()');
+assert.ok(patch.includes('\nwire();\n})()'),'C2-C2 bridge initialization is not immediate and deterministic');
+assert.ok(app.includes('Convergence · Arbre autonome'),'tree is not presented as standalone');
+assert.ok(app.includes('window.WineBlindTree={restart:treeRestart}'),'tree lifecycle bridge is missing');
+assert.ok(app.includes('function tab(n){$$(\".tab\").forEach'),'main navigation does not iterate over all tabs');
+assert.ok(patch.includes('wireTreeLifecycle'),'red/white/reset actions do not rebuild the tree lifecycle');
+assert.ok(!app.includes('syncTreeToDiagnostic'),'legacy Tree → Diagnostic coupling is still active');
+assert.ok(!app.includes('treeDiagnosticCandidates'),'tree still depends on the legacy Diagnostic ranking');
 
 const sandbox={window:{},console};
 vm.createContext(sandbox);
@@ -35,4 +58,4 @@ assert.equal(scored.grapes.length,85);
 assert.equal(scored.profiles.length,203);
 assert.ok(scored.grapes.every(x=>Number.isFinite(x.I)&&Number.isFinite(x.A)&&Number.isFinite(x.S_eff)&&Number.isFinite(x.C)),'non-finite score');
 assert.ok(scored.grapes[0].I>=scored.grapes.at(-1).I,'ranking not sorted');
-console.log('Wine Blind V11.0.3 RESET smoke test: PASS');
+console.log('Wine Blind V11.0.4 mobile stability smoke test: PASS');
