@@ -1,11 +1,11 @@
 {
-  "name": "Wine Blind",
+  "name": "Wine Blind — WSET Diagnostic",
   "short_name": "Wine Blind",
+  "description": "Diagnostic de cépage et d’origine pour la dégustation à l’aveugle, basé sur la matrice WSET V9.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f7f3f4",
-  "theme_color": "#4d1026",
-  "lang": "fr",
+  "background_color": "#fbf8f6",
+  "theme_color": "#7c2d3f",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -16,6 +16,12 @@
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
