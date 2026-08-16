@@ -1,3 +1,23 @@
+# Wine Blind V11.1.0
+
+## Lecture du diagnostic
+
+- Le rang reste calculé par l'indice C2-C2 gelé `I = 3.20 × A + S_eff + C`.
+- Le nombre présenté dans les cartes est désormais l'adéquation aux seuls repères réellement saisis. Une structure parfaitement compatible n'est donc plus divisée par le maximum aromatique lorsque l'utilisateur n'a renseigné aucun arôme.
+- Les sous-scores Structure et Arômes rendent la contribution de chaque volet explicite.
+
+## Fiches cépages
+
+- Les notes précises et plages historiques du Référentiel restent l'unique source des fiches ouvertes depuis le Référentiel comme depuis le Top 10.
+- L'empreinte affiche maintenant les familles et leurs descripteurs en français, sous les trois lectures Primaires / Secondaires / Tertiaires.
+- Les trois prévalences 1 / 2 / 3 sont affichées, y compris les marqueurs contextuels de niveau 1.
+
+## Moteur
+
+Aucun profil, coefficient, marqueur, intervalle, rang ni règle C2-C2 n'est modifié dans cette version.
+
+---
+
 # Wine Blind V11.0.3 RESET
 
 ## Base restaurée

@@ -15,11 +15,14 @@ for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual']) assert.ok(patch.includes(feature),`V11.0.9 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-0-9-mobile-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown']) assert.ok(patch.includes(feature),`V11.1.0 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-1-0-mobile-1'),'wrong service-worker cache namespace');
 assert.ok(app.includes('window.WineBlindReference=Object.freeze'),'historical grape reference is not exposed as the single identity source');
 assert.ok(patch.includes('window.WineBlindReference?.openGrape(r.profile.grape)'),'Top 10 cards do not use the historical reference identity source');
 assert.ok(!patch.includes('openGrapeAggregate'),'competing C2-C2 aggregate identity source still exists');
+assert.ok(patch.includes('fingerprint-evidence'),'identity fingerprints omit exact descriptors');
+assert.ok(patch.includes('fp-w${x.weight}'),'identity fingerprints omit prevalence 1/2/3');
+assert.ok(patch.includes("const arr=fp[type]||[]"),'complete fingerprints are not installed');
 assert.ok(!patch.includes('wireReference'),'reference clicks are still intercepted by a competing identity renderer');
 
 // Mobile navigation / interaction regression guards.
@@ -85,4 +88,10 @@ assert.equal(scored.grapes.length,85);
 assert.equal(scored.profiles.length,203);
 assert.ok(scored.grapes.every(x=>Number.isFinite(x.I)&&Number.isFinite(x.A)&&Number.isFinite(x.S_eff)&&Number.isFinite(x.C)),'non-finite score');
 assert.ok(scored.grapes[0].I>=scored.grapes.at(-1).I,'ranking not sorted');
-console.log('Wine Blind V11.0.9 single-source identity smoke test: PASS');
+const pinot=E.profiles.find(p=>p.grape==='Pinot Noir');
+const pinotObs={structure:Object.fromEntries(Object.entries(pinot.structure).map(([axis,r])=>[axis,Math.round(r.center)])),families:[],signatures:[],exacts:[],coherenceTokens:[]};
+const pinotResult=E.score(pinotObs).grapes.find(r=>r.profile.grape==='Pinot Noir');
+assert.equal(E.score(pinotObs).grapes[0].profile.grape,'Pinot Noir','Pinot structure regression');
+assert.equal(Math.round(pinotResult.st.S*100),100,'Pinot structure should be a perfect observed fit');
+assert.ok(patch.includes('(3.2*r.A+r.S_eff+r.C)/available'),'displayed adequacy is not normalized to observed evidence');
+console.log('Wine Blind V11.1.0 adequacy and complete fingerprint smoke test: PASS');

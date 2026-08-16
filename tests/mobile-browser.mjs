@@ -130,9 +130,11 @@ try{
   assert.equal((await page.locator('#detailTitle').textContent())?.trim(),topIdentity.title,'Top 10 and Reference opened different grape identities');
   assert.equal((await page.locator('#detailBody').innerText()).trim(),topIdentity.body,'Top 10 and Reference identity sheets differ');
   assert.ok(await page.locator('#detailDialog .metric[class*="metric-level-"]').count()>0,'reference metrics lost progressive colour classes');
+  assert.ok(await page.locator('#detailDialog .fingerprint-evidence').count()>0,'reference fingerprint lost exact descriptors');
+  assert.ok(await page.locator('#detailDialog .fingerprint-chip.fp-w1').count()>0,'reference fingerprint hides prevalence level 1');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.0.9 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.1.0 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }

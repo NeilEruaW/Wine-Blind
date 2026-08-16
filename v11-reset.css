@@ -1,4 +1,4 @@
-/* Wine Blind V11.0.9 — UX overlay on the historical V10.7.2 frontend. */
+/* Wine Blind V11.1.0 — UX overlay on the historical V10.7.2 frontend. */
 #tab-origin > .form-card { display:none !important; }
 #tab-origin .results-section .step { display:none !important; }
 #tab-origin .section-heading { margin-top:4px; }
@@ -40,6 +40,11 @@
 .c2-result-card.is-primary { border-color:rgba(124,45,63,.45); box-shadow:0 8px 26px rgba(124,45,63,.10); }
 .c2-result-card.is-primary .result-name { font-size:1.08em; }
 .c2-engine-badge { display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--wine);background:var(--soft-wine);border-radius:999px;padding:4px 7px;margin-top:6px; }
+.c2-score-breakdown{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.c2-score-breakdown span{font-size:10px;color:var(--muted);background:#f6f3ef;border-radius:999px;padding:4px 7px}
+.c2-score-breakdown b{color:var(--ink);font-size:11px}
+.fingerprint-item{display:flex;flex-direction:column;align-items:flex-start;gap:3px;max-width:100%;padding:2px 0 5px}
+.fingerprint-evidence{font-size:8.5px;line-height:1.35;color:var(--muted);max-width:250px}
 .c2-structure-fit{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
 .c2-fit-chip{font-size:11px;border-radius:999px;padding:5px 7px;font-weight:750}
 .c2-fit-chip.match{background:#e7f2ea;color:#356044}
