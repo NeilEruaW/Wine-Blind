@@ -25,8 +25,9 @@ assert.ok(overlay.includes('right:calc(50% / var(--sat-count))'),'SAT right edge
 assert.ok(overlay.includes('touch-action:manipulation'),'touch targets are not hardened for iOS Safari');
 assert.ok(!patch.includes("document.addEventListener('click',e=>{const ref="),'legacy global capture click listener still present');
 assert.ok(!patch.includes("document.addEventListener('pointerup',schedule,true)"),'legacy global capture pointer listener still present');
-assert.ok(patch.includes("document.addEventListener('click',e=>{if(interactionAffectsDiagnostic(e.target))schedule()},false)"),'diagnostic recompute is not scoped to diagnostic inputs');
-assert.ok(patch.includes("document.addEventListener('pointerup',e=>{if(e.target.closest?.('#structureFields .sat-continuum,#markerFields .choice-rail'))schedule()},false)"),'rail recompute must happen after target pointer handler');
+assert.ok(patch.includes('event.composedPath?.()'),'diagnostic recompute does not survive DOM replacement on WebKit');
+assert.ok(patch.includes("document.addEventListener('click',e=>{if(interactionAffectsDiagnostic(e))schedule()},false)"),'diagnostic click recompute is not scoped through the event path');
+assert.ok(patch.includes("document.addEventListener('pointerup',e=>{if(interactionAffectsDiagnostic(e))schedule()},false)"),'rail recompute must happen after the target pointer handler');
 assert.ok(patch.includes("Aucun repère saisi"),'misleading confidence badge was not replaced');
 assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference metrics are not using legacy progressive color classes');
 assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
