@@ -1,0 +1,28 @@
+name: Wine Blind V11.0.3 smoke
+
+on:
+  push:
+    branches:
+      - v11.0.3-reset-clean
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check c2c2-engine.js
+          node --check v11-reset-patch.js
+          node --check app.js
+      - name: Wine Blind smoke test
+        run: node tests/smoke.mjs
