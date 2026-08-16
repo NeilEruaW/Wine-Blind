@@ -44,17 +44,29 @@ try{
   await page.locator('#detailDialog[open]').waitFor({state:'visible'});
   await page.locator('#closeDialog').tap();
 
+  const diagnosticBeforeTree=await page.evaluate(()=>({
+    values:[...document.querySelectorAll('#structureFields .sat-value')].map(x=>x.textContent.trim()),
+    groups:[...document.querySelectorAll('#markerFields .aroma-group.selected > .aroma-chip')].map(x=>x.textContent.trim()),
+    descriptors:[...document.querySelectorAll('#markerFields .descriptor-chip.active')].map(x=>x.textContent.trim())
+  }));
+
   await page.locator('.tab[data-tab="reference"]').tap(); await wait();
   assert.equal(await active('.tab[data-tab="reference"]'),true,'reference tab is not active');
   await page.locator('.tab[data-tab="tree"]').tap(); await wait();
   assert.equal(await active('.tab[data-tab="tree"]'),true,'tree tab is not active');
 
-  // Diagnostic assertion: the native restart must rebuild a live private current question.
-  await page.locator('#treeRestart').tap(); await wait();
+  // The visible question must always have a live private current question, including
+  // after the white/red lifecycle resets performed earlier in this journey.
   await page.locator('#treeYes').tap(); await wait();
-  assert.equal(await page.locator('#adaptiveHistory .adaptive-history-item').count(),1,'tree answer was not recorded even after native restart');
+  assert.equal(await page.locator('#adaptiveHistory .adaptive-history-item').count(),1,'tree answer was not recorded');
   assert.equal((await page.locator('#adaptiveHistory .adaptive-history-item small').first().textContent())?.trim(),'Oui','tree recorded the wrong answer');
   assert.ok((await page.locator('#treeStep').textContent())?.includes('1 réponses'),'tree UI did not acknowledge the answer');
+  const diagnosticAfterTree=await page.evaluate(()=>({
+    values:[...document.querySelectorAll('#structureFields .sat-value')].map(x=>x.textContent.trim()),
+    groups:[...document.querySelectorAll('#markerFields .aroma-group.selected > .aroma-chip')].map(x=>x.textContent.trim()),
+    descriptors:[...document.querySelectorAll('#markerFields .descriptor-chip.active')].map(x=>x.textContent.trim())
+  }));
+  assert.deepEqual(diagnosticAfterTree,diagnosticBeforeTree,'standalone tree modified the Diagnostic inputs');
 
   await page.locator('.tab[data-tab="grape"]').tap(); await wait();
   await page.locator('#resetAll').tap(); await wait();

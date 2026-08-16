@@ -30,6 +30,11 @@ assert.ok(patch.includes("document.addEventListener('pointerup',e=>{if(e.target.
 assert.ok(patch.includes("Aucun repère saisi"),'misleading confidence badge was not replaced');
 assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference metrics are not using legacy progressive color classes');
 assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
+assert.ok(app.includes('Convergence · Arbre autonome'),'tree is not presented as standalone');
+assert.ok(app.includes('window.WineBlindTree={restart:treeRestart}'),'tree lifecycle bridge is missing');
+assert.ok(patch.includes('wireTreeLifecycle'),'red/white/reset actions do not rebuild the tree lifecycle');
+assert.ok(!app.includes('syncTreeToDiagnostic'),'legacy Tree → Diagnostic coupling is still active');
+assert.ok(!app.includes('treeDiagnosticCandidates'),'tree still depends on the legacy Diagnostic ranking');
 
 const sandbox={window:{},console};
 vm.createContext(sandbox);
