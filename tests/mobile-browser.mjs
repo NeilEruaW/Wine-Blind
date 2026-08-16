@@ -43,6 +43,7 @@ try{
   await page.locator('#grapeResults .c2-result-card').first().tap();
   await page.locator('#detailDialog[open]').waitFor({state:'visible'});
   await page.locator('#closeDialog').tap();
+  await page.locator('#detailDialog').waitFor({state:'hidden'});
 
   const diagnosticBeforeTree=await page.evaluate(()=>({
     values:[...document.querySelectorAll('#structureFields .sat-value')].map(x=>x.textContent.trim()),
