@@ -15,8 +15,8 @@ for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','openGrapeAggregate','saveC2','Top 10 origines','C2-C2','rankVisual']) assert.ok(patch.includes(feature),`V11.0.7 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-0-7-mobile-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','openGrapeAggregate','saveC2','Top 10 origines','C2-C2','rankVisual']) assert.ok(patch.includes(feature),`V11.0.8 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-0-8-mobile-1'),'wrong service-worker cache namespace');
 
 // Mobile navigation / interaction regression guards.
 assert.ok(overlay.includes('repeat(var(--sat-count),minmax(0,1fr))'),'SAT continuum does not use its real point count');
@@ -42,6 +42,8 @@ assert.ok(app.includes('x.classList.toggle("active",i<0);deferCalc()'),'descript
 assert.ok(patch.includes('timer=setTimeout(render,180)'),'C2-C2 burst interactions are not coalesced');
 assert.ok(patch.includes('updateInputIndicator({});clearTimeout(timer)'),'input counter is not updated before deferred ranking');
 assert.ok(patch.includes('rank podium podium-${i+1}'),'C2-C2 cards do not own stable podium icons');
+const exactFr=vm.runInNewContext('('+patch.match(/const EXACT_FR=(\{.*?\});/s)[1]+')');
+const uiExact=vm.runInNewContext('('+patch.match(/const UI_EXACT=(\{.*?\});/s)[1]+')');
 assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference metrics are not using legacy progressive color classes');
 assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
 assert.ok(!patch.includes('refine.remove()'),'C2-C2 bridge removes historical origin fields required by forms()');
@@ -62,13 +64,21 @@ assert.equal(C.profiles.length,203);
 assert.equal(new Set(C.profiles.map(p=>p.grape)).size,85);
 assert.equal(C.marker_dictionary.length,77);
 assert.equal(C.marker_dictionary.filter(m=>m.kind==='exact').length,63);
+const canonicalExacts=new Set(C.marker_dictionary.filter(m=>m.kind==='exact').map(m=>m.item));
+assert.deepEqual([...canonicalExacts].filter(x=>!exactFr[x]),[],'a canonical exact marker has no French display label');
+assert.deepEqual(Object.values(uiExact).filter(x=>!canonicalExacts.has(x)),[],'a French UI mapping targets an unknown canonical exact');
+for(const [label,canonical] of Object.entries({banane:'banana',chevrefeuille:'honeysuckle',mangue:'mango','poivre noir':'pepper',raisin:'raisin frais','fruits a coque':'nutty'})) assert.equal(uiExact[label],canonical,`missing French exact mapping for ${label}`);
 vm.runInContext(read('c2c2-engine.js'),sandbox,{filename:'c2c2-engine.js'});
 const E=sandbox.window.WineBlindEngine;
 assert.ok(E&&typeof E.score==='function','engine did not initialize');
+for(const canonical of new Set(Object.values(uiExact))){
+  const probe=E.score({structure:{},families:[],signatures:[],exacts:[canonical],coherenceTokens:[]});
+  assert.ok(probe.profiles.some(x=>x.ar.matchedExacts.includes(canonical)&&x.A>0),`French mapping ${canonical} has no scoring effect`);
+}
 const obs={structure:{'Acidité':4,'Tanins':4,'Alcool':4,'Corps':4,'Couleur':4},families:['Fruits noirs'],signatures:['Épicé / poivré'],exacts:['cassis','graphite'],coherenceTokens:[]};
 const scored=E.score(obs);
 assert.equal(scored.grapes.length,85);
 assert.equal(scored.profiles.length,203);
 assert.ok(scored.grapes.every(x=>Number.isFinite(x.I)&&Number.isFinite(x.A)&&Number.isFinite(x.S_eff)&&Number.isFinite(x.C)),'non-finite score');
 assert.ok(scored.grapes[0].I>=scored.grapes.at(-1).I,'ranking not sorted');
-console.log('Wine Blind V11.0.7 single-render smoke test: PASS');
+console.log('Wine Blind V11.0.8 French canonical aroma smoke test: PASS');
