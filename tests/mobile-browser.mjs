@@ -55,11 +55,10 @@ try{
   assert.equal(await active('.tab[data-tab="tree"]'),true,'tree tab is not active');
 
   // 6. Decision tree answers must be tappable after navigation.
-  const before=(await page.locator('#treeQuestion').textContent())?.trim();
   await page.locator('#treeYes').tap(); await wait();
-  const after=(await page.locator('#treeQuestion').textContent())?.trim();
-  const historyCount=await page.locator('#adaptiveHistory .trail-item').count();
-  assert.ok(historyCount>0 || (before&&after&&before!==after),'tree answer did not advance state');
+  assert.equal(await page.locator('#adaptiveHistory .adaptive-history-item').count(),1,'tree answer was not recorded');
+  assert.equal((await page.locator('#adaptiveHistory .adaptive-history-item small').first().textContent())?.trim(),'Oui','tree recorded the wrong answer');
+  assert.ok((await page.locator('#treeStep').textContent())?.includes('1 réponses'),'tree UI did not acknowledge the answer');
 
   // 7. Return to diagnostic, reset all, and verify stale selections/results are cleared.
   await page.locator('.tab[data-tab="grape"]').tap(); await wait();
