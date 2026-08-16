@@ -1,4 +1,4 @@
-/* Wine Blind V11.0.4 — UX overlay on the historical V10.7.2 frontend. */
+/* Wine Blind V11.0.5 — UX overlay on the historical V10.7.2 frontend. */
 #tab-origin > .form-card { display:none !important; }
 #tab-origin .results-section .step { display:none !important; }
 #tab-origin .section-heading { margin-top:4px; }
@@ -40,11 +40,11 @@
 .c2-result-card.is-primary { border-color:rgba(124,45,63,.45); box-shadow:0 8px 26px rgba(124,45,63,.10); }
 .c2-result-card.is-primary .result-name { font-size:1.08em; }
 .c2-engine-badge { display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--wine);background:var(--soft-wine);border-radius:999px;padding:4px 7px;margin-top:6px; }
-.c2-why { margin-top:9px;padding-top:8px;border-top:1px solid var(--line); }
-.c2-why-title { font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px; }
-.c2-why-chips { display:flex;flex-wrap:wrap;gap:5px; }
-.c2-why-chip { font-size:11px;border-radius:999px;padding:5px 7px;background:var(--soft-green);color:var(--green);font-weight:700; }
-.c2-why-chip.warn { background:#faece8;color:#934b38; }
+.c2-structure-fit{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
+.c2-fit-chip{font-size:11px;border-radius:999px;padding:5px 7px;font-weight:750}
+.c2-fit-chip.match{background:#e7f2ea;color:#356044}
+.c2-fit-chip.near{background:#f7f0d9;color:#786522}
+.c2-fit-chip.mismatch{background:#fae8e5;color:#8b4038}
 .c2-origin-sub { color:var(--muted);font-size:12px;margin-top:2px; }
 .c2-legacy-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .c2-version-note { font-size:10px;color:var(--muted);text-align:center;padding:8px 0 2px; }

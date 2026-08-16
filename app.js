@@ -42,8 +42,8 @@ function scaleField(k,l,opts,target="g"){
  const fromX=x=>{let r=track.getBoundingClientRect(),p=Math.max(0,Math.min(.999,(x-r.left)/r.width)),i=Math.min(opts.length-1,Math.floor(p*opts.length));return opts[i][0]};
  track.addEventListener("pointerdown",e=>{dragging=true;moved=false;startX=e.clientX;startValue=obj[k];track.setPointerCapture(e.pointerId);paint(fromX(e.clientX));e.preventDefault()});
  track.addEventListener("pointermove",e=>{if(!dragging)return;if(Math.abs(e.clientX-startX)>5)moved=true;paint(fromX(e.clientX));e.preventDefault()});
- track.addEventListener("pointerup",e=>{if(!dragging)return;dragging=false;let chosen=pending;if(!moved&&normalizeScaleValue(k,startValue)===chosen)chosen="";obj[k]=chosen;forms();calc();e.preventDefault()});
- track.addEventListener("pointercancel",()=>{dragging=false;forms()});
+ track.addEventListener("pointerup",e=>{if(!dragging)return;dragging=false;let chosen=pending;if(!moved&&normalizeScaleValue(k,startValue)===chosen)chosen="";obj[k]=chosen;paint(chosen);track.setAttribute("aria-valuetext",displayScaleValue(k,chosen,opts)||"Non renseigné");calc();e.preventDefault()});
+ track.addEventListener("pointercancel",()=>{dragging=false;paint(normalizeScaleValue(k,obj[k]))});
  w.append(track);return w
 }
 function satField(k,l){return scaleField(k,l,SCALE[k]||SCALE.acid,"g")}
@@ -95,20 +95,22 @@ function aromaSelected(type,group){return !!S.aromas[type]?.[group]}
 function aromaGroup(type,group,descs){
  let selected=aromaSelected(type,group),wrap=document.createElement("div");wrap.className="aroma-group"+(selected?" selected":"");
  let b=document.createElement("button");b.type="button";b.className="aroma-chip";b.textContent=group;b.setAttribute("aria-pressed",selected?"true":"false");
- b.onclick=()=>{
-   if(S.aromas[type][group])delete S.aromas[type][group];else S.aromas[type][group]=[];
-   forms();calc()
- };
- wrap.append(b);
- if(selected){
+ const appendDescriptors=()=>{
    let d=document.createElement("div");d.className="descriptor-row";
    descs.forEach(desc=>{
      let x=document.createElement("button");x.type="button";x.className="descriptor-chip"+(S.aromas[type][group].includes(desc)?" active":"");x.textContent=desc;
-     x.onclick=e=>{e.stopPropagation();let arr=S.aromas[type][group],i=arr.indexOf(desc);if(i>=0)arr.splice(i,1);else arr.push(desc);forms();calc()};
+     x.onclick=e=>{e.stopPropagation();let arr=S.aromas[type][group],i=arr.indexOf(desc);if(i>=0)arr.splice(i,1);else arr.push(desc);x.classList.toggle("active",i<0);calc()};
      d.append(x)
    });
    wrap.append(d)
- }
+ };
+ b.onclick=()=>{
+   if(S.aromas[type][group]){delete S.aromas[type][group];wrap.classList.remove("selected");wrap.querySelector(".descriptor-row")?.remove();b.setAttribute("aria-pressed","false")}
+   else{S.aromas[type][group]=[];wrap.classList.add("selected");b.setAttribute("aria-pressed","true");appendDescriptors()}
+   calc()
+ };
+ wrap.append(b);
+ if(selected)appendDescriptors();
  return wrap
 }
 const AROMA_HELP={

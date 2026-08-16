@@ -1,4 +1,4 @@
-# Wine Blind — V11.0.3 RESET
+# Wine Blind — V11.0.5
 
 Version de production candidate reconstruite à partir du dernier frontend complet **V10.7.2** et du moteur de release **C2-C2**.
 

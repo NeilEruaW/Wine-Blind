@@ -32,12 +32,23 @@ try{
   await firstRail.locator('.sat-point').nth(1).tap(); await wait();
   assert.ok((await page.locator('#structureFields .sat-value').first().textContent()).trim(),'SAT value was not selected');
 
+  const acidRail=page.locator('#structureFields .sat-field').filter({hasText:'Acidité'}).locator('.sat-continuum');
+  await acidRail.locator('.sat-point').nth(3).tap(); await wait();
+  await page.locator('#typeWhite').tap(); await wait();
+  assert.equal(await active('#typeWhite'),true,'white toggle failed after acidity input');
+  await page.locator('#typeRed').tap(); await wait();
+  assert.equal(await active('#typeRed'),true,'red toggle failed after acidity input');
+
   const aroma=page.locator('#markerFields .aroma-group').first();
   await aroma.locator('.aroma-chip').tap(); await wait();
+  const secondAroma=page.locator('#markerFields .aroma-group').nth(1);
+  await secondAroma.locator('.aroma-chip').tap(); await wait();
+  assert.equal(await page.locator('#markerFields .aroma-group.selected').count(),2,'two aroma families could not stay open');
   const selectedGroup=page.locator('#markerFields .aroma-group.selected').first();
   await selectedGroup.locator('.descriptor-chip').nth(0).tap(); await wait();
   await page.locator('#markerFields .aroma-group.selected').first().locator('.descriptor-chip').nth(1).tap(); await wait();
   assert.ok(await page.locator('#markerFields .descriptor-chip.active').count()>=2,'multiple aroma descriptors were not retained');
+  assert.match((await page.locator('#diagnosticConfidence').textContent())||'',/Saisie · [5-9]\d* repères/,'input indicator did not update after structure, families and descriptors');
 
   try{
     await page.locator('#grapeResults .c2-result-card').first().waitFor({state:'visible',timeout:10000});
@@ -54,6 +65,7 @@ try{
   }
   await page.locator('#grapeResults .c2-result-card').first().tap();
   await page.locator('#detailDialog[open]').waitFor({state:'visible'});
+  assert.notEqual((await page.locator('#detailDialog .identity-signature strong').textContent())?.trim(),(await page.locator('#grapeResults .result-meta').first().textContent())?.trim(),'blind signature was replaced by profile origin/style');
   await page.locator('#closeDialog').tap();
   await page.locator('#detailDialog').waitFor({state:'hidden'});
 
@@ -101,7 +113,7 @@ try{
   assert.ok(await page.locator('#detailDialog .metric[class*="metric-level-"]').count()>0,'reference metrics lost progressive colour classes');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.0.4 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.0.5 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }
