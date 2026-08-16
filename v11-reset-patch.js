@@ -46,7 +46,7 @@ let timer;function schedule(){clearTimeout(timer);timer=setTimeout(render,0)}
 function interactionAffectsDiagnostic(target){return !!target.closest?.('#typeRed,#typeWhite,#resetAll,.aroma-chip,.descriptor-chip,#structureFields .sat-continuum,#markerFields .choice-rail')}
 function wireTreeLifecycle(){['#typeRed','#typeWhite','#resetAll'].forEach(sel=>$(sel)?.addEventListener('click',()=>window.WineBlindTree?.restart()))}
 function wireMobileTabs(){
- $('.tab').forEach(tab=>{
+ $$('.tab').forEach(tab=>{
    let timer;
    const ensure=()=>{clearTimeout(timer);timer=setTimeout(()=>{if(!tab.classList.contains('active'))tab.click()},0)};
    tab.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen')ensure()},false);
