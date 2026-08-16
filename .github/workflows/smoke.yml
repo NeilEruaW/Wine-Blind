@@ -30,6 +30,7 @@ jobs:
           node --check app.js
           node --check sw.js
           node --check tests/mobile-browser.mjs
+          node --check tests/mobile-endurance.mjs
       - name: Wine Blind regression smoke
         run: node tests/smoke.mjs
       - name: Install WebKit test runtime
@@ -40,3 +41,4 @@ jobs:
         run: |
           python3 -m http.server 4173 >/tmp/wineblind-http.log 2>&1 &
           node tests/mobile-browser.mjs
+          node tests/mobile-endurance.mjs

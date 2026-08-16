@@ -15,8 +15,8 @@ for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','openGrapeAggregate','saveC2','Top 10 origines','C2-C2','interactionAffectsDiagnostic']) assert.ok(patch.includes(feature),`V11.0.6 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-0-6-mobile-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','openGrapeAggregate','saveC2','Top 10 origines','C2-C2','rankVisual']) assert.ok(patch.includes(feature),`V11.0.7 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-0-7-mobile-1'),'wrong service-worker cache namespace');
 
 // Mobile navigation / interaction regression guards.
 assert.ok(overlay.includes('repeat(var(--sat-count),minmax(0,1fr))'),'SAT continuum does not use its real point count');
@@ -25,9 +25,10 @@ assert.ok(overlay.includes('right:calc(50% / var(--sat-count))'),'SAT right edge
 assert.ok(overlay.includes('touch-action:manipulation'),'touch targets are not hardened for iOS Safari');
 assert.ok(!patch.includes("document.addEventListener('click',e=>{const ref="),'legacy global capture click listener still present');
 assert.ok(!patch.includes("document.addEventListener('pointerup',schedule,true)"),'legacy global capture pointer listener still present');
-assert.ok(patch.includes('event.composedPath?.()'),'diagnostic recompute does not survive DOM replacement on WebKit');
-assert.ok(patch.includes("document.addEventListener('click',e=>{if(interactionAffectsDiagnostic(e))schedule()},false)"),'diagnostic click recompute is not scoped through the event path');
-assert.ok(patch.includes("document.addEventListener('pointerup',e=>{if(interactionAffectsDiagnostic(e))schedule()},false)"),'rail recompute must happen after the target pointer handler');
+assert.ok(app.includes('new CustomEvent("wineblind:diagnostic-input")'),'historical inputs do not emit the single diagnostic event');
+assert.ok(patch.includes("document.addEventListener('wineblind:diagnostic-input',schedule)"),'C2-C2 does not use the single diagnostic event');
+assert.ok(!patch.includes("document.addEventListener('pointerup'"),'duplicate pointer recompute listener is still active');
+assert.ok(!patch.includes("document.addEventListener('change'"),'duplicate change recompute listener is still active');
 assert.ok(patch.includes("Aucun repère saisi"),'misleading confidence badge was not replaced');
 assert.ok(patch.includes('visibleInputCount'),'input indicator is not based on visible retained inputs');
 assert.ok(!patch.includes('Pourquoi ?'),'legacy Why block is still rendered under grape candidates');
@@ -35,10 +36,12 @@ for(const tone of ['match','near','mismatch']) assert.ok(overlay.includes(`.c2-f
 assert.ok(patch.includes('blindSignature(p.grape)'),'profile identity still replaces the blind signature with an origin/style');
 assert.ok(!app.includes('x.classList.toggle("active",i<0);forms()'),'aroma descriptor tap still rebuilds the complete form');
 assert.ok(!app.includes('obj[k]=chosen;forms();calc()'),'structure rail still rebuilds the complete form on pointerup');
-assert.ok(app.includes('function deferCalc()'),'historical ranking calculation is not deferred until after visual feedback');
+assert.ok(app.includes('function deferCalc(){document.dispatchEvent'),'historical ranking still runs alongside C2-C2');
 assert.ok(app.includes('forms();deferCalc()};$("#typeWhite")'),'red/white toggle still blocks on synchronous ranking');
 assert.ok(app.includes('x.classList.toggle("active",i<0);deferCalc()'),'descriptor selection still blocks on synchronous ranking');
-assert.ok(patch.includes('requestAnimationFrame(()=>{frame=0;clearTimeout(timer);timer=setTimeout(render,0)})'),'C2-C2 rendering is not deferred until after visual feedback');
+assert.ok(patch.includes('timer=setTimeout(render,180)'),'C2-C2 burst interactions are not coalesced');
+assert.ok(patch.includes('updateInputIndicator({});clearTimeout(timer)'),'input counter is not updated before deferred ranking');
+assert.ok(patch.includes('rank podium podium-${i+1}'),'C2-C2 cards do not own stable podium icons');
 assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference metrics are not using legacy progressive color classes');
 assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
 assert.ok(!patch.includes('refine.remove()'),'C2-C2 bridge removes historical origin fields required by forms()');
@@ -68,4 +71,4 @@ assert.equal(scored.grapes.length,85);
 assert.equal(scored.profiles.length,203);
 assert.ok(scored.grapes.every(x=>Number.isFinite(x.I)&&Number.isFinite(x.A)&&Number.isFinite(x.S_eff)&&Number.isFinite(x.C)),'non-finite score');
 assert.ok(scored.grapes[0].I>=scored.grapes.at(-1).I,'ranking not sorted');
-console.log('Wine Blind V11.0.6 instant-input smoke test: PASS');
+console.log('Wine Blind V11.0.7 single-render smoke test: PASS');
