@@ -5,9 +5,13 @@
 
 /* Continuums: every point is centered in its real grid cell and the rail joins
    the centre of the first and last cells. This also neutralises the historical
-   sat-count-3 manual offset that caused visible drift on iPhone. */
+   sat-count-3 manual offset/padding that caused visible drift on iPhone. */
 .sat-continuum{
   grid-template-columns:repeat(var(--sat-count),minmax(0,1fr)) !important;
+}
+.sat-continuum.sat-count-3{
+  padding-left:0 !important;
+  padding-right:0 !important;
 }
 .sat-continuum .sat-point{
   justify-self:center !important;
