@@ -54,10 +54,12 @@ try{
 
   const exotic=page.locator('#markerFields .aroma-group').filter({has:page.locator('.aroma-chip',{hasText:'Fruits exotiques'})});
   if(!(await exotic.evaluate(el=>el.classList.contains('selected')))) await exotic.locator('.aroma-chip').tap();
-  await exotic.getByRole('button',{name:'Banane',exact:true}).tap();
+  const banana=exotic.getByRole('button',{name:'Banane',exact:true});
+  if(!(await banana.evaluate(el=>el.classList.contains('active')))) await banana.tap();
   const floral=page.locator('#markerFields .aroma-group').filter({has:page.locator('.aroma-chip',{hasText:'Floral'})});
   if(!(await floral.evaluate(el=>el.classList.contains('selected')))) await floral.locator('.aroma-chip').tap();
-  await floral.getByRole('button',{name:'Chèvrefeuille',exact:true}).tap();
+  const honeysuckle=floral.getByRole('button',{name:'Chèvrefeuille',exact:true});
+  if(!(await honeysuckle.evaluate(el=>el.classList.contains('active')))) await honeysuckle.tap();
   await page.waitForTimeout(300);
   const canonicalExactInputs=await page.evaluate(()=>window.__C2_LAST?.obs?.exacts||[]);
   assert.ok(canonicalExactInputs.includes('banana'),'Banane was not mapped to canonical banana');
