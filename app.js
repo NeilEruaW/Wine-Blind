@@ -486,7 +486,7 @@ function showG(g){
  $("#detailDialog").showModal();wireOriginLinks()
 }
 let historyReturnTab="grape";
-function tab(n){$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();if(n==="reference")ref($("#searchGrape").value);if(n==="tree"&&!S.tree.done)treeRender();scrollTo({top:0,behavior:"smooth"})}
+function tab(n){$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.tab===n));$$(".screen").forEach(x=>x.classList.toggle("active",x.id==="tab-"+n));if(n==="history")histRender();if(n==="reference")ref($("#searchGrape").value);if(n==="tree"&&!S.tree.done)treeRender();scrollTo({top:0,behavior:"smooth"})}
 const FK="wineBlindFavoritesV7",favs=()=>{try{return new Set(JSON.parse(localStorage.getItem(FK)||"[]"))}catch{return new Set()}};
 function toggleFav(name){let f=favs();f.has(name)?f.delete(name):f.add(name);localStorage.setItem(FK,JSON.stringify([...f]));ref($("#searchGrape").value)}
 function grapeSearchText(g){
