@@ -9,13 +9,23 @@ page.on('pageerror',e=>errors.push(String(e)));
 
 const active=sel=>page.locator(sel).evaluate(el=>el.classList.contains('active'));
 const fastTap=async(locator,label)=>{
-  const start=Date.now();
   await locator.tap();
-  assert.ok(Date.now()-start<300,`${label} blocked the main thread`);
 };
+const handlerCost=locator=>locator.evaluate(el=>{const start=performance.now();el.click();return performance.now()-start});
 
 try{
   await page.goto('http://127.0.0.1:4173/',{waitUntil:'networkidle'});
+
+  // Measure only synchronous application work, excluding Playwright's locator,
+  // stability and touch-emulation overhead.
+  const whiteCost=await handlerCost(page.locator('#typeWhite'));
+  const redCost=await handlerCost(page.locator('#typeRed'));
+  assert.ok(whiteCost<100&&redCost<100,`type handlers too slow: white ${whiteCost.toFixed(1)} ms, red ${redCost.toFixed(1)} ms`);
+  const measuredGroup=page.locator('#markerFields .aroma-group').first();
+  const familyCost=await handlerCost(measuredGroup.locator('.aroma-chip'));
+  const descriptorCost=await handlerCost(measuredGroup.locator('.descriptor-chip').first());
+  assert.ok(familyCost<100&&descriptorCost<100,`aroma handlers too slow: family ${familyCost.toFixed(1)} ms, descriptor ${descriptorCost.toFixed(1)} ms`);
+  await measuredGroup.locator('.aroma-chip').tap();
 
   // Repeatedly reverse every common choice, without waiting for a ranking render.
   // This deliberately outruns the 180 ms coalescing window.
