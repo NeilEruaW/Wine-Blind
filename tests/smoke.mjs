@@ -15,8 +15,8 @@ for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','openGrapeAggregate','saveC2','Top 10 origines','C2-C2','interactionAffectsDiagnostic']) assert.ok(patch.includes(feature),`V11.0.5 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-0-5-mobile-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','openGrapeAggregate','saveC2','Top 10 origines','C2-C2','interactionAffectsDiagnostic']) assert.ok(patch.includes(feature),`V11.0.6 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-0-6-mobile-1'),'wrong service-worker cache namespace');
 
 // Mobile navigation / interaction regression guards.
 assert.ok(overlay.includes('repeat(var(--sat-count),minmax(0,1fr))'),'SAT continuum does not use its real point count');
@@ -35,6 +35,10 @@ for(const tone of ['match','near','mismatch']) assert.ok(overlay.includes(`.c2-f
 assert.ok(patch.includes('blindSignature(p.grape)'),'profile identity still replaces the blind signature with an origin/style');
 assert.ok(!app.includes('x.classList.toggle("active",i<0);forms()'),'aroma descriptor tap still rebuilds the complete form');
 assert.ok(!app.includes('obj[k]=chosen;forms();calc()'),'structure rail still rebuilds the complete form on pointerup');
+assert.ok(app.includes('function deferCalc()'),'historical ranking calculation is not deferred until after visual feedback');
+assert.ok(app.includes('forms();deferCalc()};$("#typeWhite")'),'red/white toggle still blocks on synchronous ranking');
+assert.ok(app.includes('x.classList.toggle("active",i<0);deferCalc()'),'descriptor selection still blocks on synchronous ranking');
+assert.ok(patch.includes('requestAnimationFrame(()=>{frame=0;clearTimeout(timer);timer=setTimeout(render,0)})'),'C2-C2 rendering is not deferred until after visual feedback');
 assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference metrics are not using legacy progressive color classes');
 assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
 assert.ok(!patch.includes('refine.remove()'),'C2-C2 bridge removes historical origin fields required by forms()');
@@ -64,4 +68,4 @@ assert.equal(scored.grapes.length,85);
 assert.equal(scored.profiles.length,203);
 assert.ok(scored.grapes.every(x=>Number.isFinite(x.I)&&Number.isFinite(x.A)&&Number.isFinite(x.S_eff)&&Number.isFinite(x.C)),'non-finite score');
 assert.ok(scored.grapes[0].I>=scored.grapes.at(-1).I,'ranking not sorted');
-console.log('Wine Blind V11.0.5 mobile stability smoke test: PASS');
+console.log('Wine Blind V11.0.6 instant-input smoke test: PASS');
