@@ -32,8 +32,8 @@ assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference met
 assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
 assert.ok(app.includes('Convergence · Arbre autonome'),'tree is not presented as standalone');
 assert.ok(app.includes('window.WineBlindTree={restart:treeRestart}'),'tree lifecycle bridge is missing');
+assert.ok(app.includes('function tab(n){$$(\".tab\").forEach'),'main navigation does not iterate over all tabs');
 assert.ok(patch.includes('wireTreeLifecycle'),'red/white/reset actions do not rebuild the tree lifecycle');
-assert.ok(patch.includes('wireMobileTabs'),'lost iOS tab taps do not have a scoped fallback');
 assert.ok(patch.includes("$$('.tab').forEach"),'mobile tab fallback does not iterate over all tabs');
 assert.ok(patch.includes("if(!tab.classList.contains('active'))tab.click()"),'mobile tab fallback is not conditional');
 assert.ok(!app.includes('syncTreeToDiagnostic'),'legacy Tree → Diagnostic coupling is still active');
