@@ -1,3 +1,14 @@
+# QA — Wine Blind V11.1.0
+
+## Contrôles spécifiques
+
+- Cas étalon Pinot noir : une saisie des cinq axes au centre du profil classe le Pinot noir premier, avec 100 % d'adéquation structurelle.
+- Vérification que la normalisation d'affichage dépend de la masse d'information saisie, tandis que le tri demeure fondé sur l'indice brut C2-C2.
+- Vérification statique des 85 cépages et 203 profils, des correspondances françaises et de la fin du masquage des empreintes de niveau 1.
+- Parcours WebKit mobile : navigation Rouge/Blanc, rafales de sélections, ouverture de la même fiche depuis le Top 10 et le Référentiel, présence des descripteurs et des niveaux 1/2/3.
+
+---
+
 # QA — Wine Blind V11.0.3 RESET
 
 ## Contrôle de restauration
