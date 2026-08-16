@@ -1,9 +1,32 @@
-/* Wine Blind V11 RESET — UX overlay on the historical V10.7.2 frontend.
-   This file deliberately does not replace styles.css: it only adds the validated V11 UX adjustments. */
+/* Wine Blind V11.0.4 — UX overlay on the historical V10.7.2 frontend. */
 #tab-origin > .form-card { display:none !important; }
 #tab-origin .results-section .step { display:none !important; }
 #tab-origin .section-heading { margin-top:4px; }
-.c2-result-card { position:relative; }
+
+/* Continuums: the track and the dots now use the same dynamic point count. */
+.sat-continuum{
+  grid-template-columns:repeat(var(--sat-count),minmax(0,1fr)) !important;
+}
+.sat-continuum::before{
+  left:calc(50% / var(--sat-count)) !important;
+  right:calc(50% / var(--sat-count)) !important;
+}
+
+/* iOS Safari: keep taps native and predictable outside draggable rails. */
+.tab,.seg,.ghost-btn,.primary-btn,.secondary-btn,.aroma-chip,.descriptor-chip,.answer-btn,.result-card,.ref-row,.filter-chip,.ref-mode-btn,.history-inline-btn{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(124,45,63,.10);
+}
+.aroma-chip,.descriptor-chip,.answer-btn,.tab,.seg,#resetAll{cursor:pointer}
+
+/* The former "Confiance" label was not a calibrated probability. */
+.input-status-badge{
+  background:#f2edef !important;
+  color:#66595d !important;
+}
+
+.c2-result-card { position:relative; cursor:pointer; }
+.c2-result-card:focus-visible{outline:2px solid var(--wine);outline-offset:2px}
 .c2-result-card.is-primary { border-color:rgba(124,45,63,.45); box-shadow:0 8px 26px rgba(124,45,63,.10); }
 .c2-result-card.is-primary .result-name { font-size:1.08em; }
 .c2-engine-badge { display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--wine);background:var(--soft-wine);border-radius:999px;padding:4px 7px;margin-top:6px; }
@@ -13,18 +36,9 @@
 .c2-why-chip { font-size:11px;border-radius:999px;padding:5px 7px;background:var(--soft-green);color:var(--green);font-weight:700; }
 .c2-why-chip.warn { background:#faece8;color:#934b38; }
 .c2-origin-sub { color:var(--muted);font-size:12px;margin-top:2px; }
-.c2-detail-structure { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 16px; }
-.c2-metric { background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:11px 12px;text-align:left; }
-.c2-metric-label { display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted); }
-.c2-metric-sat { display:block;font-size:14px;font-weight:750;margin-top:4px;color:var(--ink); }
-.c2-metric-value { display:block;font-size:20px;font-weight:850;color:var(--wine);font-variant-numeric:tabular-nums;margin-top:1px; }
-.c2-metric-range { display:block;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px; }
-.c2-detail-section { padding:12px 0;border-top:1px solid var(--line); }
-.c2-detail-section h3 { margin:0 0 7px;font-size:14px; }
-.c2-tags { display:flex;flex-wrap:wrap;gap:6px; }
-.c2-tag { padding:6px 8px;border-radius:999px;background:#f4eff0;color:#5f5356;font-size:11px;font-weight:700; }
-.c2-tag.exact { background:var(--soft-wine);color:var(--wine); }
-.c2-origin-card { cursor:pointer; }
-.c2-origin-card:hover { border-color:#d6bcc3; }
+.c2-legacy-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .c2-version-note { font-size:10px;color:var(--muted);text-align:center;padding:8px 0 2px; }
-@media(max-width:520px){ .c2-detail-structure{grid-template-columns:1fr 1fr}.c2-metric{padding:10px}.c2-metric-value{font-size:18px} }
+@media(max-width:520px){
+  .c2-legacy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .aroma-chip,.descriptor-chip{min-height:40px}
+}
