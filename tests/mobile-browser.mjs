@@ -105,6 +105,10 @@ try{
   const focusedPanel=page.locator(`.origin-grape-panel[data-grape="${focusedGrape}"]`);
   assert.equal(await focusedPanel.count(),1,'Top 10 origin did not open the unified regional identity');
   assert.equal(await focusedPanel.evaluate(el=>el.open),true,'Top 10 origin did not focus the relevant grape profile');
+  assert.equal((await page.locator('#detailType').textContent())?.includes('Origine'),false,'redundant Origine label remains beside the country');
+  assert.equal(await page.locator('#detailBody').getByText('Profils de la région',{exact:true}).count(),0,'duplicated regional profile block remains');
+  assert.equal(await page.locator('#detailBody').getByText('Cépages clés',{exact:true}).count(),0,'redundant key-grape block remains');
+  assert.equal(await page.locator('#detailBody').getByText(/Déplier un cépage/).count(),0,'instructional grape-panel copy remains');
   assert.equal(await page.locator('#detailBody').getByText('Clés de différenciation',{exact:true}).count(),0,'obsolete differentiation block remains in origin identity');
   assert.equal(await page.locator('#detailBody').getByText('À distinguer de',{exact:true}).count(),0,'obsolete confusion block remains in origin identity');
   const originIdentityTitle=(await page.locator('#detailTitle').textContent())?.trim();
@@ -157,10 +161,17 @@ try{
   assert.equal((await page.locator('#detailTitle').textContent())?.trim(),topIdentity.title,'Top 10 and Reference opened different grape identities');
   assert.equal((await page.locator('#detailBody').innerText()).trim(),topIdentity.body,'Top 10 and Reference identity sheets differ');
   assert.ok(await page.locator('#detailDialog .metric[class*="metric-level-"]').count()>0,'reference metrics lost progressive colour classes');
-  assert.ok(await page.locator('#detailDialog .aroma-descriptor-token').count()>0,'reference fingerprint lost exact descriptors');
+  assert.equal(await page.locator('#detailDialog .fingerprint-descriptors:visible').count(),0,'aroma descriptors are expanded by default');
+  const fingerprintGroup=page.locator('#detailDialog .fingerprint-group').first();
+  await fingerprintGroup.locator('summary').tap();
+  assert.ok(await fingerprintGroup.locator('.aroma-descriptor-token:visible').count()>0,'aroma family did not reveal its descriptors');
   assert.ok(await page.locator('#detailDialog .aroma-token.fp-w1').count()>0,'reference fingerprint hides prevalence level 1');
   assert.ok(await page.locator('#detailDialog .metric-info').count()>0,'metric ranges are not folded behind information controls');
+  const firstMetricInfo=page.locator('#detailDialog .metric-info').first();
+  await firstMetricInfo.locator('summary').tap();
+  assert.match((await firstMetricInfo.locator('span').textContent())||'',/^\[[\d,]+–[\d,]+\]$/,'metric range contains redundant wording');
   assert.equal(await page.locator('#detailBody').getByText('Géographie',{exact:true}).count(),1,'grape geography is not consolidated into one block');
+  assert.equal(await page.locator('.geo-subsection').first().locator('.origin-link').count(),await page.locator('.geo-subsection').first().locator('button').count(),'some production regions are not clickable');
   assert.equal(await page.locator('#detailBody').getByText('Arômes & marqueurs',{exact:true}).count(),0,'competing legacy aroma block remains visible');
   await page.locator('#closeDialog').tap();
   await page.locator('.ref-mode-btn[data-refmode="origins"]').tap(); await wait();
@@ -171,7 +182,7 @@ try{
   assert.ok(await page.locator('.origin-grape-panel').count()>0,'directory origin identity has no per-grape profiles');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.3.0 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.3.1 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }
