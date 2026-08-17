@@ -64,9 +64,16 @@
 .metric-score-line{display:flex;justify-content:center;align-items:center;gap:5px}
 .metric-info>span{left:auto;right:0}
 .geo-subsection{margin-top:10px}
-.more-regions{margin-top:7px}
-.more-regions>summary{cursor:pointer;color:var(--wine);font-size:10px;font-weight:750}
-.more-regions .origin-link-list{margin-top:7px}
+.geo-tree{display:grid;gap:6px;margin-top:6px}
+.geo-fold{border:1px solid rgba(124,45,63,.13);border-radius:10px;background:#faf7f6;overflow:hidden}
+.geo-fold>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;color:var(--wine);font-size:10px;font-weight:820;cursor:pointer;list-style:none}
+.geo-fold>summary::-webkit-details-marker{display:none}
+.geo-fold>summary::after{content:'›';font-size:15px;line-height:1;transition:transform .16s ease}
+.geo-fold[open]>summary::after{transform:rotate(90deg)}
+.geo-fold>summary small{margin-left:auto;color:var(--muted);font-size:8.5px;font-weight:680}
+.geo-fold-content{display:grid;gap:6px;padding:0 7px 8px}
+.region-fold{background:#fff;border-color:var(--line)}
+.region-fold>summary{color:var(--ink);font-weight:760}
 .confusion-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .grape-identity-link{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(124,45,63,.18);border-radius:999px;background:var(--soft-wine);color:var(--wine);padding:6px 9px;font:750 10px/1.2 inherit;cursor:pointer}
 .origin-grape-panel{margin-top:8px;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:visible}
@@ -77,6 +84,9 @@
 .origin-profile-evidence{display:grid;gap:7px;margin:8px 0}
 .origin-profile-evidence>div{padding:8px;border-radius:9px;background:#f8f5f2}
 .origin-profile-evidence p,.origin-panel-intro{margin:3px 0 0;font-size:10px;line-height:1.45;color:var(--muted)}
+.blind-signature-summary{margin-top:9px;padding:9px 10px;border:1px solid rgba(176,125,35,.24);border-radius:10px;background:linear-gradient(135deg,#fbf5e7,#f6ecda);color:#6e531f}
+.blind-signature-summary b{font-size:10px}
+.blind-signature-summary p{margin:4px 0 0;font-size:10px;line-height:1.45;color:#765f32}
 .c2-structure-fit{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
 .c2-fit-chip{font-size:11px;border-radius:999px;padding:5px 7px;font-weight:750}
 .c2-fit-chip.match{background:#e7f2ea;color:#356044}
