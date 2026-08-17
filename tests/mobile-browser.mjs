@@ -85,6 +85,21 @@ try{
   await page.locator('#closeDialog').tap();
   await page.locator('#detailDialog').waitFor({state:'hidden'});
 
+  await page.locator('#goOrigin').tap(); await wait();
+  assert.equal(await active('.tab[data-tab="origin"]'),true,'origin tab is not active');
+  assert.equal(await active('#originScopeSelector [data-origin-scope="world"]'),true,'world scope must be active by default');
+  const worldFirst=(await page.locator('#originResults .c2-origin-card .result-name').first().textContent())?.trim();
+  await page.locator('#originScopeSelector [data-origin-scope="france"]').tap(); await wait();
+  assert.equal(await active('#originScopeSelector [data-origin-scope="france"]'),true,'France scope did not activate');
+  const franceCards=page.locator('#originResults .c2-origin-card');
+  assert.ok(await franceCards.count()>0&&await franceCards.count()<=10,'France scope did not render a single Top 10');
+  const franceMeta=await franceCards.locator('.c2-origin-sub').allTextContents();
+  assert.ok(franceMeta.every(x=>/(^|,\s*)France(\s*,|$)/i.test(x)),`non-French origin leaked into France scope: ${franceMeta.join(' | ')}`);
+  await page.locator('#originScopeSelector [data-origin-scope="world"]').tap(); await wait();
+  assert.equal((await page.locator('#originResults .c2-origin-card .result-name').first().textContent())?.trim(),worldFirst,'world ranking changed after France round-trip');
+  assert.equal(await page.locator('#originResults').count(),1,'scope selector created competing origin result lists');
+  await page.locator('.tab[data-tab="grape"]').tap(); await wait();
+
   const diagnosticBeforeTree=await page.evaluate(()=>({
     values:[...document.querySelectorAll('#structureFields .sat-value')].map(x=>x.textContent.trim()),
     groups:[...document.querySelectorAll('#markerFields .aroma-group.selected > .aroma-chip')].map(x=>x.textContent.trim()),
@@ -112,6 +127,7 @@ try{
   await page.locator('.tab[data-tab="grape"]').tap(); await wait();
   await page.locator('#resetAll').tap(); await wait();
   assert.equal(await active('#typeRed'),true,'reset did not restore red');
+  assert.equal(await active('#originScopeSelector [data-origin-scope="world"]'),true,'reset did not restore world origin scope');
   assert.equal(await page.locator('#markerFields .aroma-group.selected').count(),0,'reset left selected aroma groups');
   const values=await page.locator('#structureFields .sat-value').allTextContents();
   assert.ok(values.every(v=>!v.trim()),'reset left structure values selected');
@@ -134,7 +150,7 @@ try{
   assert.ok(await page.locator('#detailDialog .fingerprint-chip.fp-w1').count()>0,'reference fingerprint hides prevalence level 1');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.2.0 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.2.1 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }

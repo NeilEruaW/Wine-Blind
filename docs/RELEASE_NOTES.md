@@ -1,3 +1,18 @@
+# Wine Blind V11.2.1
+
+## Top 10 origines
+
+- Ajout d’un sélecteur alternatif `Monde / France` dans l’unique section Top 10 origines.
+- `Monde` reste le périmètre par défaut ; `France` filtre le même classement sur les profils dont la géographie canonique est française.
+- Aucun second Top 10 ni aucun moteur concurrent n’est créé.
+- Les allers-retours de périmètre réutilisent le score déjà calculé et ne relancent pas C2-C2.
+
+## PWA
+
+Nouveau namespace de cache : `wine-blind-v11-2-1-origin-scope-1`.
+
+---
+
 # Wine Blind V11.2.0
 
 ## Source aromatique canonique
