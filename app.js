@@ -476,11 +476,14 @@ function grapeGeographyHTML(g){
  let regions=units.map(u=>({name:u.label,country:u.country,unit:u}));
  Object.entries(g.productionWorld||{}).forEach(([country,names])=>{(names||[]).forEach(name=>{if(name&&nt(name)!==nt(country))regions.push({name,country,unit:productionUnit(g,name,country)})})});
  regions=uniqueByName(regions).sort((a,b)=>String(a.country).localeCompare(String(b.country),"fr")||String(a.name).localeCompare(String(b.name),"fr"));
- let groups=V.grapeAppellations?.[g.name]||{},apps=uniqueByName([...(groups.mono||[]),...(groups.blend||[])]),shown=apps.slice(0,10),rest=apps.slice(10);
+ let groups=V.grapeAppellations?.[g.name]||{},apps=uniqueByName([...(groups.mono||[]),...(groups.blend||[])]);
  let regionButton=x=>`<button class="origin-link" data-unit="${x.unit?.id||""}" data-region="${esc(x.name)}" data-country="${esc(x.country)}" data-grape="${esc(g.name)}"><span>${esc(x.name)}</span><small>${esc(x.country)}</small></button>`;
- return `<div class="detail-block geography-block"><b>Géographie</b><div class="geo-subsection"><span class="app-subtitle">Régions de production</span><div class="origin-link-list">${regions.slice(0,12).map(regionButton).join("")}</div>${regions.length>12?`<details class="more-regions"><summary>Voir les ${regions.length-12} autres régions</summary><div class="origin-link-list">${regions.slice(12).map(regionButton).join("")}</div></details>`:""}</div>${apps.length?`<div class="geo-subsection"><span class="app-subtitle">Appellations</span><div class="detail-apps">${shown.map(a=>`<span>${esc(a.name||a.label)}${a.country?` <em>${esc(a.country)}</em>`:""}</span>`).join("")}</div>${rest.length?`<details class="more-apps"><summary>Voir les ${rest.length} autres appellations</summary><div class="detail-apps">${rest.map(a=>`<span>${esc(a.name||a.label)}${a.country?` <em>${esc(a.country)}</em>`:""}</span>`).join("")}</div></details>`:""}</div>`:""}</div>`
+ let groupBy=(arr,key)=>arr.reduce((m,x)=>{let k=key(x)||"Autres";(m[k]||(m[k]=[])).push(x);return m},{}),byCountry=groupBy(regions,x=>x.country);
+ let regionTree=Object.keys(byCountry).sort((a,b)=>a.localeCompare(b,"fr")).map(country=>`<details class="geo-fold country-fold"><summary><span>${esc(country)}</span><small>${byCountry[country].length} région${byCountry[country].length>1?"s":""}</small></summary><div class="geo-fold-content origin-link-list">${byCountry[country].map(regionButton).join("")}</div></details>`).join("");
+ let appCountries=groupBy(apps,x=>x.country||"Pays non renseigné"),appTree=Object.keys(appCountries).sort((a,b)=>a.localeCompare(b,"fr")).map(country=>{let byRegion=groupBy(appCountries[country],x=>x.region||"Autres régions"),regionsHtml=Object.keys(byRegion).sort((a,b)=>a.localeCompare(b,"fr")).map(region=>`<details class="geo-fold region-fold"><summary><span>${esc(region)}</span><small>${byRegion[region].length}</small></summary><div class="geo-fold-content detail-apps">${byRegion[region].map(a=>`<span>${esc(a.name||a.label)}</span>`).join("")}</div></details>`).join("");return `<details class="geo-fold country-fold"><summary><span>${esc(country)}</span><small>${appCountries[country].length} appellation${appCountries[country].length>1?"s":""}</small></summary><div class="geo-fold-content">${regionsHtml}</div></details>`}).join("");
+ return `<div class="detail-block geography-block"><b>Géographie</b><div class="geo-subsection"><span class="app-subtitle">Régions de production</span><div class="geo-tree">${regionTree}</div></div>${apps.length?`<div class="geo-subsection"><span class="app-subtitle">Appellations</span><div class="geo-tree">${appTree}</div></div>`:""}</div>`
 }
-function confusionsHTML(g){let text=g.confusions;if(!text)return"";let names=D.grapes.filter(x=>x.name!==g.name&&nt(text).includes(nt(x.name))).sort((a,b)=>b.name.length-a.name.length);return `<div class="detail-block"><b>Confusions fréquentes</b><p>${esc(text)}</p>${names.length?`<div class="confusion-links">${names.map(x=>`<button class="grape-identity-link" data-grape="${esc(x.name)}">${esc(x.name)} <span>›</span></button>`).join("")}</div>`:""}</div>`}
+function confusionsHTML(g){let text=g.confusions;if(!text)return"";let segments=text.split(/[;,]/).map(nt).filter(Boolean),names=uniqueByName(D.grapes.filter(x=>{if(x.name===g.name)return false;let aliases=[x.name,...String(x.synonyms||"").split(/[,;/]/)].map(nt).filter(Boolean);return aliases.some(a=>segments.some(s=>s===a||a.startsWith(s+" ")||s.startsWith(a+" ")))||nt(text).includes(nt(x.name))})).sort((a,b)=>b.name.length-a.name.length);return names.length?`<div class="detail-block"><b>Confusions fréquentes</b><div class="confusion-links">${names.map(x=>`<button class="grape-identity-link" data-grape="${esc(x.name)}">${esc(x.name)} <span>›</span></button>`).join("")}</div></div>`:""}
 function showG(g){
  let f=favs(),sig=g.keyMarker||g.differentiation||"";
  $("#detailType").textContent=g.type+" · Cépage";$("#detailTitle").textContent=g.name;
@@ -613,6 +616,7 @@ function originColourClass(u){
  if(types.has("Blanc"))return"ref-white";
  return""
 }
+function originFilterType(u){let c=originColourClass(u);return c==="ref-red"?"Rouge":c==="ref-white"?"Blanc":c==="ref-mixed"?"mixed":""}
 function refGrapes(q=""){
  let l=$("#referenceList");l.innerHTML="";let nq=nt(q),f=favs();
  let arr=D.grapes.filter(g=>{
@@ -660,7 +664,7 @@ function c2Metric(label,r){if(!r)return"";let fmt=x=>Number(x).toFixed(1).replac
 function originGrapePanel(grape,profiles){
  let c2s=profiles.map(c2ProfileForReference).filter(Boolean),p=c2s[0],axes=["Acidité","Tanins","Alcool","Corps","Couleur"],markers=(p?.markers||[]).filter(m=>m.context!=="TERTIARY_OPTIONAL").sort((a,b)=>(b.capacity||0)-(a.capacity||0)),exact=markers.filter(m=>m.kind==="exact").slice(0,12),families=markers.filter(m=>m.kind!=="exact").slice(0,10),locale=window.WineBlindAromaLocale;
  let exactLabel=x=>locale?.exactFR?.[String(x).toLowerCase()]||x;
- return `<details class="origin-grape-panel" data-grape="${esc(grape)}"><summary><strong>${esc(grape)}</strong><span>${profiles.length} profil${profiles.length>1?"s":""}</span></summary><div class="origin-grape-content">${p?`<div class="detail-grid">${axes.map(a=>c2Metric(a,p.structure?.[a])).join("")}</div><div class="origin-profile-evidence"><div><b>Descripteurs précis</b><p>${exact.length?exact.map(m=>esc(exactLabel(m.item))).join(" · "):"—"}</p></div><div><b>Familles & signatures</b><p>${families.length?families.map(m=>esc(m.item)).join(" · "):"—"}</p></div><div><b>Contexte</b><p>Bois typique : ${p.native_wood==null?"—":p.native_wood<=0?"non détecté":p.native_wood===1?"faible":p.native_wood===2?"modéré":"marqué"} · FML explicite : ${p.explicit_MLF?"oui":"non"}</p></div></div>`:""}${profiles.map(x=>`<div class="origin-profile-row"><b>${esc(x.styleVariant||x.style||x.grape)}</b><span>${esc(x.diagnostic||"")}</span></div>`).join("")}</div></details>`
+ return `<details class="origin-grape-panel" data-grape="${esc(grape)}"><summary><strong>${esc(grape)}</strong><span>${profiles.length} profil${profiles.length>1?"s":""}</span></summary><div class="origin-grape-content">${p?`<div class="detail-grid">${axes.map(a=>c2Metric(a,p.structure?.[a])).join("")}</div><div class="origin-profile-evidence"><div><b>Descripteurs précis</b><p>${exact.length?exact.map(m=>esc(exactLabel(m.item))).join(" · "):"—"}</p></div><div><b>Familles & signatures</b><p>${families.length?families.map(m=>esc(m.item)).join(" · "):"—"}</p></div><div><b>Contexte</b><p>Bois typique : ${p.native_wood==null?"—":p.native_wood<=0?"non détecté":p.native_wood===1?"faible":p.native_wood===2?"modéré":"marqué"} · FML explicite : ${p.explicit_MLF?"oui":"non"}</p></div></div>`:""}${profiles.map(x=>`<div class="blind-signature-summary"><b>Signature aveugle : familles et descripteurs</b><p>${esc(x.diagnostic||x.style||"")}</p></div>`).join("")}</div></details>`
 }
 function showOriginReference(u,focusGrape=""){
  let pp=originProfiles(u),cc=originChildren(u),grapes=[...new Set([...pp.map(p=>p.grape),...(u.grapes||[])])],mother=u.mother||u.label;
@@ -668,7 +672,7 @@ function showOriginReference(u,focusGrape=""){
  let appRows=apps.length?`<div class="detail-block"><b>Appellations & zones</b><div class="app-pill-list">${apps.slice(0,12).map(a=>`<span class="app-pill">${esc(a.label||a.name)}</span>`).join("")}</div>${apps.length>12?`<details class="more-apps"><summary>Voir les ${apps.length-12} autres appellations et zones</summary><div class="app-pill-list">${apps.slice(12).map(a=>`<span class="app-pill">${esc(a.label||a.name)}</span>`).join("")}</div></details>`:""}</div>`:"";
  $("#detailType").textContent=u.country;$("#detailTitle").textContent=u.label;
  $("#detailBody").innerHTML=`<div class="origin-path"><span>${esc(u.country)}</span>${mother!==u.label?`<i>›</i><span>${esc(mother)}</span>`:""}<i>›</i><strong>${esc(u.label)}</strong></div>
- <div class="detail-block origin-grape-section"><b>Profils par cépage</b>${pp.length?grapes.map(g=>originGrapePanel(g,pp.filter(p=>p.grape===g))).join(""):`<div class="production-region-note">${grapes.length?`Cépage référencé : ${grapes.map(esc).join(" · ")}`:"Aucun profil diagnostique détaillé n’est encore disponible pour cette région."}</div>`}</div>
+ <div class="detail-block origin-grape-section"><b>Cépages clés</b>${pp.length?grapes.map(g=>originGrapePanel(g,pp.filter(p=>p.grape===g))).join(""):`<div class="production-region-note">${grapes.length?`Cépage référencé : ${grapes.map(esc).join(" · ")}`:"Aucun profil diagnostique détaillé n’est encore disponible pour cette région."}</div>`}</div>
  ${appRows}`;
  let focused=focusGrape?[...document.querySelectorAll(".origin-grape-panel")].find(x=>nt(x.dataset.grape)===nt(focusGrape)):null;
  if(focused)focused.open=true;
@@ -677,7 +681,7 @@ function showOriginReference(u,focusGrape=""){
 }
 function refOrigins(q=""){
  let l=$("#referenceList");l.innerHTML="";let nq=nt(q);
- let arr=(G8.units||[]).filter(u=>(S.refCountry==="all"||u.country===S.refCountry)&&(!nq||originSearchText(u).includes(nq)))
+ let arr=(G8.units||[]).filter(u=>(S.refCountry==="all"||u.country===S.refCountry)&&(S.refFilter==="all"||originFilterType(u)===S.refFilter)&&(!nq||originSearchText(u).includes(nq)))
    .sort((a,b)=>a.label.localeCompare(b.label,"fr",{sensitivity:"base"})||a.country.localeCompare(b.country,"fr"));
  let lastLetter="",letters=new Set();
  arr.forEach(u=>{
@@ -689,9 +693,11 @@ function refOrigins(q=""){
    r.innerHTML=`<div><strong>${esc(u.label)}</strong><br><small>${esc(u.country)}${matched?` · Appellation : ${esc(matched.label||matched.name)}`:""}${gs?` · ${esc(gs)}`:""}${cc.length?` · ${cc.length} zone${cc.length>1?"s":""}`:""}</small></div><div class="ref-actions"><span>›</span></div>`;
    r.onclick=()=>showOriginReference(u);l.append(r)
  });
- refMetaRender(arr.length,"origine","origins");alphaRender(letters)
+ refMetaRender(arr.length,"région","origins");alphaRender(letters)
 }
+function referenceFilterRender(){let box=document.querySelector(".ref-filters");if(!box)return;let options=S.refMode==="origins"?[["all","Tous"],["Rouge","Rouges"],["Blanc","Blancs"],["mixed","Mixtes"]]:[["all","Tous"],["Rouge","Rouges"],["Blanc","Blancs"],["fav","♡ À réviser"]];if(!options.some(x=>x[0]===S.refFilter))S.refFilter="all";box.innerHTML=options.map(([v,l])=>`<button class="filter-chip ${S.refFilter===v?"active":""}" data-ref="${v}">${l}</button>`).join("");box.querySelectorAll(".filter-chip").forEach(b=>b.onclick=()=>{S.refFilter=b.dataset.ref;referenceFilterRender();ref($("#searchGrape").value)})}
 function ref(q=""){
+ referenceFilterRender();
  countryRender();
  if(S.refMode==="origins")refOrigins(q);else refGrapes(q)
 }

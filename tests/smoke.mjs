@@ -15,8 +15,8 @@ for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown','originCandidates','renderOriginList','isFrenchProfile']) assert.ok(patch.includes(feature),`V11.3.1 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-3-1-compact-identities-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown','originCandidates','renderOriginList','isFrenchProfile']) assert.ok(patch.includes(feature),`V11.4.0 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-4-0-geography-hierarchy-1'),'wrong service-worker cache namespace');
 assert.ok(app.includes('window.WineBlindReference=Object.freeze'),'historical grape reference is not exposed as the single identity source');
 assert.ok(patch.includes('window.WineBlindReference?.openGrape(r.profile.grape)'),'Top 10 cards do not use the historical reference identity source');
 assert.ok(!patch.includes('openGrapeAggregate'),'competing C2-C2 aggregate identity source still exists');
@@ -32,7 +32,11 @@ assert.ok(app.includes('origin-grape-panel'),'origin sheets do not expose collap
 assert.ok(app.includes('openOrigin:(unitId,grape)'),'unified origin identity entry point is missing');
 assert.ok(patch.includes('openOriginReference(r.profile)'),'Top 10 origin cards do not use the unified origin identity source');
 assert.ok(app.includes('confusionsHTML(g)'),'frequent-confusion grapes are not linked to their identities');
-assert.ok(app.includes('more-regions'),'long region lists are not collapsible');
+assert.ok(app.includes('country-fold'),'production regions are not grouped by country');
+assert.ok(app.includes('region-fold'),'appellations are not grouped by region inside country');
+assert.ok(app.includes('blind-signature-summary'),'origin blind signatures are not visually summarized');
+assert.ok(app.includes('originFilterType'),'region directory colour filters are not data-driven');
+assert.ok(index.includes('data-refmode="origins">Régions'),'origin directory was not renamed Regions');
 assert.ok(!patch.includes('moteur release'),'technical release badge is still shown to users');
 assert.ok(patch.includes("const phase=relations.filter(r=>r.phase===type)"),'canonical complete fingerprints are not installed');
 assert.ok(!patch.includes('wireReference'),'reference clicks are still intercepted by a competing identity renderer');
@@ -114,4 +118,4 @@ const pinotResult=E.score(pinotObs).grapes.find(r=>r.profile.grape==='Pinot Noir
 assert.equal(E.score(pinotObs).grapes[0].profile.grape,'Pinot Noir','Pinot structure regression');
 assert.equal(Math.round(pinotResult.st.S*100),100,'Pinot structure should be a perfect observed fit');
 assert.ok(patch.includes('(3.2*r.A+r.S_eff+r.C)/available'),'displayed adequacy is not normalized to observed evidence');
-console.log('Wine Blind V11.3.1 compact identity smoke test: PASS');
+console.log('Wine Blind V11.4.0 geography hierarchy smoke test: PASS');

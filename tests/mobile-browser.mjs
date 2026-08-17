@@ -107,8 +107,10 @@ try{
   assert.equal(await focusedPanel.evaluate(el=>el.open),true,'Top 10 origin did not focus the relevant grape profile');
   assert.equal((await page.locator('#detailType').textContent())?.includes('Origine'),false,'redundant Origine label remains beside the country');
   assert.equal(await page.locator('#detailBody').getByText('Profils de la région',{exact:true}).count(),0,'duplicated regional profile block remains');
-  assert.equal(await page.locator('#detailBody').getByText('Cépages clés',{exact:true}).count(),0,'redundant key-grape block remains');
+  assert.equal(await page.locator('#detailBody').getByText('Cépages clés',{exact:true}).count(),1,'key-grape heading is missing');
   assert.equal(await page.locator('#detailBody').getByText(/Déplier un cépage/).count(),0,'instructional grape-panel copy remains');
+  assert.ok(await focusedPanel.locator('.blind-signature-summary').count()>0,'blind signature summary is missing');
+  assert.equal((await focusedPanel.locator('.blind-signature-summary b').first().textContent())?.trim(),'Signature aveugle : familles et descripteurs','blind signature label was not normalized');
   assert.equal(await page.locator('#detailBody').getByText('Clés de différenciation',{exact:true}).count(),0,'obsolete differentiation block remains in origin identity');
   assert.equal(await page.locator('#detailBody').getByText('À distinguer de',{exact:true}).count(),0,'obsolete confusion block remains in origin identity');
   const originIdentityTitle=(await page.locator('#detailTitle').textContent())?.trim();
@@ -171,10 +173,23 @@ try{
   await firstMetricInfo.locator('summary').tap();
   assert.match((await firstMetricInfo.locator('span').textContent())||'',/^\[[\d,]+–[\d,]+\]$/,'metric range contains redundant wording');
   assert.equal(await page.locator('#detailBody').getByText('Géographie',{exact:true}).count(),1,'grape geography is not consolidated into one block');
-  assert.equal(await page.locator('.geo-subsection').first().locator('.origin-link').count(),await page.locator('.geo-subsection').first().locator('button').count(),'some production regions are not clickable');
+  const geography=page.locator('#detailDialog .geography-block');
+  assert.ok(await geography.locator('.geo-subsection').first().locator('.country-fold').count()>0,'production regions are not grouped by country');
+  const productionCountry=geography.locator('.geo-subsection').first().locator('.country-fold').first();
+  assert.equal(await productionCountry.locator('.origin-link:visible').count(),0,'production regions are expanded by default');
+  await productionCountry.locator('summary').tap();
+  assert.ok(await productionCountry.locator('.origin-link:visible').count()>0,'country did not reveal production regions');
+  const appellationSection=geography.locator('.geo-subsection').nth(1),appCountry=appellationSection.locator('.country-fold').first();
+  await appCountry.locator(':scope > summary').tap();
+  const appRegion=appCountry.locator('.region-fold').first();
+  assert.equal(await appRegion.locator('.detail-apps:visible').count(),0,'appellations are expanded before their region');
+  await appRegion.locator('summary').tap();
+  assert.ok(await appRegion.locator('.detail-apps:visible span').count()>0,'region did not reveal appellations');
   assert.equal(await page.locator('#detailBody').getByText('Arômes & marqueurs',{exact:true}).count(),0,'competing legacy aroma block remains visible');
   await page.locator('#closeDialog').tap();
   await page.locator('.ref-mode-btn[data-refmode="origins"]').tap(); await wait();
+  assert.equal((await page.locator('.ref-mode-btn[data-refmode="origins"]').textContent())?.trim(),'Régions','directory is not named Regions');
+  assert.deepEqual((await page.locator('.ref-filters .filter-chip').allTextContents()).map(x=>x.trim()),['Tous','Rouges','Blancs','Mixtes'],'region directory filters are incorrect');
   await page.locator('#searchGrape').fill(originIdentityTitle||'');
   const originRef=page.locator('#referenceList .origin-ref-row').filter({has:page.locator('strong',{hasText:originIdentityTitle})}).first();
   await originRef.waitFor({state:'visible'}); await originRef.tap();
@@ -182,7 +197,7 @@ try{
   assert.ok(await page.locator('.origin-grape-panel').count()>0,'directory origin identity has no per-grape profiles');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.3.1 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.4.0 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }

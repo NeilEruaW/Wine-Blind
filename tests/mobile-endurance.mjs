@@ -75,7 +75,7 @@ try{
     await page.locator('#closeDialog').tap();
   }
   assert.deepEqual(errors,[],`page errors: ${errors.join(' | ')}`);
-  console.log('Wine Blind V11.3.1 iPhone WebKit endurance: PASS (24 type reversals + 20 origin scope switches + 8 identity round-trips)');
+  console.log('Wine Blind V11.4.0 iPhone WebKit endurance: PASS (24 type reversals + 20 origin scope switches + 8 identity round-trips)');
 } finally {
   await browser.close();
 }
