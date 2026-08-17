@@ -53,12 +53,22 @@
 .aroma-token.fp-w3{background:var(--wine);color:#fff}
 .aroma-token.fp-w2{background:rgba(124,45,63,.18);color:var(--wine)}
 .aroma-token.fp-w1{background:rgba(124,45,63,.07);color:#6f6265;border:1px solid rgba(124,45,63,.10)}
-.metric-heading{display:flex;justify-content:center;align-items:center;gap:5px;margin-bottom:7px}
+.fingerprint-group{display:inline-flex;flex-direction:column;align-items:flex-start;vertical-align:top}
+.fingerprint-group>summary{cursor:pointer;list-style:none}
+.fingerprint-group>summary::-webkit-details-marker{display:none}
+.fingerprint-group>summary span{margin-left:4px;transition:transform .16s ease}
+.fingerprint-group[open]>summary span{transform:rotate(90deg)}
+.fingerprint-descriptors{display:flex;flex-wrap:wrap;gap:4px;max-width:250px;padding:5px 2px 2px}
+.metric-heading{display:flex;justify-content:center;align-items:center;margin-bottom:6px;text-align:center}
 .metric-heading>span{font-size:10px;font-weight:850;color:var(--ink)}
+.metric-score-line{display:flex;justify-content:center;align-items:center;gap:5px}
 .metric-info>span{left:auto;right:0}
 .geo-subsection{margin-top:10px}
-.geo-region{display:flex;flex-direction:column;gap:1px;padding:7px 9px;border:1px solid var(--line);border-radius:10px;background:#faf8f6;font-size:10px}
-.geo-region small{color:var(--muted)}
+.more-regions{margin-top:7px}
+.more-regions>summary{cursor:pointer;color:var(--wine);font-size:10px;font-weight:750}
+.more-regions .origin-link-list{margin-top:7px}
+.confusion-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.grape-identity-link{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(124,45,63,.18);border-radius:999px;background:var(--soft-wine);color:var(--wine);padding:6px 9px;font:750 10px/1.2 inherit;cursor:pointer}
 .origin-grape-panel{margin-top:8px;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:visible}
 .origin-grape-panel>summary{display:flex;justify-content:space-between;align-items:center;padding:10px 11px;cursor:pointer;list-style:none}
 .origin-grape-panel>summary::-webkit-details-marker{display:none}
