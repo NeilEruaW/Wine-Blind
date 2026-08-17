@@ -668,8 +668,10 @@ function showOriginReference(u,focusGrape=""){
  ${profileRows?`<div class="detail-block"><b>Profils de la région</b>${profileRows}</div>`:""}
  ${appRows}
  <div class="detail-block origin-grape-section"><b>Profils par cépage</b><p class="origin-panel-intro">Déplier un cépage pour consulter sa structure, ses marqueurs et son contexte.</p>${grapes.map(g=>originGrapePanel(g,pp.filter(p=>p.grape===g))).join("")}</div>`;
+ let focused=focusGrape?[...document.querySelectorAll(".origin-grape-panel")].find(x=>nt(x.dataset.grape)===nt(focusGrape)):null;
+ if(focused)focused.open=true;
  $("#detailDialog").showModal();
- if(focusGrape)setTimeout(()=>{let panel=[...document.querySelectorAll(".origin-grape-panel")].find(x=>nt(x.dataset.grape)===nt(focusGrape));if(panel){panel.open=true;panel.scrollIntoView({block:"start",behavior:"smooth"})}},40)
+ if(focused)setTimeout(()=>focused.scrollIntoView({block:"start",behavior:"smooth"}),40)
 }
 function refOrigins(q=""){
  let l=$("#referenceList");l.innerHTML="";let nq=nt(q);
