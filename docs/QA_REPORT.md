@@ -1,3 +1,23 @@
+# QA — Wine Blind V11.2.0
+
+## Promotion aromatique
+
+- 199 associations expertisées : 80 confirmations, 18 enrichissements promus et 101 mentions maintenues comme contextuelles.
+- 2 935 relations canoniques sur 98 cépages ; 509 relations éligibles au scoring sur 85 cépages et 203 profils C2-C2.
+- Test différentiel des 18 enrichissements : chacun produit une contribution positive pour le cépage cible.
+- Test d’absence : sans sélection des nouveaux descripteurs, les scores et classements restent strictement inchangés.
+- `data.js` et `c2c2-data.js` restent inchangés ; les ajouts passent par les overlays canoniques générés.
+- Parité vérifiée entre les fiches ouvertes depuis le Top 10 et le Référentiel.
+
+## Contrôles automatisés
+
+- `analysis/canonical-aroma/test.mjs` : **PASS**.
+- `tests/canonical-aroma-scoring.mjs` : **PASS (18/18)**.
+- `tests/smoke.mjs` : **PASS**.
+- La batterie WebKit mobile n’a pas été rejouée dans ce conteneur, où Playwright n’est pas installé ; ses scénarios ont été mis à jour pour V11.2.0.
+
+---
+
 # QA — Wine Blind V11.1.0
 
 ## Contrôles spécifiques

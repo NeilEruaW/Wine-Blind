@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "status": "APPROVED_FOR_IDENTITY_AND_CONTROLLED_SCORING",
+  "approved_at": "2026-08-17",
+  "policy": {
+    "scoring_mode": "POSITIVE_ONLY",
+    "absence_is_negative": false,
+    "prevalence_match_strength": { "1": 0.55, "2": 0.78, "3": 1.0 },
+    "exact_normalization": {
+      "Acacia":"acacia","Aubépine":"aubépine","Bourgeon de cassis":"bourgeon de cassis","Cuir":"leather",
+      "Framboise":"raspberry","Myrtille":"blueberry","Noisette grillée":"noisette grillée","Poivron vert":"poivron vert",
+      "Réglisse":"réglisse","Tilleul":"tilleul","Truffe":"truffe","Cannelle":"cannelle","Coing":"coing",
+      "Groseille rouge":"groseille rouge","Safran":"safran"
+    },
+    "notes": "Un enrichissement ne crée jamais de pénalité en cas d'absence. Sa contribution exacte est plafonnée par sa prévalence validée."
+  },
+  "relations": [
+    {"proposal_id":"LENOIR-9421-CHARDONNAY","grape":"Chardonnay","type":"Blanc","phase":"primary","group":"Floral","label_fr":"Acacia","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9391-CHARDONNAY","grape":"Chardonnay","type":"Blanc","phase":"primary","group":"Floral","label_fr":"Aubépine","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9415-SAUVIGNON-BLANC","grape":"Sauvignon Blanc","type":"Blanc","phase":"primary","group":"Végétal","label_fr":"Bourgeon de cassis","prevalence":3,"source_refs":["SCI_SAUVIGNON_4MSP","SCI_SAUVIGNON_THIOLS"]},
+    {"proposal_id":"LENOIR-9381-CABERNET-SAUVIGNON","grape":"Cabernet Sauvignon","type":"Rouge","phase":"tertiary","group":"Vieillissement en bouteille – rouge","label_fr":"Cuir","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9371-SYRAH","grape":"Syrah","type":"Rouge","phase":"primary","group":"Fruits rouges","label_fr":"Framboise","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_SYRAH_SENSORY"]},
+    {"proposal_id":"LENOIR-9377-CABERNET-SAUVIGNON","grape":"Cabernet Sauvignon","type":"Rouge","phase":"primary","group":"Fruits noirs","label_fr":"Myrtille","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9377-SYRAH","grape":"Syrah","type":"Rouge","phase":"primary","group":"Fruits noirs","label_fr":"Myrtille","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_SYRAH_SENSORY"]},
+    {"proposal_id":"LENOIR-9419-CHARDONNAY","grape":"Chardonnay","type":"Blanc","phase":"secondary","group":"Bois","label_fr":"Noisette grillée","prevalence":2,"source_refs":["SCI_LENOIR_PHOTOS","SCI_OAK_TOAST"]},
+    {"proposal_id":"LENOIR-9395-CABERNET-FRANC","grape":"Cabernet Franc","type":"Rouge","phase":"primary","group":"Végétal","label_fr":"Poivron vert","prevalence":3,"source_refs":["SCI_CABFRANC_IBMP","SCI_PYRAZINE_GENETICS"]},
+    {"proposal_id":"LENOIR-9395-CABERNET-SAUVIGNON","grape":"Cabernet Sauvignon","type":"Rouge","phase":"primary","group":"Végétal","label_fr":"Poivron vert","prevalence":2,"source_refs":["SCI_PYRAZINE_GENETICS"]},
+    {"proposal_id":"LENOIR-9355-CABERNET-SAUVIGNON","grape":"Cabernet Sauvignon","type":"Rouge","phase":"primary","group":"Épices fortes","label_fr":"Réglisse","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9423-RIESLING","grape":"Riesling","type":"Blanc","phase":"primary","group":"Floral","label_fr":"Tilleul","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9441-CABERNET-SAUVIGNON","grape":"Cabernet Sauvignon","type":"Rouge","phase":"tertiary","group":"Vieillissement en bouteille – rouge","label_fr":"Truffe","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9449-GEWURZTRAMINER","grape":"Gewurztraminer","type":"Blanc","phase":"primary","group":"Épices fortes","label_fr":"Cannelle","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9397-CHENIN-BLANC","grape":"Chenin Blanc","type":"Blanc","phase":"primary","group":"Fruits verts","label_fr":"Coing","prevalence":2,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9397-PETIT-MANSENG","grape":"Petit Manseng","type":"Blanc","phase":"primary","group":"Fruits verts","label_fr":"Coing","prevalence":2,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9451-NEGRETTE","grape":"Négrette","type":"Rouge","phase":"primary","group":"Fruits rouges","label_fr":"Groseille rouge","source_label":"Groseille","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]},
+    {"proposal_id":"LENOIR-9455-FURMINT","grape":"Furmint","type":"Blanc","phase":"tertiary","group":"Vieillissement en bouteille – blanc","label_fr":"Safran","prevalence":1,"source_refs":["SCI_LENOIR_PHOTOS","SCI_WB_EXPERT_MATRIX"]}
+  ]
+}

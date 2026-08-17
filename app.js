@@ -1,4 +1,4 @@
-(()=>{const D=WSET_DATA,T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},G=window.WSET_V107||{regions:[],profiles:[],children:[]},G8=window.WSET_V108||{units:[],profiles:[],children:[],specificity:{},rankWeights:[1,.75,.55,.35,.2,.12,.08,.05,.03,.02]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+(()=>{const D=WSET_DATA,A=window.WINE_BLIND_AROMA_CANONICAL||{approved_relations:[],grapes:[],policy:{prevalence_match_strength:{1:.55,2:.78,3:1}}},T=WSET_TREE,V=window.WSET_V106||{grapeAppellations:{},appellations:[],blends:[]},G=window.WSET_V107||{regions:[],profiles:[],children:[]},G8=window.WSET_V108||{units:[],profiles:[],children:[],specificity:{},rankWeights:[1,.75,.55,.35,.2,.12,.08,.05,.03,.02]},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const S={type:"Rouge",blend:null,g:{acid:"",tannin:"",alcohol:"",body:"",color:"",colorShade:"",intensity:"",sweetness:"",flavourIntensity:"",fruit:"",texture:"",signature:""},aromas:{primary:{},secondary:{},tertiary:{}},o:{climate:"",maturity:"",oak:"",marker:""},gr:[],or:[],tree:{answers:[],current:null,done:false,extended:false,prefillKeys:[]},compare:new Set(),refFilter:"all",refMode:"grapes",refCountry:"all",training:{difficulty:"Fondamentaux",wsetLevel:3,theoryTopic:"all",mode:"quick",questions:[],index:0,score:0,current:null,answered:false}};
 const L={acid:"Acidité",tannin:"Tanins",alcohol:"Alcool",body:"Corps",color:"Intensité visuelle",colorShade:"Couleur",intensity:"Intensité aromatique",sweetness:"Douceur",flavourIntensity:"Intensité des saveurs",signature:"Indice discriminant"},sat=["F","M-","M","M+","E"],lev=v=>({"F":1,"M-":2,"M":3,"M+":4,"E":5}[v]||0),cmp=d=>d<=.01?1:d<=.5?.92:d<=1?.82:d<=1.5?.65:d<=2?.42:d<=2.5?.2:.05,has=(a,b)=>(a||"").toLowerCase().includes((b||"").toLowerCase());
 function deferCalc(){document.dispatchEvent(new CustomEvent("wineblind:diagnostic-input"))}
@@ -66,7 +66,7 @@ function choiceRail(k,l,opts,target,hint){
 }
 const WINE_LEXICON={
  primary:{
-  "Floral":["Acacia","Chèvrefeuille","Camomille","Fleur de sureau","Géranium","Fleurs","Rose","Violette"],
+  "Floral":["Acacia","Aubépine","Chèvrefeuille","Camomille","Fleur de sureau","Géranium","Fleurs","Rose","Tilleul","Violette"],
   "Fruits verts":["Pomme","Groseille à maquereau","Poire","Bonbon à la poire","Coing","Raisin"],
   "Agrumes":["Pamplemousse","Citron","Citron vert","Zeste d’orange","Zeste de citron"],
   "Fruits à noyau":["Pêche","Abricot","Nectarine"],
@@ -74,22 +74,22 @@ const WINE_LEXICON={
   "Fruits rouges":["Groseille rouge","Canneberge","Framboise","Fraise","Cerise rouge","Prune rouge"],
   "Fruits noirs":["Cassis","Mûre","Ronce","Myrtille","Cerise noire","Prune noire"],
   "Fruits séchés/cuits":["Figue","Pruneau","Raisin sec","Sultanine","Kirsch","Confiture","Fruits cuits","Fruits compotés","Fruits conservés"],
-  "Végétal":["Poivron vert","Herbe","Feuille de tomate","Asperge","Feuille de cassis"],
+  "Végétal":["Poivron vert","Herbe","Feuille de tomate","Asperge","Feuille de cassis","Bourgeon de cassis"],
   "Herbes":["Eucalyptus","Menthe","Médicinal","Lavande","Fenouil","Aneth"],
-  "Épices fortes":["Poivre noir","Poivre blanc","Réglisse"],
+  "Épices fortes":["Poivre noir","Poivre blanc","Réglisse","Cannelle"],
   "Autres":["Silex","Pierre mouillée","Laine mouillée"]
  },
  secondary:{
   "Levures / lies / autolyse":["Biscuit","Pain","Toast","Pâtisserie","Brioche","Pâte à pain","Fromage"],
   "FML":["Beurre","Fromage","Crème"],
-  "Bois":["Vanille","Clou de girofle","Muscade","Noix de coco","Caramel au beurre","Toast","Cèdre","Bois brûlé","Fumée","Chocolat","Café","Résineux"]
+  "Bois":["Vanille","Clou de girofle","Muscade","Noix de coco","Caramel au beurre","Toast","Cèdre","Bois brûlé","Fumée","Chocolat","Café","Noisette grillée","Résineux"]
  },
  tertiary:{
   "Oxydation volontaire":["Amande","Massepain","Noisette","Noix","Chocolat","Café","Toffee","Caramel"],
   "Évolution du fruit – blanc":["Abricot sec","Marmelade","Pomme séchée","Banane séchée"],
   "Évolution du fruit – rouge":["Figue","Pruneau","Goudron","Mûre séchée","Canneberge séchée","Mûre cuite","Prune rouge cuite"],
-  "Vieillissement en bouteille – blanc":["Pétrole","Kérosène","Cannelle","Gingembre","Muscade","Toast","Fruits à coque","Champignon","Foin","Miel"],
-  "Vieillissement en bouteille – rouge":["Cuir","Sous-bois","Terre","Champignon","Gibier","Tabac","Végétal","Feuilles humides","Savoureux","Viande","Ferme"]
+  "Vieillissement en bouteille – blanc":["Pétrole","Kérosène","Cannelle","Gingembre","Muscade","Safran","Toast","Fruits à coque","Champignon","Foin","Miel"],
+  "Vieillissement en bouteille – rouge":["Cuir","Sous-bois","Terre","Champignon","Gibier","Tabac","Truffe","Végétal","Feuilles humides","Savoureux","Viande","Ferme"]
  }
 };
 function aromaSelected(type,group){return !!S.aromas[type]?.[group]}
@@ -158,7 +158,11 @@ function aromaScore(g){
    let descs=s.descs||[],descFit=0;
    if(descs.length){
      let evidence=item?fingerprintMatchText(item):hay;
-     let matches=descs.filter(x=>evidence.includes(nt(x))||hay.includes(nt(x))).length;
+     let matches=descs.reduce((sum,x)=>{
+       if(evidence.includes(nt(x))||hay.includes(nt(x)))return sum+1;
+       let approved=(A.approved_relations||[]).find(r=>nt(r.grape)===nt(g.name)&&r.phase===s.type&&nt(r.group)===nt(s.group)&&nt(r.label_fr)===nt(x));
+       return sum+(approved?Number(A.policy?.prevalence_match_strength?.[approved.prevalence]||0):0)
+     },0);
      descFit=matches/descs.length;
    }
    let unit=.82*familyFit+.18*(descs.length?(.55+.45*descFit):familyFit);
@@ -239,11 +243,11 @@ function structureMetric(label,g,key){
 }
 function fingerprintMatchText(item){return nt([item.group,...(item.evidence||[])].join(" "))}
 function aromaFingerprintHTML(g){
- let fp=g.aromaFingerprint||{},labels={primary:"Primaires",secondary:"Secondaires",tertiary:"Tertiaires"};
+ let fp=g.aromaFingerprint||{},canonical=(A.grapes||[]).find(x=>nt(x.grape)===nt(g.name)),labels={primary:"Primaires",secondary:"Secondaires",tertiary:"Tertiaires"};
  let sections=["primary","secondary","tertiary"].map(type=>{
-   let arr=(fp[type]||[]).filter(x=>x.weight>=2).slice(0,7);
+   let arr=(fp[type]||[]).slice(0,9);
    if(!arr.length)return"";
-   return `<div class="fingerprint-row"><b>${labels[type]}</b><div>${arr.map(x=>`<span class="fingerprint-chip fp-w${x.weight}">${esc(x.group)}<i>${x.weight}</i></span>`).join("")}</div></div>`
+   return `<div class="fingerprint-row"><b>${labels[type]}</b><div>${arr.map(x=>{let ds=(canonical?.relations||[]).filter(r=>r.phase===type&&r.kind==="descriptor"&&nt(r.group)===nt(x.group)).slice(0,8);return `<span class="fingerprint-chip fp-w${x.weight}"><span>${esc(x.group)}<i>${x.weight}</i></span>${ds.length?`<small>${ds.map(d=>`${esc(d.label_fr)} (${d.prevalence})`).join(" · ")}</small>`:""}</span>`}).join("")}</div></div>`
  }).join("");
  return sections?`<div class="detail-block aroma-fingerprint"><b>Empreinte aromatique</b><small>3 = très caractéristique · 2 = fréquent · 1 = contextuel</small>${sections}</div>`:""
 }

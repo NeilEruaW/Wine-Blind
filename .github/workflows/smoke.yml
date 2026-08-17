@@ -26,13 +26,17 @@ jobs:
       - name: JavaScript syntax
         run: |
           node --check c2c2-engine.js
+          node --check canonical-scoring-overlay.js
+          node --check canonical-aroma-runtime.js
           node --check v11-reset-patch.js
           node --check app.js
           node --check sw.js
           node --check tests/mobile-browser.mjs
           node --check tests/mobile-endurance.mjs
       - name: Wine Blind regression smoke
-        run: node tests/smoke.mjs
+        run: |
+          node tests/smoke.mjs
+          node tests/canonical-aroma-scoring.mjs
       - name: Install WebKit test runtime
         run: |
           npm install --no-save playwright@1.55.0
