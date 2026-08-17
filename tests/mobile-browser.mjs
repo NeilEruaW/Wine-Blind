@@ -134,7 +134,7 @@ try{
   assert.ok(await page.locator('#detailDialog .fingerprint-chip.fp-w1').count()>0,'reference fingerprint hides prevalence level 1');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.1.0 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.2.0 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }

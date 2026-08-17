@@ -1,3 +1,23 @@
+# Wine Blind V11.2.0
+
+## Source aromatique canonique
+
+- Une seule source générée alimente désormais les empreintes ouvertes depuis le Top 10 et le Référentiel.
+- Les 18 enrichissements issus de la revue scientifique des fiches Jean Lenoir sont promus avec phase, famille, descripteur et prévalence 1/2/3.
+- Les empreintes présentent les familles et les descripteurs en français selon les trois phases primaire, secondaire et tertiaire.
+
+## Scoring contrôlé
+
+- Les 18 relations approuvées sont intégrées à C2-C2 par un overlay traçable, sans réécriture de `c2c2-data.js`.
+- Leur contribution est uniquement positive et pondérée par la prévalence : une correspondance peut améliorer l’adéquation, mais l’absence du descripteur n’est jamais pénalisante.
+- Les 101 mentions jugées contextuelles lors de la revue restent exclues du scoring.
+
+## PWA
+
+Nouveau namespace de cache : `wine-blind-v11-2-0-aroma-1`.
+
+---
+
 # Wine Blind V11.1.0
 
 ## Lecture du diagnostic

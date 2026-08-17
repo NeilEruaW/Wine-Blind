@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0-study",
+  "sources": [
+    {"source_id":"SCI_LENOIR_PHOTOS","title":"Jean Lenoir — 54 fiches Le Nez du Vin, copie photographiée fournie par l'utilisateur","url":"local:lenoir-photo-inventory.json","scope":"occurrence éditoriale, exemples de vins et commentaires du recto"},
+    {"source_id":"SCI_WB_EXPERT_MATRIX","title":"Matrice experte Wine Blind V10.7 et audit V10.6.2","url":"local:canonical-aroma-source.json","scope":"phase, prévalence et empreinte experte existantes"},
+    {"source_id":"SCI_PLANTGRAPE","title":"PlantGrape — catalogue institutionnel IFV/INRAE","url":"https://www.plantgrape.fr/fr","scope":"potentiel technologique et remarques organoleptiques validées"},
+    {"source_id":"SCI_SAUVIGNON_4MSP","title":"Tominaga et al. — précurseur de 4MSP du Sauvignon blanc","url":"https://pubmed.ncbi.nlm.nih.gov/18493966/","scope":"buis/bourgeon de cassis, potentiel variétal Sauvignon blanc"},
+    {"source_id":"SCI_SAUVIGNON_THIOLS","title":"Swiegers et al. — libération des thiols volatils du vin","url":"https://pubmed.ncbi.nlm.nih.gov/17492802/","scope":"pamplemousse, cassis, buis et fruits exotiques; interaction raisin-fermentation"},
+    {"source_id":"SCI_PYRAZINE_GENETICS","title":"Guillaumie et al. — biosynthèse de l'IBMP dans la vigne","url":"https://pubmed.ncbi.nlm.nih.gov/23606597/","scope":"poivron/capsicum et caractère végétal des variétés à méthoxypyrazines"},
+    {"source_id":"SCI_CABFRANC_IBMP","title":"Lei et al. — expression sensorielle de l'IBMP dans le Cabernet franc","url":"https://pubmed.ncbi.nlm.nih.gov/34073256/","scope":"poivron vert et caractère herbacé du Cabernet franc"},
+    {"source_id":"SCI_SYRAH_ROTUNDONE","title":"Takase et al. — biosynthèse de la rotundone chez la Syrah","url":"https://pubmed.ncbi.nlm.nih.gov/26590863/","scope":"poivre noir, marqueur variétal de la Syrah"},
+    {"source_id":"SCI_SYRAH_SENSORY","title":"Mayr et al. — composés clés de l'arôme des Shiraz","url":"https://pubmed.ncbi.nlm.nih.gov/24745791/","scope":"rotundone, DMS, composés boisés et variabilité climatique/régionale"},
+    {"source_id":"SCI_OAK_TOAST","title":"Pérez-Prieto et al. — extraction des volatils du bois et chauffe","url":"https://pubmed.ncbi.nlm.nih.gov/23578629/","scope":"vanille, épices, eugénol, lactones, composés furaniques; marqueurs de procédé"},
+    {"source_id":"SCI_OAK_AGING","title":"Volatilome des vins élevés avec douelles ou copeaux","url":"https://pubmed.ncbi.nlm.nih.gov/31711813/","scope":"influence du temps d'élevage et de la chauffe sur fruité, boisé et toasté"},
+    {"source_id":"SCI_SMOKY_THIOL","title":"Tominaga et al. — contribution du benzenemethanethiol aux notes fumées","url":"https://pubmed.ncbi.nlm.nih.gov/12590483/","scope":"fumé dans plusieurs cépages; démontre que l'origine n'est pas uniquement le bois"},
+    {"source_id":"SCI_WHOLE_BUNCH","title":"AWRI — influence des grappes entières sur l'IBMP","url":"https://ives-openscience.eu/8157/","scope":"poivron vert induit par les rafles dans Pinot noir et Shiraz; facteur de procédé"},
+    {"source_id":"SCI_PINOT_TERROIR","title":"Oregon State University — différences sensorielles régionales des Pinot noir","url":"https://ives-openscience.eu/4851/","scope":"variabilité interrégionale des descripteurs fruités, terreux et boisés"}
+  ]
+}

@@ -10,19 +10,19 @@ const overlay=read('v11-reset.css');
 const patch=read('v11-reset-patch.js');
 const sw=read('sw.js');
 
-for(const asset of ['styles.css','v11-reset.css','data.js','v106.js','v107.js','v108.js','tree.js','app.js','c2c2-data.js','c2c2-engine.js','v11-reset-patch.js']) assert.ok(index.includes(asset),`index missing ${asset}`);
+for(const asset of ['styles.css','v11-reset.css','data.js','canonical-aroma-runtime.js','v106.js','v107.js','v108.js','tree.js','app.js','c2c2-data.js','canonical-scoring-overlay.js','c2c2-engine.js','v11-reset-patch.js']) assert.ok(index.includes(asset),`index missing ${asset}`);
 for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','data-tab="quiz"','data-tab="reference"','id="historyList"']) assert.ok(index.includes(feature),`historical UI missing ${feature}`);
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown']) assert.ok(patch.includes(feature),`V11.1.0 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-1-0-mobile-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown']) assert.ok(patch.includes(feature),`V11.2.0 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-2-0-aroma-1'),'wrong service-worker cache namespace');
 assert.ok(app.includes('window.WineBlindReference=Object.freeze'),'historical grape reference is not exposed as the single identity source');
 assert.ok(patch.includes('window.WineBlindReference?.openGrape(r.profile.grape)'),'Top 10 cards do not use the historical reference identity source');
 assert.ok(!patch.includes('openGrapeAggregate'),'competing C2-C2 aggregate identity source still exists');
 assert.ok(patch.includes('fingerprint-evidence'),'identity fingerprints omit exact descriptors');
-assert.ok(patch.includes('fp-w${x.weight}'),'identity fingerprints omit prevalence 1/2/3');
-assert.ok(patch.includes("const arr=fp[type]||[]"),'complete fingerprints are not installed');
+assert.ok(patch.includes('fp-w${weight}'),'identity fingerprints omit prevalence 1/2/3');
+assert.ok(patch.includes("const phase=relations.filter(r=>r.phase===type)"),'canonical complete fingerprints are not installed');
 assert.ok(!patch.includes('wireReference'),'reference clicks are still intercepted by a competing identity renderer');
 
 // Mobile navigation / interaction regression guards.
@@ -50,6 +50,7 @@ assert.ok(patch.includes('timer=setTimeout(render,180)'),'C2-C2 burst interactio
 assert.ok(patch.includes('updateInputIndicator({});clearTimeout(timer)'),'input counter is not updated before deferred ranking');
 assert.ok(patch.includes('rank podium podium-${i+1}'),'C2-C2 cards do not own stable podium icons');
 const exactFr=vm.runInNewContext('('+patch.match(/const EXACT_FR=(\{.*?\});/s)[1]+')');
+Object.assign(exactFr,{"acacia":"Acacia","aubépine":"Aubépine","bourgeon de cassis":"Bourgeon de cassis","blueberry":"Myrtille","noisette grillée":"Noisette grillée","tilleul":"Tilleul","truffe":"Truffe","cannelle":"Cannelle","safran":"Safran"});
 const uiExact=vm.runInNewContext('('+patch.match(/const UI_EXACT=(\{.*?\});/s)[1]+')');
 assert.ok(patch.includes('metric-level-${level(r.center)}'),'C2-C2 reference metrics are not using legacy progressive color classes');
 assert.ok(patch.includes('window.__C2_LAST=null'),'reset/no-signal state does not clear cached C2 result');
@@ -64,13 +65,16 @@ assert.ok(!app.includes('treeDiagnosticCandidates'),'tree still depends on the l
 
 const sandbox={window:{},console};
 vm.createContext(sandbox);
+vm.runInContext(read('canonical-aroma-runtime.js'),sandbox,{filename:'canonical-aroma-runtime.js'});
 vm.runInContext(read('c2c2-data.js'),sandbox,{filename:'c2c2-data.js'});
+vm.runInContext(read('canonical-scoring-overlay.js'),sandbox,{filename:'canonical-scoring-overlay.js'});
 const C=sandbox.window.WINE_BLIND_CANDIDATE;
 assert.equal(C.candidate_id,'Wine-Blind-vNext-C2-C2');
 assert.equal(C.profiles.length,203);
 assert.equal(new Set(C.profiles.map(p=>p.grape)).size,85);
-assert.equal(C.marker_dictionary.length,77);
-assert.equal(C.marker_dictionary.filter(m=>m.kind==='exact').length,63);
+assert.equal(C.marker_dictionary.length,86);
+assert.equal(C.marker_dictionary.filter(m=>m.kind==='exact').length,72);
+assert.equal(JSON.stringify(C.canonical_aroma_overlay),JSON.stringify({status:'APPLIED',relations:18,mode:'POSITIVE_ONLY',absence_is_negative:false}));
 const canonicalExacts=new Set(C.marker_dictionary.filter(m=>m.kind==='exact').map(m=>m.item));
 assert.deepEqual([...canonicalExacts].filter(x=>!exactFr[x]),[],'a canonical exact marker has no French display label');
 assert.deepEqual(Object.values(uiExact).filter(x=>!canonicalExacts.has(x)),[],'a French UI mapping targets an unknown canonical exact');
@@ -94,4 +98,4 @@ const pinotResult=E.score(pinotObs).grapes.find(r=>r.profile.grape==='Pinot Noir
 assert.equal(E.score(pinotObs).grapes[0].profile.grape,'Pinot Noir','Pinot structure regression');
 assert.equal(Math.round(pinotResult.st.S*100),100,'Pinot structure should be a perfect observed fit');
 assert.ok(patch.includes('(3.2*r.A+r.S_eff+r.C)/available'),'displayed adequacy is not normalized to observed evidence');
-console.log('Wine Blind V11.1.0 adequacy and complete fingerprint smoke test: PASS');
+console.log('Wine Blind V11.2.0 canonical aroma and adequacy smoke test: PASS');

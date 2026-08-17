@@ -1,0 +1,489 @@
+{
+  "status": "PASS",
+  "mode": "POSITIVE_ONLY",
+  "relations": 18,
+  "grapes": 11,
+  "absence_check": "UNCHANGED",
+  "rows": [
+    {
+      "proposal_id": "LENOIR-9421-CHARDONNAY",
+      "grape": "Chardonnay",
+      "label_fr": "Acacia",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "acacia",
+      "before": {
+        "rank": 17,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9391-CHARDONNAY",
+      "grape": "Chardonnay",
+      "label_fr": "Aubépine",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "aubépine",
+      "before": {
+        "rank": 17,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9415-SAUVIGNON-BLANC",
+      "grape": "Sauvignon Blanc",
+      "label_fr": "Bourgeon de cassis",
+      "phase": "primary",
+      "prevalence": 3,
+      "exact": "bourgeon de cassis",
+      "before": {
+        "rank": 65,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.8089673360295411,
+        "index": 2.5886954752945317
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9381-CABERNET-SAUVIGNON",
+      "grape": "Cabernet Sauvignon",
+      "label_fr": "Cuir",
+      "phase": "tertiary",
+      "prevalence": 1,
+      "exact": "leather",
+      "before": {
+        "rank": 22,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 2,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9371-SYRAH",
+      "grape": "Syrah",
+      "label_fr": "Framboise",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "raspberry",
+      "before": {
+        "rank": 71,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 5,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9377-CABERNET-SAUVIGNON",
+      "grape": "Cabernet Sauvignon",
+      "label_fr": "Myrtille",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "blueberry",
+      "before": {
+        "rank": 14,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2519055470886909,
+        "index": 0.806097750683811
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9377-SYRAH",
+      "grape": "Syrah",
+      "label_fr": "Myrtille",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "blueberry",
+      "before": {
+        "rank": 71,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 2,
+        "aroma_score": 0.2519055470886909,
+        "index": 0.806097750683811
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9419-CHARDONNAY",
+      "grape": "Chardonnay",
+      "label_fr": "Noisette grillée",
+      "phase": "secondary",
+      "prevalence": 2,
+      "exact": "noisette grillée",
+      "before": {
+        "rank": 17,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.5393115573530274,
+        "index": 1.7257969835296878
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9395-CABERNET-FRANC",
+      "grape": "Cabernet Franc",
+      "label_fr": "Poivron vert",
+      "phase": "primary",
+      "prevalence": 3,
+      "exact": "poivron vert",
+      "before": {
+        "rank": 14,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.7557166412660727,
+        "index": 2.418293252051433
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9395-CABERNET-SAUVIGNON",
+      "grape": "Cabernet Sauvignon",
+      "label_fr": "Poivron vert",
+      "phase": "primary",
+      "prevalence": 2,
+      "exact": "poivron vert",
+      "before": {
+        "rank": 15,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 3,
+        "aroma_score": 0.5038110941773818,
+        "index": 1.612195501367622
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9355-CABERNET-SAUVIGNON",
+      "grape": "Cabernet Sauvignon",
+      "label_fr": "Réglisse",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "réglisse",
+      "before": {
+        "rank": 15,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 2,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9423-RIESLING",
+      "grape": "Riesling",
+      "label_fr": "Tilleul",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "tilleul",
+      "before": {
+        "rank": 60,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9441-CABERNET-SAUVIGNON",
+      "grape": "Cabernet Sauvignon",
+      "label_fr": "Truffe",
+      "phase": "tertiary",
+      "prevalence": 1,
+      "exact": "truffe",
+      "before": {
+        "rank": 14,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9449-GEWURZTRAMINER",
+      "grape": "Gewurztraminer",
+      "label_fr": "Cannelle",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "cannelle",
+      "before": {
+        "rank": 31,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9397-CHENIN-BLANC",
+      "grape": "Chenin Blanc",
+      "label_fr": "Coing",
+      "phase": "primary",
+      "prevalence": 2,
+      "exact": "coing",
+      "before": {
+        "rank": 1,
+        "aroma_score": 0.5583935,
+        "index": 1.7868592
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.5583935,
+        "index": 1.7868592
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9397-PETIT-MANSENG",
+      "grape": "Petit Manseng",
+      "label_fr": "Coing",
+      "phase": "primary",
+      "prevalence": 2,
+      "exact": "coing",
+      "before": {
+        "rank": 54,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 4,
+        "aroma_score": 0.5038110941773818,
+        "index": 1.612195501367622
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9451-NEGRETTE",
+      "grape": "Négrette",
+      "label_fr": "Groseille rouge",
+      "phase": "primary",
+      "prevalence": 1,
+      "exact": "groseille rouge",
+      "before": {
+        "rank": 50,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 2,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "proposal_id": "LENOIR-9455-FURMINT",
+      "grape": "Furmint",
+      "label_fr": "Safran",
+      "phase": "tertiary",
+      "prevalence": 1,
+      "exact": "safran",
+      "before": {
+        "rank": 28,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    }
+  ],
+  "combined_by_grape": [
+    {
+      "grape": "Chardonnay",
+      "selected_approved_descriptors": 3,
+      "before": {
+        "rank": 17,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.38769510825467784,
+        "index": 1.240624346414969
+      }
+    },
+    {
+      "grape": "Sauvignon Blanc",
+      "selected_approved_descriptors": 1,
+      "before": {
+        "rank": 65,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.8089673360295411,
+        "index": 2.5886954752945317
+      }
+    },
+    {
+      "grape": "Cabernet Sauvignon",
+      "selected_approved_descriptors": 5,
+      "before": {
+        "rank": 23,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.3396558484237796,
+        "index": 1.0868987149560947
+      }
+    },
+    {
+      "grape": "Syrah",
+      "selected_approved_descriptors": 2,
+      "before": {
+        "rank": 71,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 5,
+        "aroma_score": 0.2623033920175742,
+        "index": 0.8393708544562375
+      }
+    },
+    {
+      "grape": "Cabernet Franc",
+      "selected_approved_descriptors": 1,
+      "before": {
+        "rank": 14,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.7557166412660727,
+        "index": 2.418293252051433
+      }
+    },
+    {
+      "grape": "Riesling",
+      "selected_approved_descriptors": 1,
+      "before": {
+        "rank": 60,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "grape": "Gewurztraminer",
+      "selected_approved_descriptors": 1,
+      "before": {
+        "rank": 31,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "grape": "Chenin Blanc",
+      "selected_approved_descriptors": 1,
+      "before": {
+        "rank": 1,
+        "aroma_score": 0.5583935,
+        "index": 1.7868592
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.5583935,
+        "index": 1.7868592
+      }
+    },
+    {
+      "grape": "Petit Manseng",
+      "selected_approved_descriptors": 1,
+      "before": {
+        "rank": 54,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 4,
+        "aroma_score": 0.5038110941773818,
+        "index": 1.612195501367622
+      }
+    },
+    {
+      "grape": "Négrette",
+      "selected_approved_descriptors": 1,
+      "before": {
+        "rank": 50,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 2,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    },
+    {
+      "grape": "Furmint",
+      "selected_approved_descriptors": 1,
+      "before": {
+        "rank": 28,
+        "aroma_score": 0,
+        "index": 0
+      },
+      "after": {
+        "rank": 1,
+        "aroma_score": 0.2696557786765137,
+        "index": 0.8628984917648439
+      }
+    }
+  ]
+}
