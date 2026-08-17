@@ -68,8 +68,14 @@ try{
   for(let i=0;i<20;i++)await fastTap(page.locator(`#originScopeSelector [data-origin-scope="${i%2?'world':'france'}"]`),`origin scope ${i}`);
   assert.equal(await active('#originScopeSelector [data-origin-scope="world"]'),true,'origin scope round-trips did not finish on world');
   assert.equal(await page.locator('#originResults').count(),1,'origin scope stress created duplicate Top 10 containers');
+  for(let i=0;i<8;i++){
+    const card=page.locator('#originResults .c2-origin-card').nth(i%Math.min(3,await page.locator('#originResults .c2-origin-card').count()));
+    await card.tap();
+    assert.ok(await page.locator('#detailDialog .origin-grape-panel[open]').count()===1,`origin focus lost at round ${i}`);
+    await page.locator('#closeDialog').tap();
+  }
   assert.deepEqual(errors,[],`page errors: ${errors.join(' | ')}`);
-  console.log('Wine Blind V11.2.1 iPhone WebKit endurance: PASS (24 type reversals + 20 origin scope switches)');
+  console.log('Wine Blind V11.3.0 iPhone WebKit endurance: PASS (24 type reversals + 20 origin scope switches + 8 identity round-trips)');
 } finally {
   await browser.close();
 }

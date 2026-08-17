@@ -98,6 +98,17 @@ try{
   await page.locator('#originScopeSelector [data-origin-scope="world"]').tap(); await wait();
   assert.equal((await page.locator('#originResults .c2-origin-card .result-name').first().textContent())?.trim(),worldFirst,'world ranking changed after France round-trip');
   assert.equal(await page.locator('#originResults').count(),1,'scope selector created competing origin result lists');
+  const topOriginCard=page.locator('#originResults .c2-origin-card').first();
+  const focusedGrape=((await topOriginCard.locator('.c2-origin-sub').textContent())||'').split(' · ')[0].trim();
+  await topOriginCard.tap();
+  await page.locator('#detailDialog[open]').waitFor({state:'visible'});
+  const focusedPanel=page.locator(`.origin-grape-panel[data-grape="${focusedGrape}"]`);
+  assert.equal(await focusedPanel.count(),1,'Top 10 origin did not open the unified regional identity');
+  assert.equal(await focusedPanel.evaluate(el=>el.open),true,'Top 10 origin did not focus the relevant grape profile');
+  assert.equal(await page.locator('#detailBody').getByText('Clés de différenciation',{exact:true}).count(),0,'obsolete differentiation block remains in origin identity');
+  assert.equal(await page.locator('#detailBody').getByText('À distinguer de',{exact:true}).count(),0,'obsolete confusion block remains in origin identity');
+  const originIdentityTitle=(await page.locator('#detailTitle').textContent())?.trim();
+  await page.locator('#closeDialog').tap();
   await page.locator('.tab[data-tab="grape"]').tap(); await wait();
 
   const diagnosticBeforeTree=await page.evaluate(()=>({
@@ -146,11 +157,21 @@ try{
   assert.equal((await page.locator('#detailTitle').textContent())?.trim(),topIdentity.title,'Top 10 and Reference opened different grape identities');
   assert.equal((await page.locator('#detailBody').innerText()).trim(),topIdentity.body,'Top 10 and Reference identity sheets differ');
   assert.ok(await page.locator('#detailDialog .metric[class*="metric-level-"]').count()>0,'reference metrics lost progressive colour classes');
-  assert.ok(await page.locator('#detailDialog .fingerprint-evidence').count()>0,'reference fingerprint lost exact descriptors');
-  assert.ok(await page.locator('#detailDialog .fingerprint-chip.fp-w1').count()>0,'reference fingerprint hides prevalence level 1');
+  assert.ok(await page.locator('#detailDialog .aroma-descriptor-token').count()>0,'reference fingerprint lost exact descriptors');
+  assert.ok(await page.locator('#detailDialog .aroma-token.fp-w1').count()>0,'reference fingerprint hides prevalence level 1');
+  assert.ok(await page.locator('#detailDialog .metric-info').count()>0,'metric ranges are not folded behind information controls');
+  assert.equal(await page.locator('#detailBody').getByText('Géographie',{exact:true}).count(),1,'grape geography is not consolidated into one block');
+  assert.equal(await page.locator('#detailBody').getByText('Arômes & marqueurs',{exact:true}).count(),0,'competing legacy aroma block remains visible');
+  await page.locator('#closeDialog').tap();
+  await page.locator('.ref-mode-btn[data-refmode="origins"]').tap(); await wait();
+  await page.locator('#searchGrape').fill(originIdentityTitle||'');
+  const originRef=page.locator('#referenceList .origin-ref-row').filter({has:page.locator('strong',{hasText:originIdentityTitle})}).first();
+  await originRef.waitFor({state:'visible'}); await originRef.tap();
+  assert.equal((await page.locator('#detailTitle').textContent())?.trim(),originIdentityTitle,'Top 10 and directory opened different origin identities');
+  assert.ok(await page.locator('.origin-grape-panel').count()>0,'directory origin identity has no per-grape profiles');
 
   assert.deepEqual(pageErrors,[],`browser page errors: ${pageErrors.join(' | ')}`);
-  console.log('Wine Blind V11.2.1 iPhone WebKit navigation: PASS');
+  console.log('Wine Blind V11.3.0 iPhone WebKit navigation: PASS');
 } finally {
   await browser.close();
 }
