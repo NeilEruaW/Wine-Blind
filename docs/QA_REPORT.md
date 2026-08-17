@@ -1,3 +1,14 @@
+# QA — Wine Blind V11.2.1
+
+## Sélecteur d’origines
+
+- Un seul conteneur `originResults` est conservé pour les périmètres Monde et France.
+- Le filtre France s’appuie sur la géographie des 203 profils C2-C2 et non sur une liste éditoriale parallèle.
+- Vérification des allers-retours Monde → France → Monde et de la stabilité du premier résultat Monde.
+- Test d’endurance prévu : 20 changements de périmètre sans duplication de liste ni nouveau calcul du score.
+
+---
+
 # QA — Wine Blind V11.2.0
 
 ## Promotion aromatique
