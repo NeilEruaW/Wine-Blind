@@ -34,11 +34,12 @@ jobs:
           node --check tests/origin-calibration.mjs
           node --check tests/mobile-browser.mjs
           node --check tests/mobile-endurance.mjs
+      - name: Origin probability calibration
+        run: node tests/origin-calibration.mjs
       - name: Wine Blind regression smoke
         run: |
           node tests/smoke.mjs
           node tests/canonical-aroma-scoring.mjs
-          node tests/origin-calibration.mjs
       - name: Install WebKit test runtime
         run: |
           npm install --no-save playwright@1.55.0
