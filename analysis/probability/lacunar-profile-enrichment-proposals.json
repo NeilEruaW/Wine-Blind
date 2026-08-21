@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0-review",
+  "status": "SCIENTIFIC_REVIEW_REQUIRED_NOT_SCORING",
+  "policy": {
+    "well_documented_profiles_are_not_downweighted": true,
+    "encyclopedic_sources_are_confirmation_sources": true,
+    "single_source_descriptor_is_not_scoring_eligible": true,
+    "structure_conflicts_require_adjudication": true
+  },
+  "sources": [
+    {"id":"PLANTGRAPE","authority":"institutional","url":"https://plantgrape.fr/en"},
+    {"id":"WINES_OF_GREECE","authority":"institutional_sector","url":"https://winesofgreece.org/varieties/moschofilero/"},
+    {"id":"VINS_DE_LOIRE","authority":"institutional_sector","url":"https://www.vinsdeloire.fr/en/grape-varieties/romorantin"},
+    {"id":"VIN_DE_FRANCE","authority":"institutional_sector","url":"https://www.vindefrance.com/wines/grape-varieties-of-france"},
+    {"id":"WIKIPEDIA_EN","authority":"encyclopedic_confirmation","url":"https://en.wikipedia.org/"}
+  ],
+  "proposals": [
+    {"grape":"Saperavi","field":"structure.Couleur","proposal":"très élevée / teinturier","evidence":["WIKIPEDIA_EN:Saperavi"],"confidence":"HIGH_CONFIRMATION","action":"KEEP_CURRENT"},
+    {"grape":"Saperavi","field":"structure.Acidité","proposal":"élevée","evidence":["WIKIPEDIA_EN:Saperavi"],"confidence":"MEDIUM_CONFIRMATION","action":"KEEP_CURRENT"},
+    {"grape":"Saperavi","field":"aroma.descriptor","proposal":"Mûre","phase":"primary","prevalence":2,"evidence":["WIKIPEDIA_EN:Saperavi","WIKIPEDIA_EN:Georgian_wine"],"confidence":"MEDIUM","action":"REVIEW"},
+    {"grape":"Duras","field":"structure.Couleur","proposal":"moyenne plutôt qu'élevée","evidence":["PLANTGRAPE:Duras technological potential"],"confidence":"HIGH","action":"REVIEW_RANGE_CONFLICT"},
+    {"grape":"Duras","field":"aroma.descriptor","proposal":"Poivre","phase":"primary","prevalence":3,"evidence":["PLANTGRAPE:Duras technological potential"],"confidence":"HIGH","action":"PROMOTE_EXISTING"},
+    {"grape":"Gros Manseng","field":"structure.Acidité","proposal":"élevée","evidence":["PLANTGRAPE:Gros Manseng technological potential","VIN_DE_FRANCE:Gros Manseng"],"confidence":"HIGH","action":"KEEP_CURRENT"},
+    {"grape":"Gros Manseng","field":"structure.Alcool","proposal":"potentiel moyen à élevé selon maturité/style","evidence":["PLANTGRAPE:Gros Manseng technological potential","VIN_DE_FRANCE:Gros Manseng"],"confidence":"HIGH","action":"REVIEW_RANGE"},
+    {"grape":"Moschofilero","field":"aroma.descriptor","proposal":"Rose","phase":"primary","prevalence":3,"evidence":["WINES_OF_GREECE:Moschofilero","WIKIPEDIA_EN:Moschofilero"],"confidence":"HIGH","action":"PROMOTE_EXISTING"},
+    {"grape":"Moschofilero","field":"aroma.family","proposal":"Fruits verts","phase":"primary","prevalence":2,"evidence":["WINES_OF_GREECE:Moschofilero"],"confidence":"HIGH","action":"ADD_AFTER_REVIEW"},
+    {"grape":"Moschofilero","field":"structure.Corps","proposal":"faible","evidence":["WINES_OF_GREECE:Moschofilero"],"confidence":"HIGH","action":"KEEP_CURRENT"},
+    {"grape":"Poulsard","field":"structure.Couleur","proposal":"faible, variable","evidence":["PLANTGRAPE:Poulsard","WIKIPEDIA_EN:Poulsard"],"confidence":"HIGH","action":"KEEP_CURRENT"},
+    {"grape":"Poulsard","field":"structure.Tanins","proposal":"faibles à moyens selon clone","evidence":["PLANTGRAPE:Poulsard clone data","WIKIPEDIA_EN:Poulsard"],"confidence":"HIGH","action":"REVIEW_RANGE"},
+    {"grape":"Poulsard","field":"aroma.descriptor","proposal":"Framboise","phase":"primary","prevalence":2,"evidence":["WIKIPEDIA_EN:Poulsard"],"confidence":"LOW_SINGLE_SOURCE","action":"SEEK_CORROBORATION"},
+    {"grape":"Négrette","field":"structure.Acidité","proposal":"faible à moyenne","evidence":["PLANTGRAPE:Négrette","VIN_DE_FRANCE:Négrette"],"confidence":"HIGH","action":"REVIEW_RANGE_CONFLICT"},
+    {"grape":"Négrette","field":"structure.Tanins","proposal":"faibles à moyens","evidence":["PLANTGRAPE:Négrette","VIN_DE_FRANCE:Négrette"],"confidence":"HIGH","action":"REVIEW_RANGE_CONFLICT"},
+    {"grape":"Négrette","field":"structure.Couleur","proposal":"élevée / riche en anthocyanes","evidence":["PLANTGRAPE:Négrette","VIN_DE_FRANCE:Négrette"],"confidence":"HIGH","action":"REVIEW_RANGE"},
+    {"grape":"Négrette","field":"aroma.descriptor","proposal":"Violette","phase":"primary","prevalence":3,"evidence":["WIKIPEDIA_EN:Négrette","VIN_DE_FRANCE:Négrette fragrant profile"],"confidence":"MEDIUM","action":"PROMOTE_EXISTING_AFTER_REVIEW"},
+    {"grape":"Romorantin","field":"structure.Acidité","proposal":"élevée","evidence":["VINS_DE_LOIRE:Romorantin","WIKIPEDIA_EN:Romorantin"],"confidence":"HIGH","action":"KEEP_CURRENT"},
+    {"grape":"Romorantin","field":"aroma.family","proposal":"Fruits à noyau","phase":"primary","prevalence":1,"evidence":["VINS_DE_LOIRE:Romorantin"],"confidence":"MEDIUM","action":"REVIEW"},
+    {"grape":"Trousseau","field":"structure.Tanins","proposal":"moyens à élevés selon clone/style","evidence":["PLANTGRAPE:Trousseau clone data","WIKIPEDIA_EN:Trousseau"],"confidence":"HIGH","action":"KEEP_BROAD_RANGE"},
+    {"grape":"Trousseau","field":"structure.Couleur","proposal":"moyenne à élevée selon clone/style","evidence":["PLANTGRAPE:Trousseau clone data","WIKIPEDIA_EN:Trousseau"],"confidence":"HIGH","action":"REVIEW_RANGE"},
+    {"grape":"Trousseau","field":"aroma.descriptor","proposal":"Fraise","phase":"primary","prevalence":2,"evidence":["WIKIPEDIA_EN:Trousseau"],"confidence":"LOW_SINGLE_SOURCE","action":"SEEK_CORROBORATION"}
+  ]
+}
