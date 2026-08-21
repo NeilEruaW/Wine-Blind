@@ -1,4 +1,4 @@
-const CACHE='wine-blind-v11-5-3-canonical-origin-taxonomy-1';
+const CACHE='wine-blind-v11-5-4-origin-calibration-1';
 const ASSETS=['./','./index.html','./styles.css','./v11-reset.css','./app.js','./data.js','./canonical-aroma-runtime.js','./v106.js','./v107.js','./v108.js','./tree.js','./c2c2-data.js','./canonical-scoring-overlay.js','./lacunar-profile-overlay.js','./canonical-profile-runtime.js','./c2c2-engine.js','./canonical-probability-model.js','./v11-reset-patch.js','./origin-probability-patch.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),self.clients.claim()])));
