@@ -1,11 +1,11 @@
 import fs from 'node:fs';import vm from 'node:vm';
 const N=Number(process.argv[2]||2000),OUT='analysis/probability/DISCRIMINANT_MODEL_REPORT.md';
-const s={window:{},Math,Number,Object,Map,Set,console};vm.createContext(s);for(const f of ['c2c2-data.js','canonical-aroma-runtime.js','canonical-scoring-overlay.js','lacunar-profile-overlay.js','canonical-probability-model.js'])vm.runInContext(fs.readFileSync(f,'utf8'),s,{filename:f});
+const s={window:{},Math,Number,Object,Map,Set,console};vm.createContext(s);for(const f of ['data.js','c2c2-data.js','canonical-aroma-runtime.js','canonical-scoring-overlay.js','lacunar-profile-overlay.js','canonical-profile-runtime.js','canonical-probability-model.js'])vm.runInContext(fs.readFileSync(f,'utf8'),s,{filename:f});
 const C=s.window.WINE_BLIND_CANDIDATE,A=s.window.WINE_BLIND_AROMA_CANONICAL,P=s.window.WineBlindCanonicalProbability;
 let seed=0x57424d43;const rnd=()=>((seed=(1664525*seed+1013904223)>>>0)/4294967296),pick=a=>a[Math.floor(rnd()*a.length)],gauss=()=>Math.sqrt(-2*Math.log(Math.max(rnd(),1e-12)))*Math.cos(2*Math.PI*rnd()),clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),mean=a=>a.reduce((x,y)=>x+y,0)/a.length,pctl=(a,p)=>[...a].sort((x,y)=>x-y)[Math.floor((a.length-1)*p)],norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
-const byGrape=new Map();for(const p of C.profiles){const r=byGrape.get(p.grape)||[];r.push(p);byGrape.set(p.grape,r)}
+const byGrape=new Map([...P.profiles].map(([grape,p])=>[grape,[p]]));
 const type=new Map((A.grapes||[]).map(g=>[norm(g.grape),g.type]));for(const [g,ps] of byGrape)if(!type.has(norm(g)))type.set(norm(g),Number(ps[0].structure.Tanins.center)>0?'Rouge':'Blanc');
-const markerKey=m=>`${m.kind}:${norm(m.item)}`,pools={Rouge:[],Blanc:[]};
+const markerKey=m=>m.key||`${m.kind}:${norm(m.item)}`,pools={Rouge:[],Blanc:[]};
 for(const colour of ['Rouge','Blanc']){const seen=new Set();for(const g of P.eligible(colour))for(const m of P.markers.get(g).values())if(!seen.has(markerKey(m))){seen.add(markerKey(m));pools[colour].push(m)}}
 const vector=new Map();for(const g of byGrape.keys()){const ps=byGrape.get(g),s5=['Acidité','Tanins','Alcool','Corps','Couleur'].map(a=>mean(ps.map(p=>Number(p.structure[a]?.center||0))));vector.set(g,{s:s5,m:new Set(P.markers.get(g).keys())})}
 function distance(a,b){const x=vector.get(a),y=vector.get(b),sd=Math.sqrt(mean(x.s.map((v,i)=>((v-y.s[i])/5)**2))),u=new Set([...x.m,...y.m]),inter=[...x.m].filter(k=>y.m.has(k)).length;return .55*sd+.45*(u.size?1-inter/u.size:1)}

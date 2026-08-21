@@ -12,6 +12,8 @@ const structures={
   'Trousseau':{'Acidité':[3.5,4.5,5],'Tanins':[2,2.5,4],'Alcool':[3,3.2,4],'Corps':[2,2.5,4],'Couleur':[2.5,3.5,4.5]}
 };
 for(const p of C.profiles){const spec=structures[p.grape];if(!spec)continue;for(const [axis,[L,center,U]] of Object.entries(spec)){const old=p.structure[axis];if(!old)continue;Object.assign(old,{L,center,U,provenance:`${old.provenance||'C2-C2'} + multi-source lacunar review 2026`})}}
+const identityAxis={'Acidité':'acid','Tanins':'tannin','Alcool':'alcohol','Corps':'body','Couleur':'color'};
+for(const g of window.WSET_DATA?.grapes||[]){const spec=structures[g.name];if(!spec)continue;for(const [axis,[min,typical,max]] of Object.entries(spec)){const key=identityAxis[axis],old=g.structureProfile?.[key];if(!old)continue;Object.assign(old,{min,typical,max,confidence:'revue multi-source',sourceCoverage:'A'});g[key]=typical}g.intensity=g.structureProfile?.intensity?.typical??g.intensity}
 const additions={
   'Saperavi':[['primary','Fruits noirs','Mûre',3],['primary','Fruits noirs','Cassis',2],['primary','Fruits noirs','Prune noire',2],['primary','Fruits noirs','Cerise noire',2],['primary','Fruits rouges','Cerise rouge',1],['primary','Floral','Violette',2],['primary','Épices fortes','Réglisse',2],['tertiary','Vieillissement en bouteille – rouge','Tabac',1],['tertiary','Vieillissement en bouteille – rouge','Terre',1],['tertiary','Vieillissement en bouteille – rouge','Cuir',1]],
   'Duras':[['primary','Fruits rouges','Groseille rouge',2],['primary','Fruits rouges','Cerise rouge',2],['primary','Fruits rouges','Framboise',1],['primary','Fruits noirs','Cassis',2],['primary','Fruits noirs','Mûre',1],['primary','Épices fortes','Poivre noir',3],['primary','Épices fortes','Réglisse',1],['primary','Floral','Violette',1]],

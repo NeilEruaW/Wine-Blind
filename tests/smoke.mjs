@@ -10,13 +10,13 @@ const overlay=read('v11-reset.css');
 const patch=read('v11-reset-patch.js');
 const sw=read('sw.js');
 
-for(const asset of ['styles.css','v11-reset.css','data.js','canonical-aroma-runtime.js','v106.js','v107.js','v108.js','tree.js','app.js','c2c2-data.js','canonical-scoring-overlay.js','lacunar-profile-overlay.js','c2c2-engine.js','canonical-probability-model.js','v11-reset-patch.js']) assert.ok(index.includes(asset),`index missing ${asset}`);
+for(const asset of ['styles.css','v11-reset.css','data.js','canonical-aroma-runtime.js','v106.js','v107.js','v108.js','tree.js','app.js','c2c2-data.js','canonical-scoring-overlay.js','lacunar-profile-overlay.js','canonical-profile-runtime.js','c2c2-engine.js','canonical-probability-model.js','v11-reset-patch.js']) assert.ok(index.includes(asset),`index missing ${asset}`);
 for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','data-tab="quiz"','data-tab="reference"','id="historyList"','id="originScopeSelector"','data-origin-scope="world"','data-origin-scope="france"']) assert.ok(index.includes(feature),`historical UI missing ${feature}`);
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown','originCandidates','renderOriginList','isFrenchProfile','probabilityScore','% de correspondance probable']) assert.ok(patch.includes(feature),`V11.5.0 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-5-0-probability-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown','originCandidates','renderOriginList','isFrenchProfile','probabilityScore','probabilityFallback','% de correspondance probable']) assert.ok(patch.includes(feature),`V11.5.1 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-5-1-full-coverage-1'),'wrong service-worker cache namespace');
 assert.ok(app.includes('window.WineBlindReference=Object.freeze'),'historical grape reference is not exposed as the single identity source');
 assert.ok(patch.includes('window.WineBlindReference?.openGrape(r.profile.grape)'),'Top 10 cards do not use the historical reference identity source');
 assert.ok(!patch.includes('openGrapeAggregate'),'competing C2-C2 aggregate identity source still exists');
@@ -54,6 +54,10 @@ assert.ok(!patch.includes("document.addEventListener('pointerup'"),'duplicate po
 assert.ok(!patch.includes("document.addEventListener('change'"),'duplicate change recompute listener is still active');
 assert.ok(patch.includes("Aucun repère saisi"),'misleading confidence badge was not replaced');
 assert.ok(patch.includes('visibleInputCount'),'input indicator is not based on visible retained inputs');
+assert.ok(patch.includes('"eleve":5'),'masculine alcohol label Élevé is not recognized');
+assert.ok(patch.includes('"Intensité":"Couleur"'),'visual intensity is not connected to canonical colour intensity');
+assert.ok(patch.includes("label==='Alcool'||label==='Intensité'"),'three-point structure rails are not mapped to their continuous scale');
+assert.ok(patch.includes("exactL.get(k)||b.textContent.trim()"),'canonical descriptors without a legacy alias are silently discarded');
 assert.ok(!patch.includes('Pourquoi ?'),'legacy Why block is still rendered under grape candidates');
 for(const tone of ['match','near','mismatch']) assert.ok(overlay.includes(`.c2-fit-chip.${tone}`),`missing ${tone} structural match colour`);
 assert.ok(patch.includes('blindSignature(p.grape)'),'profile identity still replaces the blind signature with an origin/style');
@@ -81,11 +85,13 @@ assert.ok(!app.includes('treeDiagnosticCandidates'),'tree still depends on the l
 
 const sandbox={window:{},console};
 vm.createContext(sandbox);
+vm.runInContext(read('data.js'),sandbox,{filename:'data.js'});
 vm.runInContext(read('v108.js'),sandbox,{filename:'v108.js'});
 vm.runInContext(read('canonical-aroma-runtime.js'),sandbox,{filename:'canonical-aroma-runtime.js'});
 vm.runInContext(read('c2c2-data.js'),sandbox,{filename:'c2c2-data.js'});
 vm.runInContext(read('canonical-scoring-overlay.js'),sandbox,{filename:'canonical-scoring-overlay.js'});
 vm.runInContext(read('lacunar-profile-overlay.js'),sandbox,{filename:'lacunar-profile-overlay.js'});
+vm.runInContext(read('canonical-profile-runtime.js'),sandbox,{filename:'canonical-profile-runtime.js'});
 const C=sandbox.window.WINE_BLIND_CANDIDATE;
 assert.equal(C.candidate_id,'Wine-Blind-vNext-C2-C2');
 assert.equal(C.profiles.length,203);
@@ -102,6 +108,7 @@ assert.deepEqual(Object.values(uiExact).filter(x=>!canonicalExacts.has(x)),[],'a
 for(const [label,canonical] of Object.entries({banane:'banana',chevrefeuille:'honeysuckle',mangue:'mango','poivre noir':'pepper',raisin:'raisin frais','fruits a coque':'nutty'})) assert.equal(uiExact[label],canonical,`missing French exact mapping for ${label}`);
 vm.runInContext(read('c2c2-engine.js'),sandbox,{filename:'c2c2-engine.js'});
 vm.runInContext(read('canonical-probability-model.js'),sandbox,{filename:'canonical-probability-model.js'});
+assert.equal(sandbox.window.WineBlindCanonicalProbability.eligible('Rouge').length+sandbox.window.WineBlindCanonicalProbability.eligible('Blanc').length,98,'probability universe is not 98 grapes');
 const E=sandbox.window.WineBlindEngine;
 assert.ok(E&&typeof E.score==='function','engine did not initialize');
 for(const canonical of new Set(Object.values(uiExact))){
@@ -120,4 +127,4 @@ const pinotResult=E.score(pinotObs).grapes.find(r=>r.profile.grape==='Pinot Noir
 assert.equal(E.score(pinotObs).grapes[0].profile.grape,'Pinot Noir','Pinot structure regression');
 assert.equal(Math.round(pinotResult.st.S*100),100,'Pinot structure should be a perfect observed fit');
 assert.ok(patch.includes('(3.2*r.A+r.S_eff+r.C)/available'),'displayed adequacy is not normalized to observed evidence');
-console.log('Wine Blind V11.5.0 probabilistic ranking smoke test: PASS');
+console.log('Wine Blind V11.5.1 full-coverage probabilistic ranking smoke test: PASS');

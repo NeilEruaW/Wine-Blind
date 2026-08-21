@@ -1,7 +1,7 @@
 (()=>{
 /* Isolated shadow model. No UI side effect and no public probability flag. */
-const C=window.WINE_BLIND_CANDIDATE,A=window.WINE_BLIND_AROMA_CANONICAL;
-if(!C?.profiles?.length)return;
+const C=window.WINE_BLIND_CANDIDATE,A=window.WINE_BLIND_AROMA_CANONICAL,CP=window.WineBlindCanonicalProfiles;
+if(!C?.profiles?.length||!CP?.profiles?.length)return;
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 const lse=xs=>{const m=Math.max(...xs);return m+Math.log(xs.reduce((s,x)=>s+Math.exp(x-m),0))};
@@ -9,16 +9,19 @@ const AXES={Acidite:{source:'Acidité',base:1.5},Tanins:{source:'Tanins',base:1.
 const PHASE={PRIMARY:1,SECONDARY:.82,TERTIARY:.64,CONTEXTUAL:.55};
 const KIND={family:.72,signature:.9,exact:1};
 const PREV={1:.38,2:.66,3:.86};
-const byGrape=new Map();
-for(const p of C.profiles){const rows=byGrape.get(p.grape)||[];rows.push(p);byGrape.set(p.grape,rows)}
+const regionalByGrape=new Map();
+for(const p of C.profiles){const rows=regionalByGrape.get(p.grape)||[];rows.push(p);regionalByGrape.set(p.grape,rows)}
+const byGrape=new Map(CP.profiles.map(p=>[p.grape,[p]]));
 const types=new Map((A?.grapes||[]).map(g=>[norm(g.grape),g.type]));
 for(const [g,ps] of byGrape)if(!types.has(norm(g)))types.set(norm(g),Number(ps[0].structure?.Tanins?.center)>0?'Rouge':'Blanc');
 const eligible=colour=>[...byGrape.keys()].filter(g=>types.get(norm(g))===colour);
-const key=(kind,item)=>`${kind==='descriptor'?'exact':kind==='group'?'family':kind}:${norm(item)}`;
+const exactAlias=new Map();for(const [canonical,aliases] of Object.entries(C.engine?.observation_extraction?.C2_exact_aliases||{})){exactAlias.set(norm(canonical),canonical);for(const alias of aliases||[])exactAlias.set(norm(alias),canonical)}
+const groupAlias=x=>{const n=norm(x);if(/^(floral|fleurs)$/.test(n))return'floral';if(/^(epices fortes|epice poivre|epice poivree|epice poivre)$/.test(n)||n==='epice poivre')return'epices fortes';if(/^(vegetal|herbes|vegetal herbace)$/.test(n))return'vegetal';if(/^bois($| faible| modere| marque)/.test(n))return'bois';if(/^(fml|mlf)$/.test(n))return'fml';return n.replace('vieillissement en bouteille','vieillissement bouteille')};
+const key=(kind,item)=>kind==='exact'||kind==='descriptor'?`exact:${norm(exactAlias.get(norm(item))||item)}`:`group:${groupAlias(item)}`;
 
 function grapeMarkers(grape){
   const out=new Map();
-  for(const p of byGrape.get(grape)||[])for(const m of p.markers||[]){
+  for(const p of regionalByGrape.get(grape)||[])for(const m of p.markers||[]){
     if(!KIND[m.kind])continue;const k=key(m.kind,m.item),old=out.get(k);
     if(!old||Number(m.typicality||0)>Number(old.typicality||0))out.set(k,{...m,key:k});
   }
@@ -38,7 +41,7 @@ function observed(obs={}){
 }
 function dfFor(grapes){const df=new Map();for(const g of grapes)for(const k of markers.get(g).keys())df.set(k,(df.get(k)||0)+1);return df}
 function phase(m){return PHASE[String(m?.tier||m?.context||'PRIMARY').toUpperCase()]||.72}
-function family(m,o){return norm(m?.parent_resolved||m?.parent_rule||m?.item||o.key)}
+function family(m,o){return groupAlias(m?.parent_resolved||m?.parent_rule||m?.item||o.key)}
 
 function aroma(grape,obs,df,N,variant){
   const groups=new Map(),detail=[];
@@ -65,8 +68,8 @@ function structure(profile,input={},colour,variant){
   for(const [raw,value] of Object.entries(input)){
     const name=Object.keys(AXES).find(x=>norm(x)===norm(raw));if(!name||!Number.isFinite(Number(value)))continue;
     const axis=AXES[name],r=profile.structure?.[axis.source];if(!r)continue;
-    const discriminant=variant==='discriminant-v2'||variant==='structure-v3',specificity=axisSpecificity(profile,axis,colour),w=axis.base*(discriminant?(.9+.25*specificity):1),half=Math.max(.45,(Number(r.U)-Number(r.L))/2),x=Number(value),outside=x<r.L?r.L-x:x>r.U?x-r.U:0,center=Math.abs(x-Number(r.center))/half;
-    const contribution=-w*(outside?(.55+outside*outside/(2*half*half)):.08*center*center);log+=contribution;detail.push({axis:name,x,L:r.L,U:r.U,specificity,weight:w,contribution});
+    const discriminant=variant==='discriminant-v2'||variant==='structure-v3',specificity=axisSpecificity(profile,axis,colour),w=axis.base*(discriminant?(.96+.1*specificity):1),half=Math.max(.45,(Number(r.U)-Number(r.L))/2),x=Number(value),outside=x<r.L?r.L-x:x>r.U?x-r.U:0,center=Math.abs(x-Number(r.center))/half;
+    const contribution=-w*(outside?(.55+outside*outside/(2*half*half)):.08*center*center),sim=Math.exp(contribution/w);log+=contribution;detail.push({axis:name,x,L:r.L,U:r.U,center:r.center,inRange:outside===0,sim,specificity,weight:w,contribution});
   }
   return {log,detail};
 }
@@ -80,5 +83,5 @@ function distribution(obs={},colour,{variant='baseline'}={}){
   const values=rows.map(x=>({...x,probability:Math.exp(x.log_likelihood-den)})).sort((a,b)=>b.probability-a.probability||a.grape.localeCompare(b.grape)),top10=values.slice(0,10),mass=top10.reduce((s,x)=>s+x.probability,0);
   return {status:'shadow',variant,colour,values,top10,top10_probability:mass,unshown_probability:1-mass,display_policy:'TOP_10_ONLY_NOT_RENORMALIZED'};
 }
-window.WineBlindCanonicalProbability=Object.freeze({distribution,eligible,observed,axisSpecificity,markers});
+window.WineBlindCanonicalProbability=Object.freeze({distribution,eligible,observed,axisSpecificity,markers,profiles:CP.byGrape});
 })();
