@@ -1,33 +1,46 @@
 (()=>{
-/* Wine Blind V11.5.2 — probabilistic origin Top 10.
-   Fine regional profiles remain the scoring units; display candidates are aggregated
-   geographically before scope-specific probability normalization. */
+/* Wine Blind V11.5.3 — canonical probabilistic origin taxonomy.
+   Fine C2-C2 profiles remain the scoring units. Origin aggregation is a read-only view
+   derived from WSET_V108.profiles[].unitId -> WSET_V108.units: no parallel geography data. */
 const $=s=>document.querySelector(s);
-const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’']/g,"'").trim();
+const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’']/g,"'").replace(/[–—]/g,'-').replace(/\s+/g,' ').trim();
 const ORIGIN_TEMPERATURE=12;
-const GEO_RULES=[
-  {
-    label:'Rhône Nord',
-    country:'France',
-    match:/\b(rhone nord|northern rhone|cote[- ]?rotie|cornas|(?:crozes[- ]?)?hermitage|saint[- ]?joseph|condrieu|chateau[- ]?grillet)\b/
-  }
-];
-function isFrench(p){return /(^|,\s*)France(\s*,|$)/i.test(p?.geography||'')||GEO_RULES.some(r=>r.country==='France'&&r.match.test(norm(`${p?.style||''} ${p?.geography||''}`)))}
-function fineLabel(p){return String(p?.style||p?.geography||p?.grape||'').trim()}
-function geoGroup(p){
-  const text=norm(`${p?.style||''} ${p?.geography||''}`);
-  const rule=GEO_RULES.find(r=>r.match.test(text));
-  const label=rule?.label||fineLabel(p);
-  return {key:norm(label),label,country:rule?.country||(isFrench(p)?'France':'')};
+const fineLabel=p=>String(p?.style||p?.geography||p?.grape||'').trim();
+const profileKey=p=>`${norm(p?.grape)}::${norm(p?.style)}`;
+const fallbackCountry=p=>/(^|,\s*)France(\s*,|$)/i.test(p?.geography||'')?'France':'';
+
+function canonicalTaxonomy(){
+  const v=window.WSET_V108||{},units=Array.isArray(v.units)?v.units:[],profiles=Array.isArray(v.profiles)?v.profiles:[];
+  const unitById=new Map(units.filter(u=>u?.id).map(u=>[u.id,u]));
+  const profileByKey=new Map(),duplicateProfileKeys=[];
+  profiles.forEach(p=>{
+    const k=profileKey(p);if(!k||k==='::')return;
+    if(profileByKey.has(k))duplicateProfileKeys.push(k);else profileByKey.set(k,p);
+  });
+  const missingUnitLinks=profiles.filter(p=>p?.unitId&&!unitById.has(p.unitId)).map(p=>({grape:p.grape,style:p.style,unitId:p.unitId}));
+  const profilesWithoutUnit=profiles.filter(p=>!p?.unitId).map(p=>({grape:p.grape,style:p.style}));
+  return {units,profiles,unitById,profileByKey,duplicateProfileKeys,missingUnitLinks,profilesWithoutUnit};
 }
+
+function resolveOrigin(p,tax=canonicalTaxonomy()){
+  const linked=tax.profileByKey.get(profileKey(p)),unit=linked?.unitId?tax.unitById.get(linked.unitId):null;
+  /* Only canonical units carrying an explicit country are geographic display units.
+     Any incomplete link degrades safely to the fine profile instead of inventing geography. */
+  if(unit?.id&&unit?.label&&unit?.country){
+    return {key:`unit:${unit.id}`,label:unit.label,country:unit.country,unitId:unit.id,mother:unit.mother||'',mode:unit.mode||'',canonical:true,canonicalProfile:linked};
+  }
+  return {key:`fine:${profileKey(p)}`,label:fineLabel(p),country:fallbackCountry(p),unitId:null,mother:'',mode:'profil fin',canonical:false,canonicalProfile:linked||null};
+}
+
+function isFrenchProfile(p,tax){return resolveOrigin(p,tax).country==='France'}
 function adequacy(r){
   const aromaMass=(r?.ar?.Dg||0)+(r?.ar?.De||0),available=(aromaMass?3.2:0)+(r?.st?.k||0);
   return available?Math.max(0,Math.min(100,((3.2*(r.A||0)+(r.S_eff||0)+(r.C||0))/available)*100)):0;
 }
-function aggregateGroups(rows){
+function aggregateGroups(rows,tax){
   const groups=new Map();
   rows.forEach(r=>{
-    const g=geoGroup(r.profile),score=adequacy(r),item={...r,_originScore:score,_fineLabel:fineLabel(r.profile)};
+    const g=resolveOrigin(r.profile,tax),score=adequacy(r),item={...r,_originScore:score,_fineLabel:fineLabel(r.profile),_originResolution:g};
     if(!g.label)return;
     let bucket=groups.get(g.key);
     if(!bucket){bucket={...g,candidates:[]};groups.set(g.key,bucket)}
@@ -41,23 +54,42 @@ function aggregateGroups(rows){
     return {...g,best,score:Math.min(100,best._originScore+consensusBonus),consensusBonus};
   });
 }
-function distribution(scope){
+function distribution(scope,tax){
   const s=window.__C2_LAST;
   if(!s?.profiles?.length)return [];
-  const eligible=scope==='france'?s.profiles.filter(r=>isFrench(r.profile)):s.profiles.slice();
-  const groups=aggregateGroups(eligible);
+  const eligible=scope==='france'?s.profiles.filter(r=>isFrenchProfile(r.profile,tax)):s.profiles.slice();
+  const groups=aggregateGroups(eligible,tax);
   if(!groups.length)return [];
   const max=Math.max(...groups.map(g=>g.score));
   const weights=groups.map(g=>Math.exp((g.score-max)/ORIGIN_TEMPERATURE));
   const total=weights.reduce((a,b)=>a+b,0)||1;
   return groups.map((g,i)=>({...g,probability:weights[i]/total})).sort((a,b)=>b.probability-a.probability);
 }
+function taxonomyAudit(tax,rows=[]){
+  const canonicalMapped=tax.profiles.filter(p=>{const u=p?.unitId&&tax.unitById.get(p.unitId);return !!(u?.label&&u?.country)}).length;
+  const currentFallbacks=rows.map(r=>({profile:r.profile,resolution:resolveOrigin(r.profile,tax)})).filter(x=>!x.resolution.canonical).map(x=>({grape:x.profile?.grape,style:x.profile?.style,geography:x.profile?.geography||''}));
+  const usedUnitIds=new Set(rows.map(r=>resolveOrigin(r.profile,tax).unitId).filter(Boolean));
+  return Object.freeze({
+    source:'WSET_V108.profiles[].unitId -> WSET_V108.units',
+    canonicalProfiles:tax.profiles.length,
+    canonicalUnits:tax.units.length,
+    canonicalMapped,
+    canonicalCoverage:tax.profiles.length?canonicalMapped/tax.profiles.length:0,
+    duplicateProfileKeys:[...new Set(tax.duplicateProfileKeys)],
+    profilesWithoutUnit:tax.profilesWithoutUnit,
+    missingUnitLinks:tax.missingUnitLinks,
+    currentScoredProfiles:rows.length,
+    currentCanonicalUnitsUsed:usedUnitIds.size,
+    currentFallbackProfiles:currentFallbacks
+  });
+}
 function pct(p){const x=p*100;return x<10?x.toFixed(1).replace('.',',')+' %':Math.round(x)+' %'}
 function rankVisual(i){return i<3?`<span class="rank podium podium-${i+1}" aria-label="Rang ${i+1}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8v4c0 3-1.8 5-4 5S8 10 8 7V3Z"/><path d="M8 5H5v2c0 2 1.2 3 3.4 3"/><path d="M16 5h3v2c0 2-1.2 3-3.4 3"/><path d="M12 12v4"/><path d="M9 20h6M10 16h4"/></svg><small>${i+1}</small></span>`:`<span class="rank plain-rank">${i+1}</span>`}
 function openBest(g){
   const p=g.best?.profile;if(!p)return;
-  const gp=(window.WSET_V108?.profiles||[]).find(x=>x.grape===p.grape&&norm(x.style)===norm(p.style));
-  if(gp&&window.WineBlindReference?.openOrigin)return window.WineBlindReference.openOrigin(gp.unitId,p.grape);
+  if(g.unitId&&window.WineBlindReference?.openOrigin)return window.WineBlindReference.openOrigin(g.unitId,p.grape);
+  const cp=g.best?._originResolution?.canonicalProfile;
+  if(cp?.unitId&&window.WineBlindReference?.openOrigin)return window.WineBlindReference.openOrigin(cp.unitId,p.grape);
   window.WineBlindReference?.openGrape?.(p.grape);
 }
 function card(g,i){
@@ -69,8 +101,11 @@ function card(g,i){
 function currentScope(){return $('#originScopeSelector [data-origin-scope].active')?.dataset.originScope||window.__WINE_BLIND_ORIGIN_SCOPE||'world'}
 function render(){
   const box=$('#originResults'),s=window.__C2_LAST;if(!box||!s?.profiles?.length)return;
-  const scope=currentScope(),world=distribution('world'),france=distribution('france'),arr=scope==='france'?france:world;
-  window.__WINE_BLIND_ORIGIN_DISTRIBUTIONS={world,france,scope};
+  const tax=canonicalTaxonomy(),scope=currentScope(),world=distribution('world',tax),france=distribution('france',tax),arr=scope==='france'?france:world;
+  const audit=taxonomyAudit(tax,s.profiles);
+  window.__WINE_BLIND_ORIGIN_TAXONOMY_AUDIT=audit;
+  window.__WINE_BLIND_ORIGIN_DISTRIBUTIONS={world,france,scope,taxonomySource:audit.source};
+  if(audit.currentFallbackProfiles.length||audit.missingUnitLinks.length||audit.profilesWithoutUnit.length||audit.duplicateProfileKeys.length)console.warn('[Wine Blind] Origin taxonomy canonical audit',audit);
   box.replaceChildren(...(arr.length?arr.slice(0,10).map(card):[Object.assign(document.createElement('div'),{className:'empty',textContent:scope==='france'?'Aucune origine française ne correspond aux repères saisis.':'Aucune origine ne correspond aux repères saisis.'})]));
 }
 function schedule(delay=230){clearTimeout(schedule.t);schedule.t=setTimeout(render,delay)}
