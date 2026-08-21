@@ -1,117 +1,28 @@
 (()=>{
-/* Wine Blind V11.5.3 — canonical probabilistic origin taxonomy.
+/* Wine Blind V11.5.4 — calibrated canonical probabilistic origin taxonomy.
    Fine C2-C2 profiles remain the scoring units. Origin aggregation is a read-only view
    derived from WSET_V108.profiles[].unitId -> WSET_V108.units: no parallel geography data. */
 const $=s=>document.querySelector(s);
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[’']/g,"'").replace(/[–—]/g,'-').replace(/\s+/g,' ').trim();
-const ORIGIN_TEMPERATURE=12;
+const ORIGIN_TEMPERATURE=3.5;
+const ORIGIN_CONSENSUS_SCALE=0.005;
+const ORIGIN_CONSENSUS_CAP=0.5;
 const fineLabel=p=>String(p?.style||p?.geography||p?.grape||'').trim();
 const profileKey=p=>`${norm(p?.grape)}::${norm(p?.style)}`;
 const fallbackCountry=p=>/(^|,\s*)France(\s*,|$)/i.test(p?.geography||'')?'France':'';
-
-function canonicalTaxonomy(){
-  const v=window.WSET_V108||{},units=Array.isArray(v.units)?v.units:[],profiles=Array.isArray(v.profiles)?v.profiles:[];
-  const unitById=new Map(units.filter(u=>u?.id).map(u=>[u.id,u]));
-  const profileByKey=new Map(),duplicateProfileKeys=[];
-  profiles.forEach(p=>{
-    const k=profileKey(p);if(!k||k==='::')return;
-    if(profileByKey.has(k))duplicateProfileKeys.push(k);else profileByKey.set(k,p);
-  });
-  const missingUnitLinks=profiles.filter(p=>p?.unitId&&!unitById.has(p.unitId)).map(p=>({grape:p.grape,style:p.style,unitId:p.unitId}));
-  const profilesWithoutUnit=profiles.filter(p=>!p?.unitId).map(p=>({grape:p.grape,style:p.style}));
-  return {units,profiles,unitById,profileByKey,duplicateProfileKeys,missingUnitLinks,profilesWithoutUnit};
-}
-
-function resolveOrigin(p,tax=canonicalTaxonomy()){
-  const linked=tax.profileByKey.get(profileKey(p)),unit=linked?.unitId?tax.unitById.get(linked.unitId):null;
-  /* Only canonical units carrying an explicit country are geographic display units.
-     Any incomplete link degrades safely to the fine profile instead of inventing geography. */
-  if(unit?.id&&unit?.label&&unit?.country){
-    return {key:`unit:${unit.id}`,label:unit.label,country:unit.country,unitId:unit.id,mother:unit.mother||'',mode:unit.mode||'',canonical:true,canonicalProfile:linked};
-  }
-  return {key:`fine:${profileKey(p)}`,label:fineLabel(p),country:fallbackCountry(p),unitId:null,mother:'',mode:'profil fin',canonical:false,canonicalProfile:linked||null};
-}
-
+function canonicalTaxonomy(){const v=window.WSET_V108||{},units=Array.isArray(v.units)?v.units:[],profiles=Array.isArray(v.profiles)?v.profiles:[];const unitById=new Map(units.filter(u=>u?.id).map(u=>[u.id,u]));const profileByKey=new Map(),duplicateProfileKeys=[];profiles.forEach(p=>{const k=profileKey(p);if(!k||k==='::')return;if(profileByKey.has(k))duplicateProfileKeys.push(k);else profileByKey.set(k,p)});const missingUnitLinks=profiles.filter(p=>p?.unitId&&!unitById.has(p.unitId)).map(p=>({grape:p.grape,style:p.style,unitId:p.unitId}));const profilesWithoutUnit=profiles.filter(p=>!p?.unitId).map(p=>({grape:p.grape,style:p.style}));return {units,profiles,unitById,profileByKey,duplicateProfileKeys,missingUnitLinks,profilesWithoutUnit}}
+function resolveOrigin(p,tax=canonicalTaxonomy()){const linked=tax.profileByKey.get(profileKey(p)),unit=linked?.unitId?tax.unitById.get(linked.unitId):null;if(unit?.id&&unit?.label&&unit?.country)return {key:`unit:${unit.id}`,label:unit.label,country:unit.country,unitId:unit.id,mother:unit.mother||'',mode:unit.mode||'',canonical:true,canonicalProfile:linked};return {key:`fine:${profileKey(p)}`,label:fineLabel(p),country:fallbackCountry(p),unitId:null,mother:'',mode:'profil fin',canonical:false,canonicalProfile:linked||null}}
 function isFrenchProfile(p,tax){return resolveOrigin(p,tax).country==='France'}
-function adequacy(r){
-  const aromaMass=(r?.ar?.Dg||0)+(r?.ar?.De||0),available=(aromaMass?3.2:0)+(r?.st?.k||0);
-  return available?Math.max(0,Math.min(100,((3.2*(r.A||0)+(r.S_eff||0)+(r.C||0))/available)*100)):0;
-}
-function aggregateGroups(rows,tax){
-  const groups=new Map();
-  rows.forEach(r=>{
-    const g=resolveOrigin(r.profile,tax),score=adequacy(r),item={...r,_originScore:score,_fineLabel:fineLabel(r.profile),_originResolution:g};
-    if(!g.label)return;
-    let bucket=groups.get(g.key);
-    if(!bucket){bucket={...g,candidates:[]};groups.set(g.key,bucket)}
-    bucket.candidates.push(item);
-  });
-  return [...groups.values()].map(g=>{
-    const sorted=g.candidates.slice().sort((a,b)=>b._originScore-a._originScore),best=sorted[0];
-    const sameGrape=sorted.filter(x=>norm(x.profile?.grape)===norm(best.profile?.grape));
-    const support=sameGrape.slice(1,3).reduce((sum,x)=>sum+Math.max(0,x._originScore-50)*0.03,0);
-    const consensusBonus=Math.min(3,support);
-    return {...g,best,score:Math.min(100,best._originScore+consensusBonus),consensusBonus};
-  });
-}
-function distribution(scope,tax){
-  const s=window.__C2_LAST;
-  if(!s?.profiles?.length)return [];
-  const eligible=scope==='france'?s.profiles.filter(r=>isFrenchProfile(r.profile,tax)):s.profiles.slice();
-  const groups=aggregateGroups(eligible,tax);
-  if(!groups.length)return [];
-  const max=Math.max(...groups.map(g=>g.score));
-  const weights=groups.map(g=>Math.exp((g.score-max)/ORIGIN_TEMPERATURE));
-  const total=weights.reduce((a,b)=>a+b,0)||1;
-  return groups.map((g,i)=>({...g,probability:weights[i]/total})).sort((a,b)=>b.probability-a.probability);
-}
-function taxonomyAudit(tax,rows=[]){
-  const canonicalMapped=tax.profiles.filter(p=>{const u=p?.unitId&&tax.unitById.get(p.unitId);return !!(u?.label&&u?.country)}).length;
-  const currentFallbacks=rows.map(r=>({profile:r.profile,resolution:resolveOrigin(r.profile,tax)})).filter(x=>!x.resolution.canonical).map(x=>({grape:x.profile?.grape,style:x.profile?.style,geography:x.profile?.geography||''}));
-  const usedUnitIds=new Set(rows.map(r=>resolveOrigin(r.profile,tax).unitId).filter(Boolean));
-  return Object.freeze({
-    source:'WSET_V108.profiles[].unitId -> WSET_V108.units',
-    canonicalProfiles:tax.profiles.length,
-    canonicalUnits:tax.units.length,
-    canonicalMapped,
-    canonicalCoverage:tax.profiles.length?canonicalMapped/tax.profiles.length:0,
-    duplicateProfileKeys:[...new Set(tax.duplicateProfileKeys)],
-    profilesWithoutUnit:tax.profilesWithoutUnit,
-    missingUnitLinks:tax.missingUnitLinks,
-    currentScoredProfiles:rows.length,
-    currentCanonicalUnitsUsed:usedUnitIds.size,
-    currentFallbackProfiles:currentFallbacks
-  });
-}
+function adequacy(r){const aromaMass=(r?.ar?.Dg||0)+(r?.ar?.De||0),available=(aromaMass?3.2:0)+(r?.st?.k||0);return available?Math.max(0,Math.min(100,((3.2*(r.A||0)+(r.S_eff||0)+(r.C||0))/available)*100)):0}
+function aggregateGroups(rows,tax){const groups=new Map();rows.forEach(r=>{const g=resolveOrigin(r.profile,tax),score=adequacy(r),item={...r,_originScore:score,_fineLabel:fineLabel(r.profile),_originResolution:g};if(!g.label)return;let bucket=groups.get(g.key);if(!bucket){bucket={...g,candidates:[]};groups.set(g.key,bucket)}bucket.candidates.push(item)});return [...groups.values()].map(g=>{const sorted=g.candidates.slice().sort((a,b)=>b._originScore-a._originScore),best=sorted[0];const sameGrape=sorted.filter(x=>norm(x.profile?.grape)===norm(best.profile?.grape));const support=sameGrape.slice(1,3).reduce((sum,x)=>sum+Math.max(0,x._originScore-50)*ORIGIN_CONSENSUS_SCALE,0);const consensusBonus=Math.min(ORIGIN_CONSENSUS_CAP,support);return {...g,best,score:Math.min(100,best._originScore+consensusBonus),consensusBonus}})}
+function distribution(scope,tax){const s=window.__C2_LAST;if(!s?.profiles?.length)return [];const eligible=scope==='france'?s.profiles.filter(r=>isFrenchProfile(r.profile,tax)):s.profiles.slice();const groups=aggregateGroups(eligible,tax);if(!groups.length)return [];const max=Math.max(...groups.map(g=>g.score));const weights=groups.map(g=>Math.exp((g.score-max)/ORIGIN_TEMPERATURE));const total=weights.reduce((a,b)=>a+b,0)||1;return groups.map((g,i)=>({...g,probability:weights[i]/total})).sort((a,b)=>b.probability-a.probability)}
+function taxonomyAudit(tax,rows=[]){const canonicalMapped=tax.profiles.filter(p=>{const u=p?.unitId&&tax.unitById.get(p.unitId);return !!(u?.label&&u?.country)}).length;const currentFallbacks=rows.map(r=>({profile:r.profile,resolution:resolveOrigin(r.profile,tax)})).filter(x=>!x.resolution.canonical).map(x=>({grape:x.profile?.grape,style:x.profile?.style,geography:x.profile?.geography||''}));const usedUnitIds=new Set(rows.map(r=>resolveOrigin(r.profile,tax).unitId).filter(Boolean));return Object.freeze({source:'WSET_V108.profiles[].unitId -> WSET_V108.units',canonicalProfiles:tax.profiles.length,canonicalUnits:tax.units.length,canonicalMapped,canonicalCoverage:tax.profiles.length?canonicalMapped/tax.profiles.length:0,duplicateProfileKeys:[...new Set(tax.duplicateProfileKeys)],profilesWithoutUnit:tax.profilesWithoutUnit,missingUnitLinks:tax.missingUnitLinks,currentScoredProfiles:rows.length,currentCanonicalUnitsUsed:usedUnitIds.size,currentFallbackProfiles:currentFallbacks})}
 function pct(p){const x=p*100;return x<10?x.toFixed(1).replace('.',',')+' %':Math.round(x)+' %'}
 function rankVisual(i){return i<3?`<span class="rank podium podium-${i+1}" aria-label="Rang ${i+1}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8v4c0 3-1.8 5-4 5S8 10 8 7V3Z"/><path d="M8 5H5v2c0 2 1.2 3 3.4 3"/><path d="M16 5h3v2c0 2-1.2 3-3.4 3"/><path d="M12 12v4"/><path d="M9 20h6M10 16h4"/></svg><small>${i+1}</small></span>`:`<span class="rank plain-rank">${i+1}</span>`}
-function openBest(g){
-  const p=g.best?.profile;if(!p)return;
-  if(g.unitId&&window.WineBlindReference?.openOrigin)return window.WineBlindReference.openOrigin(g.unitId,p.grape);
-  const cp=g.best?._originResolution?.canonicalProfile;
-  if(cp?.unitId&&window.WineBlindReference?.openOrigin)return window.WineBlindReference.openOrigin(cp.unitId,p.grape);
-  window.WineBlindReference?.openGrape?.(p.grape);
-}
-function card(g,i){
-  const el=document.createElement('div');el.className=`result-card result-rank-${Math.min(i+1,4)} c2-result-card c2-origin-card ${i===0?'is-primary':''}`;el.tabIndex=0;el.setAttribute('role','button');
-  const fine=g.best?._fineLabel||'',grape=g.best?.profile?.grape||'',sub=[grape,fine&&norm(fine)!==norm(g.label)?fine:''].filter(Boolean).join(' · '),bar=Math.max(0,Math.min(100,g.probability*100));
-  el.innerHTML=`<div class="result-top">${rankVisual(i)}<div><div class="result-name">${g.label}</div><div class="c2-origin-sub">${sub}</div></div><span class="score" title="Probabilité relative dans le périmètre sélectionné">${pct(g.probability)}</span></div><div class="bar"><span style="width:${bar}%"></span></div>`;
-  const open=e=>{e?.preventDefault?.();e?.stopPropagation?.();openBest(g)};el.addEventListener('click',open);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(e)}});return el;
-}
+function openBest(g){const p=g.best?.profile;if(!p)return;if(g.unitId&&window.WineBlindReference?.openOrigin)return window.WineBlindReference.openOrigin(g.unitId,p.grape);const cp=g.best?._originResolution?.canonicalProfile;if(cp?.unitId&&window.WineBlindReference?.openOrigin)return window.WineBlindReference.openOrigin(cp.unitId,p.grape);window.WineBlindReference?.openGrape?.(p.grape)}
+function card(g,i){const el=document.createElement('div');el.className=`result-card result-rank-${Math.min(i+1,4)} c2-result-card c2-origin-card ${i===0?'is-primary':''}`;el.tabIndex=0;el.setAttribute('role','button');const fine=g.best?._fineLabel||'',grape=g.best?.profile?.grape||'',sub=[grape,fine&&norm(fine)!==norm(g.label)?fine:''].filter(Boolean).join(' · '),bar=Math.max(0,Math.min(100,g.probability*100));el.innerHTML=`<div class="result-top">${rankVisual(i)}<div><div class="result-name">${g.label}</div><div class="c2-origin-sub">${sub}</div></div><span class="score" title="Probabilité relative dans le périmètre sélectionné">${pct(g.probability)}</span></div><div class="bar"><span style="width:${bar}%"></span></div>`;const open=e=>{e?.preventDefault?.();e?.stopPropagation?.();openBest(g)};el.addEventListener('click',open);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(e)}});return el}
 function currentScope(){return $('#originScopeSelector [data-origin-scope].active')?.dataset.originScope||window.__WINE_BLIND_ORIGIN_SCOPE||'world'}
-function render(){
-  const box=$('#originResults'),s=window.__C2_LAST;if(!box||!s?.profiles?.length)return;
-  const tax=canonicalTaxonomy(),scope=currentScope(),world=distribution('world',tax),france=distribution('france',tax),arr=scope==='france'?france:world;
-  const audit=taxonomyAudit(tax,s.profiles);
-  window.__WINE_BLIND_ORIGIN_TAXONOMY_AUDIT=audit;
-  window.__WINE_BLIND_ORIGIN_DISTRIBUTIONS={world,france,scope,taxonomySource:audit.source};
-  if(audit.currentFallbackProfiles.length||audit.missingUnitLinks.length||audit.profilesWithoutUnit.length||audit.duplicateProfileKeys.length)console.warn('[Wine Blind] Origin taxonomy canonical audit',audit);
-  box.replaceChildren(...(arr.length?arr.slice(0,10).map(card):[Object.assign(document.createElement('div'),{className:'empty',textContent:scope==='france'?'Aucune origine française ne correspond aux repères saisis.':'Aucune origine ne correspond aux repères saisis.'})]));
-}
+function render(){const box=$('#originResults'),s=window.__C2_LAST;if(!box||!s?.profiles?.length)return;const tax=canonicalTaxonomy(),scope=currentScope(),world=distribution('world',tax),france=distribution('france',tax),arr=scope==='france'?france:world;const audit=taxonomyAudit(tax,s.profiles);window.__WINE_BLIND_ORIGIN_TAXONOMY_AUDIT=audit;window.__WINE_BLIND_ORIGIN_DISTRIBUTIONS={world,france,scope,taxonomySource:audit.source,calibration:{temperature:ORIGIN_TEMPERATURE,consensusScale:ORIGIN_CONSENSUS_SCALE,consensusCap:ORIGIN_CONSENSUS_CAP}};if(audit.currentFallbackProfiles.length||audit.missingUnitLinks.length||audit.profilesWithoutUnit.length||audit.duplicateProfileKeys.length)console.warn('[Wine Blind] Origin taxonomy canonical audit',audit);box.replaceChildren(...(arr.length?arr.slice(0,10).map(card):[Object.assign(document.createElement('div'),{className:'empty',textContent:scope==='france'?'Aucune origine française ne correspond aux repères saisis.':'Aucune origine ne correspond aux repères saisis.'})]))}
 function schedule(delay=230){clearTimeout(schedule.t);schedule.t=setTimeout(render,delay)}
-$('#originScopeSelector')?.querySelectorAll('[data-origin-scope]').forEach(b=>b.addEventListener('click',()=>schedule(0)));
-document.addEventListener('wineblind:diagnostic-input',()=>schedule(240));
-['#typeRed','#typeWhite','#resetAll'].forEach(sel=>$(sel)?.addEventListener('click',()=>schedule(240)));
-document.querySelector('[data-tab="origin"]')?.addEventListener('click',()=>schedule(0));
-schedule(260);
+$('#originScopeSelector')?.querySelectorAll('[data-origin-scope]').forEach(b=>b.addEventListener('click',()=>schedule(0)));document.addEventListener('wineblind:diagnostic-input',()=>schedule(240));['#typeRed','#typeWhite','#resetAll'].forEach(sel=>$(sel)?.addEventListener('click',()=>schedule(240)));document.querySelector('[data-tab="origin"]')?.addEventListener('click',()=>schedule(0));schedule(260);
 })();
