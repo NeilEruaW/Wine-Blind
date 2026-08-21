@@ -32,3 +32,4 @@ grid.sort((a,b)=>b.score-a.score);console.log('ORIGIN_CALIBRATION_TOP');for(cons
 const best=grid[0];assert.ok(best.full.top10>=.95,'perfect identities should almost always retain expected origin in Top 10');assert.ok(best.partial.top10>=.80,'partial identities should retain expected origin in Top 10');
 const hard=best.partial.rows.filter(x=>x.rank>1).sort((a,b)=>a.rank-b.rank).slice(0,20).map(x=>({grape:x.target.grape,style:x.target.style,expected:x.expected.label,rank:x.rank,p:+x.p.toFixed(3),winner:x.top?.label,winnerP:+(x.p1||0).toFixed(3)}));console.log('ORIGIN_CALIBRATION_HARD_CASES');console.log(JSON.stringify(hard));
 console.log('ORIGIN_CALIBRATION_BEST='+JSON.stringify(best.params));
+// Calibration execution marker: PR-triggered CI run.
