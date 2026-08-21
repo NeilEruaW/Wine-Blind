@@ -1,15 +1,17 @@
 # Comparaison appariée — pondération structurelle discriminante v3
 
-**12000 simulations**, graine 0x57424d43, mêmes cas pour la baseline et la variante. Verdict global : **PASS**.
+**12000 simulations**, graine 0x57424d43, mêmes cas pour la baseline et la variante. Verdict global : **FAIL — variante rejetée en l’état**.
+
+Décision applicative : **baseline canonique conservée**.
 
 | Segment | Niveau | Cépage réel Top 10 | Top 1 réel/proche | Top 1 incompatible | Masse incompatible | Erreurs >50 % | Gate |
 |---|---|---:|---:|---:|---:|---:|---|
-| Rouge | light | 97.7 % → 97.7 % (+0.0 pt) | 63.2 % → 64.1 % | 1.1 % → 1.1 % | 2.2 % → 2.3 % | 21.6 % → 20.8 % | PASS |
-| Rouge | medium | 81.5 % → 82.2 % (+0.6 pt) | 50.6 % → 50.9 % | 2.1 % → 2.2 % | 4.2 % → 4.2 % | 27.0 % → 25.8 % | PASS |
-| Rouge | heavy | 61.8 % → 62.4 % (+0.6 pt) | 35.6 % → 35.5 % | 5.5 % → 5.5 % | 8.6 % → 8.6 % | 25.1 % → 24.3 % | PASS |
-| Blanc | light | 97.5 % → 97.7 % (+0.1 pt) | 56.3 % → 56.2 % | 0.2 % → 0.3 % | 0.8 % → 0.8 % | 13.2 % → 12.6 % | PASS |
-| Blanc | medium | 79.7 % → 80.5 % (+0.9 pt) | 42.6 % → 43.0 % | 1.1 % → 1.1 % | 2.0 % → 2.0 % | 17.4 % → 16.7 % | PASS |
-| Blanc | heavy | 60.6 % → 61.0 % (+0.4 pt) | 29.9 % → 30.0 % | 3.8 % → 3.9 % | 5.7 % → 5.7 % | 15.3 % → 14.9 % | PASS |
+| Rouge | light | 100.0 % → 100.0 % (+0.0 pt) | 92.1 % → 91.8 % | 0.0 % → 0.0 % | 0.4 % → 0.4 % | 3.2 % → 3.1 % | PASS |
+| Rouge | medium | 97.0 % → 97.0 % (+0.0 pt) | 72.8 % → 72.9 % | 0.9 % → 0.9 % | 2.1 % → 2.1 % | 6.8 % → 6.5 % | PASS |
+| Rouge | heavy | 79.8 % → 79.8 % (-0.1 pt) | 45.2 % → 45.4 % | 3.6 % → 3.5 % | 6.9 % → 6.9 % | 9.2 % → 8.8 % | PASS |
+| Blanc | light | 99.4 % → 99.4 % (+0.0 pt) | 79.7 % → 79.3 % | 0.4 % → 0.4 % | 1.4 % → 1.4 % | 3.6 % → 3.5 % | FAIL |
+| Blanc | medium | 93.5 % → 93.5 % (+0.1 pt) | 60.4 % → 60.1 % | 2.9 % → 2.9 % | 3.9 % → 4.0 % | 4.2 % → 4.0 % | FAIL |
+| Blanc | heavy | 77.8 % → 78.1 % (+0.3 pt) | 38.5 % → 38.5 % | 7.2 % → 7.2 % | 8.7 % → 8.7 % | 5.1 % → 5.0 % | PASS |
 
 ## Cépages les moins documentés
 
@@ -17,26 +19,26 @@ Le tableau signale un besoin d’enrichissement ; il ne déclenche aucune réduc
 
 | Cépage | Type | Profils | Marqueurs | Familles | Signatures | Descripteurs |
 |---|---|---:|---:|---:|---:|---:|
-| Altesse | Blanc | 1 | 10 | 4 | 3 | 3 |
-| Fer Servadou | Rouge | 1 | 10 | 4 | 3 | 3 |
-| Sciaccarello | Rouge | 1 | 11 | 6 | 2 | 3 |
-| Tibouren | Rouge | 1 | 12 | 6 | 3 | 3 |
-| Piquepoul Blanc | Blanc | 1 | 13 | 4 | 1 | 8 |
-| Aligoté | Blanc | 1 | 14 | 8 | 1 | 5 |
-| Bobal | Rouge | 1 | 14 | 5 | 2 | 7 |
-| Jacquère | Blanc | 1 | 14 | 4 | 1 | 9 |
-| Poulsard | Rouge | 1 | 15 | 4 | 1 | 10 |
-| Duras | Rouge | 1 | 16 | 5 | 2 | 9 |
-| Godello | Blanc | 1 | 16 | 8 | 2 | 6 |
-| Moschofilero | Blanc | 1 | 16 | 5 | 2 | 9 |
-| Bonarda Argentina | Rouge | 1 | 17 | 8 | 3 | 6 |
-| Melon de Bourgogne | Blanc | 1 | 17 | 7 | 1 | 9 |
-| Saperavi | Rouge | 1 | 17 | 5 | 2 | 10 |
-| Agiorgitiko | Rouge | 1 | 18 | 10 | 2 | 6 |
-| Négrette | Rouge | 1 | 18 | 6 | 2 | 10 |
-| Romorantin | Blanc | 1 | 18 | 5 | 2 | 11 |
-| Petit Manseng | Blanc | 1 | 19 | 10 | 2 | 7 |
-| Savagnin | Blanc | 2 | 19 | 6 | 3 | 10 |
+| Auxerrois | Blanc | 1 | 5 | 3 | 0 | 2 |
+| Bourboulenc | Blanc | 1 | 5 | 3 | 0 | 2 |
+| Mondeuse Noire | Rouge | 1 | 5 | 3 | 0 | 2 |
+| Folle Blanche | Blanc | 1 | 6 | 4 | 0 | 2 |
+| Pineau d'Aunis | Rouge | 1 | 7 | 4 | 0 | 3 |
+| Fer Servadou | Rouge | 1 | 8 | 2 | 3 | 3 |
+| Mauzac | Blanc | 1 | 8 | 5 | 0 | 3 |
+| Altesse | Blanc | 1 | 9 | 3 | 3 | 3 |
+| Sciaccarello | Rouge | 1 | 9 | 4 | 2 | 3 |
+| Tibouren | Rouge | 1 | 9 | 3 | 3 | 3 |
+| Arneis | Blanc | 1 | 10 | 5 | 0 | 5 |
+| Bobal | Rouge | 1 | 10 | 5 | 0 | 5 |
+| Piquepoul Blanc | Blanc | 1 | 11 | 4 | 1 | 6 |
+| Aligoté | Blanc | 1 | 13 | 8 | 0 | 5 |
+| Jacquère | Blanc | 1 | 13 | 4 | 1 | 8 |
+| Falanghina | Blanc | 1 | 14 | 7 | 1 | 6 |
+| Godello | Blanc | 1 | 14 | 8 | 0 | 6 |
+| Bonarda Argentina | Rouge | 1 | 15 | 7 | 2 | 6 |
+| Colombard | Blanc | 1 | 15 | 10 | 0 | 5 |
+| Duras | Rouge | 1 | 15 | 4 | 2 | 9 |
 
 ## Règle de décision
 

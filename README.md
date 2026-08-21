@@ -1,4 +1,4 @@
-# Wine Blind — V11.4.0
+# Wine Blind — V11.5.1
 
 Version de production candidate reconstruite à partir du dernier frontend complet **V10.7.2** et du moteur de release **C2-C2**.
 
@@ -6,10 +6,12 @@ Version de production candidate reconstruite à partir du dernier frontend compl
 
 - `app.js`, `styles.css`, `data.js`, `v106.js`, `v107.js`, `v108.js` et `tree.js` conservent l'interface et les fonctions historiques.
 - `c2c2-data.js` contient la candidate C2-C2 gelée.
-- `c2c2-engine.js` exécute C2-C2.
+- `c2c2-engine.js` exécute les profils régionaux C2-C2 pour le diagnostic d’origine.
+- `canonical-profile-runtime.js` matérialise les 98 profils cépages depuis l’unique source des fiches d’identité.
+- `canonical-probability-model.js` calcule les probabilités du Top 10 cépages sur ces 98 profils.
 - `v11-reset-patch.js` relie la saisie historique au moteur C2-C2 et applique uniquement les ajustements UX validés.
 - `v11-reset.css` complète le stylesheet historique sans le remplacer.
 
-Le moteur C2-C2 n'est pas recalibré dans cette release.
+Les profils régionaux C2-C2 ne sont pas recalibrés dans cette release.
 
 Voir `docs/ARCHITECTURE.md`, `docs/RELEASE_NOTES.md` et `docs/QA_REPORT.md`.

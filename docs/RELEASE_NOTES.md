@@ -1,3 +1,31 @@
+# Wine Blind V11.5.1
+
+## Couverture probabiliste complète
+
+- Les 98 cépages du Référentiel sont désormais éligibles au Top 10 cépages.
+- Les 13 cépages auparavant absents utilisent un profil canonique agrégé issu de leur fiche d’identité, sans créer de faux profil régional dans le Top 10 origines.
+- La structure des probabilités cépages provient exclusivement de `WSET_DATA.structureProfile` ; les profils C2-C2 régionaux sont conservés pour le chantier origines.
+
+## Continuité fiche → saisie → score
+
+- Correction de la valeur masculine `Élevé` pour l’alcool.
+- Raccordement de l’intensité visuelle à l’axe structurel canonique `Couleur`.
+- Projection des rails à trois niveaux sur `1,5 / 3 / 4,5`.
+- Tous les descripteurs sélectionnés sont transmis, même sans ancien alias C2-C2.
+- Familles, signatures et descripteurs utilisent des clés sémantiques communes dans le modèle probabiliste.
+
+## Validation
+
+- 98/98 fiches quasi exactes classées dans le Top 10 ; 85/98 classées premières.
+- Agiorgitiko classé premier à 65,1 % dans le scénario quasi exact automatisé.
+- La modulation structurelle v3 est rejetée à 98 cépages ; la baseline canonique, plus robuste, est conservée.
+
+## PWA
+
+Nouveau namespace de cache : `wine-blind-v11-5-1-full-coverage-1`.
+
+---
+
 # Wine Blind V11.2.1
 
 ## Top 10 origines
