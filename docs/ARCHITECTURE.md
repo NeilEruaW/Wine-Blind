@@ -1,4 +1,4 @@
-# Architecture V11.0.3 RESET
+# Architecture V11.6.0
 
 ## Runtime
 
@@ -13,6 +13,8 @@
 - `tree.js` — arbre guidé historique.
 - `c2c2-data.js` — candidate Wine-Blind-vNext-C2-C2 gelée.
 - `c2c2-engine.js` — scoring C2-C2.
+- `canonical-probability-model.js` — vraisemblances cépages sur les 98 identités canoniques.
+- `origin-probability-model.js` — modèle hiérarchique `P(cépage) × P(profil régional | cépage)` et calibration selon la quantité de preuves.
 - `v11-reset-patch.js` — pont entre l'interface historique et C2-C2.
 - `manifest.webmanifest`, `sw.js`, `icons/` — PWA.
 

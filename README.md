@@ -1,4 +1,4 @@
-# Wine Blind — V11.5.1
+# Wine Blind — V11.6.0
 
 Version de production candidate reconstruite à partir du dernier frontend complet **V10.7.2** et du moteur de release **C2-C2**.
 
@@ -9,9 +9,10 @@ Version de production candidate reconstruite à partir du dernier frontend compl
 - `c2c2-engine.js` exécute les profils régionaux C2-C2 pour le diagnostic d’origine.
 - `canonical-profile-runtime.js` matérialise les 98 profils cépages depuis l’unique source des fiches d’identité.
 - `canonical-probability-model.js` calcule les probabilités du Top 10 cépages sur ces 98 profils.
+- `origin-probability-model.js` calcule les probabilités hiérarchiques du Top 10 origines sur 203 profils régionaux, pour les périmètres Monde et France.
 - `v11-reset-patch.js` relie la saisie historique au moteur C2-C2 et applique uniquement les ajustements UX validés.
 - `v11-reset.css` complète le stylesheet historique sans le remplacer.
 
-Les profils régionaux C2-C2 ne sont pas recalibrés dans cette release.
+Les 13 cépages sans véritable profil régional restent volontairement exclus du Top 10 origines.
 
 Voir `docs/ARCHITECTURE.md`, `docs/RELEASE_NOTES.md` et `docs/QA_REPORT.md`.

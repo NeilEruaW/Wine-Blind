@@ -74,3 +74,13 @@ Comparaison avec le commit V10.7.2 (`00044d294887797ac906952c385563f814d934bf`) 
 ## Point restant avant bascule de `main`
 
 Effectuer un smoke-test visuel réel dans Safari/iPhone : saisie SAT, Top 10, ouverture d'une fiche cépage, ouverture d'une origine, Quiz, Référentiel, Historique et réinstallation PWA. La branche `main` n'est pas modifiée tant que ce contrôle n'est pas validé.
+# V11.6.0 — Top 10 origines probabiliste
+
+- 203 profils régionaux et 85 cépages régionaux couverts ; aucun profil régional synthétique ajouté pour les 13 cépages sans origine documentée.
+- Distributions Monde et France vérifiées séparément : somme de l’univers égale à 100 %, masse du seul Top 10 non renormalisée et absence de catégorie « Autres ».
+- Cas quasi exact Napa Valley Cabernet présent dans le Top 10 Monde.
+- Campagne Monte-Carlo déterministe de 12 000 cas : Top 10 exact à 89,5 % / 73,7 % / 53,9 % selon la dégradation ; Top 1 incompatible à 0,0 % / 0,0 % / 0,1 %.
+- Tests statiques, probabilités cépages, scoring aromatique canonique et smoke tests : réussis.
+- Les parcours Playwright WebKit n’ont pas pu être relancés dans cet environnement faute de dépendance Playwright installée ; leurs garde-fous statiques restent inchangés.
+
+---

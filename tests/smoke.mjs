@@ -10,13 +10,13 @@ const overlay=read('v11-reset.css');
 const patch=read('v11-reset-patch.js');
 const sw=read('sw.js');
 
-for(const asset of ['styles.css','v11-reset.css','data.js','canonical-aroma-runtime.js','v106.js','v107.js','v108.js','tree.js','app.js','c2c2-data.js','canonical-scoring-overlay.js','lacunar-profile-overlay.js','canonical-profile-runtime.js','c2c2-engine.js','canonical-probability-model.js','v11-reset-patch.js']) assert.ok(index.includes(asset),`index missing ${asset}`);
+for(const asset of ['styles.css','v11-reset.css','data.js','canonical-aroma-runtime.js','v106.js','v107.js','v108.js','tree.js','app.js','c2c2-data.js','canonical-scoring-overlay.js','lacunar-profile-overlay.js','canonical-profile-runtime.js','c2c2-engine.js','canonical-probability-model.js','origin-probability-model.js','v11-reset-patch.js']) assert.ok(index.includes(asset),`index missing ${asset}`);
 for(const feature of ['data-tab="grape"','data-tab="origin"','data-tab="tree"','data-tab="quiz"','data-tab="reference"','id="historyList"','id="originScopeSelector"','data-origin-scope="world"','data-origin-scope="france"']) assert.ok(index.includes(feature),`historical UI missing ${feature}`);
 assert.ok(app.length>500000,'historical app.js unexpectedly small');
 for(const feature of ['WINE_LEXICON','trainingHubStats','refOrigins','wineBlindHistoryV2']) assert.ok(app.includes(feature),`historical app feature missing ${feature}`);
 for(const feature of ['.sat-continuum','.training-grid','.alpha-index','.aroma-group']) assert.ok(css.includes(feature),`historical CSS feature missing ${feature}`);
-for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown','originCandidates','renderOriginList','isFrenchProfile','probabilityScore','probabilityFallback','% de correspondance probable']) assert.ok(patch.includes(feature),`V11.5.1 patch feature missing ${feature}`);
-assert.ok(sw.includes('wine-blind-v11-5-1-full-coverage-1'),'wrong service-worker cache namespace');
+for(const feature of ['openProfile','saveC2','Top 10 origines','C2-C2','rankVisual','scoreBreakdown','originCandidates','renderOriginList','isFrenchProfile','probabilityScore','probabilityFallback','% de correspondance probable']) assert.ok(patch.includes(feature),`V11.6.0 patch feature missing ${feature}`);
+assert.ok(sw.includes('wine-blind-v11-6-0-origin-probability-1'),'wrong service-worker cache namespace');
 assert.ok(app.includes('window.WineBlindReference=Object.freeze'),'historical grape reference is not exposed as the single identity source');
 assert.ok(patch.includes('window.WineBlindReference?.openGrape(r.profile.grape)'),'Top 10 cards do not use the historical reference identity source');
 assert.ok(!patch.includes('openGrapeAggregate'),'competing C2-C2 aggregate identity source still exists');
@@ -127,4 +127,4 @@ const pinotResult=E.score(pinotObs).grapes.find(r=>r.profile.grape==='Pinot Noir
 assert.equal(E.score(pinotObs).grapes[0].profile.grape,'Pinot Noir','Pinot structure regression');
 assert.equal(Math.round(pinotResult.st.S*100),100,'Pinot structure should be a perfect observed fit');
 assert.ok(patch.includes('(3.2*r.A+r.S_eff+r.C)/available'),'displayed adequacy is not normalized to observed evidence');
-console.log('Wine Blind V11.5.1 full-coverage probabilistic ranking smoke test: PASS');
+console.log('Wine Blind V11.6.0 grape and origin probabilistic ranking smoke test: PASS');
