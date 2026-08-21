@@ -29,15 +29,18 @@ jobs:
           node --check canonical-scoring-overlay.js
           node --check canonical-aroma-runtime.js
           node --check v11-reset-patch.js
+          node --check origin-probability-patch.js
           node --check app.js
           node --check sw.js
           node --check tests/origin-calibration.mjs
+          node --check tests/origin-runtime-smoke.mjs
           node --check tests/mobile-browser.mjs
           node --check tests/mobile-endurance.mjs
       - name: Wine Blind regression smoke
         run: |
           node tests/smoke.mjs
           node tests/canonical-aroma-scoring.mjs
+          node tests/origin-runtime-smoke.mjs
           node tests/origin-calibration.mjs
       - name: Install WebKit test runtime
         run: |
