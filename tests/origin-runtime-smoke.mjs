@@ -28,7 +28,7 @@ const key=p=>`${norm(p.grape)}::${norm(p.style)}`;
 const canonical=new Map(V.profiles.map(p=>[key(p),p]));
 const units=new Map(V.units.map(u=>[u.id,u]));
 const broken=C.profiles.filter(p=>{const cp=canonical.get(key(p));return !cp?.unitId||!units.has(cp.unitId)});
-assert.deepEqual(broken.map(p=>p.profile_id),[],'one or more scored origin profiles lost their canonical unit link');
+assert.equal(broken.length,0,`one or more scored origin profiles lost their canonical unit link: ${broken.map(p=>p.profile_id).join(', ')}`);
 const france=V.units.filter(u=>u.country==='France');
 assert.ok(france.length>0,'canonical French origin universe is empty');
 console.log(`Origin V11.5.4 runtime: PASS — ${C.profiles.length} profiles, ${V.units.length} units, ${france.length} French units`);
