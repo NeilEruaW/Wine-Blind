@@ -1,3 +1,28 @@
+# Wine Blind V11.6.0
+
+## Top 10 origines probabiliste
+
+- Les 203 profils régionaux C2-C2 sont classés par probabilité relative et non plus par simple score d’adéquation.
+- Le modèle est hiérarchique : probabilité du cépage, puis probabilité de l’origine conditionnellement au cépage. Le nombre de régions documentées pour un cépage ne crée donc aucun avantage mécanique.
+- Les marqueurs régionaux sont pondérés selon leur rareté parmi les profils du même cépage ; les familles, signatures et descripteurs d’une même famille subissent un rendement décroissant.
+- La structure exploite les plages régionales et le pouvoir discriminant propre à chaque axe au sein d’un même cépage.
+- Les pourcentages sont calibrés selon la quantité de preuves saisies. Une saisie incomplète produit une distribution plus prudente.
+- Le Top 10 n’est jamais renormalisé : sa somme peut rester inférieure à 100 %, sans ligne « Autres ».
+- Le sélecteur conserve une seule liste alternative : `Monde` calcule la distribution mondiale et `France` la distribution conditionnelle parmi les seuls profils français.
+- Les 13 cépages dépourvus de véritable profil régional ne reçoivent aucune origine artificielle.
+
+## Validation
+
+- Campagne Monte-Carlo déterministe de 12 000 cas : 4 000 saisies légèrement, moyennement et fortement dégradées.
+- Origine exacte dans le Top 10 : 89,5 % / 73,7 % / 53,9 %.
+- Cépage correct représenté dans le Top 10 régional : 93,0 % / 80,9 % / 63,3 %.
+- Top 1 franchement incompatible : 0,0 % / 0,0 % / 0,1 %.
+- Erreur de calibration ECE : 4,52 / 2,51 / 3,76 points.
+
+Nouveau namespace de cache : `wine-blind-v11-6-0-origin-probability-1`.
+
+---
+
 # Wine Blind V11.5.1
 
 ## Couverture probabiliste complète
